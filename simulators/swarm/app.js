@@ -197,11 +197,13 @@ class Boid {
         this.position.add(this.velocity);
         this.acceleration.mult(0); // Reset acceleration
 
-        // Wrap around edges
-        if (this.position.x > canvas.width) this.position.x = 0;
-        if (this.position.x < 0) this.position.x = canvas.width;
-        if (this.position.y > canvas.height) this.position.y = 0;
-        if (this.position.y < 0) this.position.y = canvas.height;
+        // Wrap around edges - use canvas dimensions from global reference
+        const canvasWidth = window.boidCanvasWidth || 800;
+        const canvasHeight = window.boidCanvasHeight || 600;
+        if (this.position.x > canvasWidth) this.position.x = 0;
+        if (this.position.x < 0) this.position.x = canvasWidth;
+        if (this.position.y > canvasHeight) this.position.y = 0;
+        if (this.position.y < 0) this.position.y = canvasHeight;
     }
 
     draw(ctx, params, colorCache) {
@@ -356,9 +358,14 @@ class BoidSimulation {
         const container = this.canvas.parentElement;
         this.canvas.width = container.clientWidth;
         this.canvas.height = 600;
+        
+        // Store dimensions globally for Boid class edge wrapping
+        window.boidCanvasWidth = this.canvas.width;
+        window.boidCanvasHeight = this.canvas.height;
 
         window.addEventListener('resize', () => {
             this.canvas.width = container.clientWidth;
+            window.boidCanvasWidth = this.canvas.width;
         });
 
         this.canvas.addEventListener('mousemove', (e) => {

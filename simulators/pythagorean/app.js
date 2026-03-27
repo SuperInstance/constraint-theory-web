@@ -1,120 +1,301 @@
-// Pythagorean Snapping Simulator
+/**
+ * Pythagorean Snapping Simulator
+ * 
+ * Features:
+ * - Origin at lower-left (standard mathematical quadrant I view)
+ * - Zoom with mouse wheel and buttons
+ * - Pan by dragging
+ * - Displays many Pythagorean triples
+ */
+
 class PythagoreanSimulator {
     constructor() {
         this.canvas = document.getElementById('snapCanvas');
         this.ctx = this.canvas.getContext('2d');
+        
+        // View state
+        this.scale = 20; // Pixels per unit
+        this.minScale = 2;
+        this.maxScale = 100;
+        this.offsetX = 50; // Padding from left
+        this.offsetY = 50; // Padding from bottom (origin at lower-left)
+        
+        // Interaction state
+        this.isDragging = false;
+        this.dragStart = { x: 0, y: 0 };
+        this.dragOffset = { x: this.offsetX, y: this.offsetY };
+        
+        // Points placed by user
         this.points = [];
-        this.threshold = 0.1;
+        this.threshold = 2.0;
+        this.maxTripleSize = 100;
+        
+        // Display options
         this.showGrid = true;
         this.showRatios = true;
         this.showAngles = true;
-
-        this.pythagoreanTriples = [
-            { a: 3, b: 4, c: 5 },
-            { a: 5, b: 12, c: 13 },
-            { a: 8, b: 15, c: 17 },
-            { a: 7, b: 24, c: 25 },
-            { a: 20, b: 21, c: 29 },
-            { a: 9, b: 40, c: 41 },
-            { a: 12, b: 35, c: 37 },
-        ];
-
-        this.scale = 20; // Pixels per unit
-        this.offsetX = this.canvas.width / 2;
-        this.offsetY = this.canvas.height / 2;
-
+        this.showLabels = true;
+        
+        // Pre-computed Pythagorean triples
+        this.pythagoreanTriples = this.generateTriples(100);
+        
+        // View bounds
+        this.viewMinX = 0;
+        this.viewMaxX = 0;
+        this.viewMinY = 0;
+        this.viewMaxY = 0;
+        
         this.init();
     }
-
-    init() {
-        this.setupEventListeners();
-        this.populateTriplesList();
-        this.render();
-        this.renderEquation();
+    
+    generateTriples(maxC) {
+        const triples = [];
+        // Generate primitive Pythagorean triples using Euclid's formula
+        for (let m = 2; m * m <= maxC; m++) {
+            for (let n = 1; n < m; n++) {
+                if ((m + n) % 2 === 1 && this.gcd(m, n) === 1) {
+                    const a = m * m - n * n;
+                    const b = 2 * m * n;
+                    const c = m * m + n * n;
+                    
+                    if (c <= maxC) {
+                        // Add both orderings (a, b) and (b, a)
+                        triples.push({ a: Math.min(a, b), b: Math.max(a, b), c, primitive: true });
+                        
+                        // Add multiples (non-primitive)
+                        for (let k = 2; k * c <= maxC; k++) {
+                            triples.push({ 
+                                a: Math.min(a * k, b * k), 
+                                b: Math.max(a * k, b * k), 
+                                c: c * k, 
+                                primitive: false 
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Sort by c value
+        triples.sort((x, y) => x.c - y.c);
+        return triples;
     }
-
+    
+    gcd(a, b) {
+        return b === 0 ? a : this.gcd(b, a % b);
+    }
+    
+    init() {
+        this.setupCanvas();
+        this.setupEventListeners();
+        this.updateTriplesList();
+        this.render();
+    }
+    
+    setupCanvas() {
+        const container = this.canvas.parentElement;
+        this.canvas.width = container.clientWidth;
+        this.canvas.height = 600;
+        
+        // Set initial offset to show origin at lower-left with some padding
+        this.offsetX = 50;
+        this.offsetY = this.canvas.height - 50;
+        this.dragOffset = { x: this.offsetX, y: this.offsetY };
+        
+        window.addEventListener('resize', () => {
+            this.canvas.width = container.clientWidth;
+            this.render();
+        });
+    }
+    
     setupEventListeners() {
-        this.canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
-
+        // Mouse wheel zoom
+        this.canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+            this.zoom(zoomFactor, e);
+        });
+        
+        // Pan with drag
+        this.canvas.addEventListener('mousedown', (e) => {
+            if (e.button === 0) { // Left click
+                this.isDragging = true;
+                this.dragStart = { x: e.clientX, y: e.clientY };
+                this.dragOffset = { x: this.offsetX, y: this.offsetY };
+                this.canvas.style.cursor = 'grabbing';
+            }
+        });
+        
+        window.addEventListener('mousemove', (e) => {
+            if (this.isDragging) {
+                const dx = e.clientX - this.dragStart.x;
+                const dy = e.clientY - this.dragStart.y;
+                this.offsetX = this.dragOffset.x + dx;
+                this.offsetY = this.dragOffset.y + dy;
+                this.render();
+            }
+        });
+        
+        window.addEventListener('mouseup', (e) => {
+            if (this.isDragging && e.button === 0) {
+                this.isDragging = false;
+                this.canvas.style.cursor = 'crosshair';
+                
+                // If it was a click (not a drag), add a point
+                const dx = Math.abs(e.clientX - this.dragStart.x);
+                const dy = Math.abs(e.clientY - this.dragStart.y);
+                if (dx < 5 && dy < 5 && e.target === this.canvas) {
+                    this.handleCanvasClick(e);
+                }
+            }
+        });
+        
+        // Zoom buttons
+        document.getElementById('zoomIn').addEventListener('click', () => this.zoom(1.3));
+        document.getElementById('zoomOut').addEventListener('click', () => this.zoom(0.7));
+        document.getElementById('resetView').addEventListener('click', () => this.resetView());
+        
+        // Sliders
         document.getElementById('threshold').addEventListener('input', (e) => {
             this.threshold = parseFloat(e.target.value);
-            document.getElementById('thresholdValue').textContent = this.threshold.toFixed(2);
+            document.getElementById('thresholdValue').textContent = this.threshold.toFixed(1);
             this.recalculateSnaps();
             this.render();
         });
-
+        
+        document.getElementById('maxTriple').addEventListener('input', (e) => {
+            this.maxTripleSize = parseInt(e.target.value);
+            document.getElementById('maxTripleValue').textContent = this.maxTripleSize;
+            this.pythagoreanTriples = this.generateTriples(this.maxTripleSize);
+            this.updateTriplesList();
+            this.render();
+        });
+        
+        // Checkboxes
         document.getElementById('showGrid').addEventListener('change', (e) => {
             this.showGrid = e.target.checked;
             this.render();
         });
-
         document.getElementById('showRatios').addEventListener('change', (e) => {
             this.showRatios = e.target.checked;
             this.render();
         });
-
         document.getElementById('showAngles').addEventListener('change', (e) => {
             this.showAngles = e.target.checked;
             this.render();
         });
-
+        document.getElementById('showLabels').addEventListener('change', (e) => {
+            this.showLabels = e.target.checked;
+            this.render();
+        });
+        
+        // Reset button
         document.getElementById('resetBtn').addEventListener('click', () => {
             this.points = [];
             this.updateStats();
             this.render();
-            document.getElementById('snapHistory').innerHTML = '<p class="text-gray-500">No snaps yet</p>';
+            document.getElementById('snapHistory').innerHTML = '<p class="text-gray-500 text-sm">Click on canvas to snap points</p>';
         });
     }
-
+    
+    zoom(factor, e) {
+        const oldScale = this.scale;
+        this.scale = Math.max(this.minScale, Math.min(this.maxScale, this.scale * factor));
+        
+        if (e) {
+            // Zoom toward mouse position
+            const rect = this.canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            this.offsetX = mouseX - (mouseX - this.offsetX) * (this.scale / oldScale);
+            this.offsetY = mouseY - (mouseY - this.offsetY) * (this.scale / oldScale);
+        }
+        
+        document.getElementById('zoomLevel').textContent = (this.scale / 20).toFixed(1) + 'x';
+        document.getElementById('scaleDisplay').textContent = `1 unit = ${this.scale.toFixed(0)}px`;
+        this.render();
+    }
+    
+    resetView() {
+        this.scale = 20;
+        this.offsetX = 50;
+        this.offsetY = this.canvas.height - 50;
+        document.getElementById('zoomLevel').textContent = '1.0x';
+        document.getElementById('scaleDisplay').textContent = '1 unit = 20px';
+        this.render();
+    }
+    
+    screenToWorld(screenX, screenY) {
+        // Convert screen coordinates to world coordinates (origin at lower-left)
+        return {
+            x: (screenX - this.offsetX) / this.scale,
+            y: (this.offsetY - screenY) / this.scale  // Note: Y is inverted
+        };
+    }
+    
+    worldToScreen(worldX, worldY) {
+        // Convert world coordinates to screen coordinates
+        return {
+            x: worldX * this.scale + this.offsetX,
+            y: this.offsetY - worldY * this.scale  // Note: Y is inverted
+        };
+    }
+    
     handleCanvasClick(e) {
         const rect = this.canvas.getBoundingClientRect();
-        const scaleX = this.canvas.width / rect.width;
-        const scaleY = this.canvas.height / rect.height;
-
-        const x = (e.clientX - rect.left) * scaleX;
-        const y = (e.clientY - rect.top) * scaleY;
-
-        // Convert to mathematical coordinates
-        const mathX = (x - this.offsetX) / this.scale;
-        const mathY = (this.offsetY - y) / this.scale;
-
+        const screenX = e.clientX - rect.left;
+        const screenY = e.clientY - rect.top;
+        
+        const world = this.screenToWorld(screenX, screenY);
+        
         // Snap to Pythagorean triple
-        const snapped = this.snapToPythagorean(mathX, mathY);
-
+        const snapped = this.snapToPythagorean(world.x, world.y);
+        
         this.points.push({
-            x: mathX,
-            y: mathY,
+            x: world.x,
+            y: world.y,
             snapped: snapped.snapped,
             snappedTo: snapped.snappedTo,
             distance: snapped.distance
         });
-
+        
         this.updateSnapHistory(snapped);
         this.updateStats();
         this.render();
     }
-
+    
     snapToPythagorean(x, y) {
         let snapped = null;
         let minDistance = Infinity;
-
+        
         for (const triple of this.pythagoreanTriples) {
-            const distance = Math.sqrt(Math.pow(x - triple.a, 2) + Math.pow(y - triple.b, 2));
-
-            if (distance < this.threshold && distance < minDistance) {
-                minDistance = distance;
-                snapped = { ...triple };
+            // Check both (a, b) and (b, a) orderings
+            const orders = [
+                { x: triple.a, y: triple.b, triple },
+                { x: triple.b, y: triple.a, triple }
+            ];
+            
+            for (const order of orders) {
+                const distance = Math.sqrt(
+                    Math.pow(x - order.x, 2) + Math.pow(y - order.y, 2)
+                );
+                
+                if (distance < this.threshold && distance < minDistance) {
+                    minDistance = distance;
+                    snapped = { x: order.x, y: order.y, triple: order.triple };
+                }
             }
         }
-
+        
         return {
             original: { x, y },
-            snapped: snapped,
-            snappedTo: snapped ? { x: snapped.a, y: snapped.b } : null,
+            snapped: snapped !== null,
+            snappedTo: snapped,
             distance: minDistance === Infinity ? 0 : minDistance
         };
     }
-
+    
     recalculateSnaps() {
         this.points = this.points.map(point => {
             const snapped = this.snapToPythagorean(point.x, point.y);
@@ -128,179 +309,301 @@ class PythagoreanSimulator {
         });
         this.updateStats();
     }
-
+    
     render() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
+        const ctx = this.ctx;
+        const width = this.canvas.width;
+        const height = this.canvas.height;
+        
+        // Clear canvas
+        ctx.fillStyle = '#0a0a14';
+        ctx.fillRect(0, 0, width, height);
+        
+        // Calculate visible world bounds
+        const topLeft = this.screenToWorld(0, 0);
+        const bottomRight = this.screenToWorld(width, height);
+        this.viewMinX = Math.min(topLeft.x, bottomRight.x);
+        this.viewMaxX = Math.max(topLeft.x, bottomRight.x);
+        this.viewMinY = Math.min(topLeft.y, bottomRight.y);
+        this.viewMaxY = Math.max(topLeft.y, bottomRight.y);
+        
         // Draw grid
         if (this.showGrid) {
             this.drawGrid();
         }
-
-        // Draw Pythagorean ratios
+        
+        // Draw axes
+        this.drawAxes();
+        
+        // Draw Pythagorean triples
         if (this.showRatios) {
-            this.drawPythagoreanRatios();
+            this.drawPythagoreanTriples();
         }
-
-        // Draw points
-        this.points.forEach(point => {
-            const screenX = point.x * this.scale + this.offsetX;
-            const screenY = this.offsetY - point.y * this.scale;
-
-            // Draw line from original to snapped
-            if (point.snapped) {
-                const snappedScreenX = point.snappedTo.x * this.scale + this.offsetX;
-                const snappedScreenY = this.offsetY - point.snappedTo.y * this.scale;
-
-                this.ctx.beginPath();
-                this.ctx.moveTo(screenX, screenY);
-                this.ctx.lineTo(snappedScreenX, snappedScreenY);
-                this.ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)';
-                this.ctx.lineWidth = 2;
-                this.ctx.stroke();
-
-                // Draw snapped point
-                this.ctx.beginPath();
-                this.ctx.arc(snappedScreenX, snappedScreenY, 8, 0, 2 * Math.PI);
-                this.ctx.fillStyle = 'rgb(34, 197, 94)';
-                this.ctx.fill();
-            }
-
-            // Draw original point
-            this.ctx.beginPath();
-            this.ctx.arc(screenX, screenY, 6, 0, 2 * Math.PI);
-            this.ctx.fillStyle = point.snapped ? 'rgb(59, 130, 246)' : 'rgb(239, 68, 68)';
-            this.ctx.fill();
-        });
-
-        // Update coordinates display
-        if (this.points.length > 0) {
-            const lastPoint = this.points[this.points.length - 1];
-            document.getElementById('coordinates').textContent =
-                `Last: (${lastPoint.x.toFixed(2)}, ${lastPoint.y.toFixed(2)})` +
-                (lastPoint.snapped ? ` → Snapped to (${lastPoint.snappedTo.x}, ${lastPoint.snappedTo.y})` : '');
-        }
+        
+        // Draw user points
+        this.drawPoints();
+        
+        // Update visible count
+        this.updateVisibleCount();
     }
-
+    
     drawGrid() {
-        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-        this.ctx.lineWidth = 1;
-
+        const ctx = this.ctx;
+        const width = this.canvas.width;
+        const height = this.canvas.height;
+        
+        // Determine grid spacing based on scale
+        let gridStep = 1;
+        if (this.scale < 5) gridStep = 10;
+        else if (this.scale < 10) gridStep = 5;
+        else if (this.scale < 20) gridStep = 2;
+        
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
+        ctx.lineWidth = 1;
+        
         // Vertical lines
-        for (let x = this.offsetX % this.scale; x < this.canvas.width; x += this.scale) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(x, 0);
-            this.ctx.lineTo(x, this.canvas.height);
-            this.ctx.stroke();
+        const startX = Math.floor(this.viewMinX / gridStep) * gridStep;
+        for (let x = startX; x <= this.viewMaxX; x += gridStep) {
+            const screen = this.worldToScreen(x, 0);
+            ctx.beginPath();
+            ctx.moveTo(screen.x, 0);
+            ctx.lineTo(screen.x, height);
+            ctx.stroke();
         }
-
+        
         // Horizontal lines
-        for (let y = this.offsetY % this.scale; y < this.canvas.height; y += this.scale) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(0, y);
-            this.ctx.lineTo(this.canvas.width, y);
-            this.ctx.stroke();
+        const startY = Math.floor(this.viewMinY / gridStep) * gridStep;
+        for (let y = startY; y <= this.viewMaxY; y += gridStep) {
+            const screen = this.worldToScreen(0, y);
+            ctx.beginPath();
+            ctx.moveTo(0, screen.y);
+            ctx.lineTo(width, screen.y);
+            ctx.stroke();
         }
-
-        // Axes
-        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-        this.ctx.lineWidth = 2;
-
+    }
+    
+    drawAxes() {
+        const ctx = this.ctx;
+        const width = this.canvas.width;
+        const height = this.canvas.height;
+        
+        // Origin screen position
+        const origin = this.worldToScreen(0, 0);
+        
         // X-axis
-        this.ctx.beginPath();
-        this.ctx.moveTo(0, this.offsetY);
-        this.ctx.lineTo(this.canvas.width, this.offsetY);
-        this.ctx.stroke();
-
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, origin.y);
+        ctx.lineTo(width, origin.y);
+        ctx.stroke();
+        
         // Y-axis
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.offsetX, 0);
-        this.ctx.lineTo(this.offsetX, this.canvas.height);
-        this.ctx.stroke();
-    }
-
-    drawPythagoreanRatios() {
-        this.ctx.fillStyle = 'rgba(34, 197, 94, 0.3)';
-        this.ctx.strokeStyle = 'rgba(34, 197, 94, 0.8)';
-        this.ctx.lineWidth = 2;
-
-        this.pythagoreanTriples.forEach(triple => {
-            const x = triple.a * this.scale + this.offsetX;
-            const y = this.offsetY - triple.b * this.scale;
-
-            // Draw ratio point
-            this.ctx.beginPath();
-            this.ctx.arc(x, y, 5, 0, 2 * Math.PI);
-            this.ctx.fill();
-
-            // Draw label
-            this.ctx.fillStyle = 'rgba(34, 197, 94, 1)';
-            this.ctx.font = '12px monospace';
-            this.ctx.fillText(`(${triple.a}, ${triple.b})`, x + 10, y - 10);
-            this.ctx.fillStyle = 'rgba(34, 197, 94, 0.3)';
-
-            // Draw triangle
-            if (this.showAngles) {
-                this.ctx.beginPath();
-                this.ctx.moveTo(this.offsetX, this.offsetY);
-                this.ctx.lineTo(x, this.offsetY);
-                this.ctx.lineTo(x, y);
-                this.ctx.closePath();
-                this.ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(origin.x, 0);
+        ctx.lineTo(origin.x, height);
+        ctx.stroke();
+        
+        // Origin marker
+        ctx.fillStyle = '#00ffaa';
+        ctx.beginPath();
+        ctx.arc(origin.x, origin.y, 5, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Axis labels
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.font = '12px sans-serif';
+        ctx.fillText('0', origin.x - 15, origin.y + 15);
+        
+        // Tick marks on axes
+        let tickStep = 1;
+        if (this.scale < 5) tickStep = 10;
+        else if (this.scale < 10) tickStep = 5;
+        else if (this.scale < 15) tickStep = 2;
+        
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.font = '10px monospace';
+        
+        // X-axis ticks
+        for (let x = tickStep; x <= this.viewMaxX; x += tickStep) {
+            const screen = this.worldToScreen(x, 0);
+            if (screen.x > 30 && screen.x < width - 10) {
+                ctx.fillText(x.toString(), screen.x - 5, origin.y + 15);
             }
-        });
+        }
+        
+        // Y-axis ticks
+        for (let y = tickStep; y <= this.viewMaxY; y += tickStep) {
+            const screen = this.worldToScreen(0, y);
+            if (screen.y > 10 && screen.y < height - 30) {
+                ctx.fillText(y.toString(), origin.x - 20, screen.y + 4);
+            }
+        }
     }
-
-    populateTriplesList() {
+    
+    drawPythagoreanTriples() {
+        const ctx = this.ctx;
+        
+        let visibleCount = 0;
+        
+        for (const triple of this.pythagoreanTriples) {
+            // Skip if outside view
+            if (triple.a > this.viewMaxX && triple.b > this.viewMaxX) continue;
+            if (triple.a < this.viewMinX && triple.b < this.viewMinX) continue;
+            if (triple.a > this.viewMaxY && triple.b > this.viewMaxY) continue;
+            if (triple.a < this.viewMinY && triple.b < this.viewMinY) continue;
+            
+            visibleCount++;
+            
+            // Draw both orderings: (a, b) and (b, a)
+            const positions = [
+                { x: triple.a, y: triple.b },
+                { x: triple.b, y: triple.a }
+            ];
+            
+            for (const pos of positions) {
+                if (pos.x < this.viewMinX - 1 || pos.x > this.viewMaxX + 1) continue;
+                if (pos.y < this.viewMinY - 1 || pos.y > this.viewMaxY + 1) continue;
+                
+                const screen = this.worldToScreen(pos.x, pos.y);
+                
+                // Draw ratio point
+                const radius = triple.primitive ? 6 : 4;
+                const alpha = triple.primitive ? 0.8 : 0.4;
+                
+                ctx.beginPath();
+                ctx.arc(screen.x, screen.y, radius, 0, Math.PI * 2);
+                ctx.fillStyle = triple.primitive 
+                    ? `rgba(0, 255, 170, ${alpha})` 
+                    : `rgba(0, 170, 255, ${alpha})`;
+                ctx.fill();
+                
+                // Draw triangle from origin if enabled
+                if (this.showAngles && this.scale > 8) {
+                    const origin = this.worldToScreen(0, 0);
+                    const xEnd = this.worldToScreen(pos.x, 0);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(origin.x, origin.y);
+                    ctx.lineTo(xEnd.x, origin.y);
+                    ctx.lineTo(screen.x, screen.y);
+                    ctx.closePath();
+                    ctx.strokeStyle = `rgba(0, 255, 170, 0.15)`;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+                
+                // Draw label if zoomed in enough
+                if (this.showLabels && this.scale > 15) {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                    ctx.font = '10px monospace';
+                    ctx.fillText(`(${triple.a},${triple.b})`, screen.x + 8, screen.y - 8);
+                }
+            }
+        }
+        
+        this.visibleTripleCount = visibleCount;
+    }
+    
+    drawPoints() {
+        const ctx = this.ctx;
+        
+        for (const point of this.points) {
+            const screen = this.worldToScreen(point.x, point.y);
+            
+            // Draw line to snapped point if snapped
+            if (point.snapped && point.snappedTo) {
+                const snappedScreen = this.worldToScreen(point.snappedTo.x, point.snappedTo.y);
+                
+                // Draw snap line
+                ctx.beginPath();
+                ctx.moveTo(screen.x, screen.y);
+                ctx.lineTo(snappedScreen.x, snappedScreen.y);
+                ctx.strokeStyle = 'rgba(59, 130, 246, 0.6)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Draw snapped point (larger, green)
+                ctx.beginPath();
+                ctx.arc(snappedScreen.x, snappedScreen.y, 10, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 255, 170, 0.8)';
+                ctx.fill();
+                ctx.strokeStyle = '#00ffaa';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+            
+            // Draw original point
+            ctx.beginPath();
+            ctx.arc(screen.x, screen.y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = point.snapped ? 'rgba(59, 130, 246, 0.8)' : 'rgba(239, 68, 68, 0.8)';
+            ctx.fill();
+            ctx.strokeStyle = point.snapped ? '#3b82f6' : '#ef4444';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+    }
+    
+    updateVisibleCount() {
+        document.getElementById('visibleTriples').textContent = this.visibleTripleCount || 0;
+    }
+    
+    updateTriplesList() {
         const list = document.getElementById('triplesList');
-        list.innerHTML = this.pythagoreanTriples.map(t => `
-            <div class="flex justify-between items-center bg-gray-900 p-2 rounded">
+        const displayTriples = this.pythagoreanTriples.slice(0, 20);
+        
+        list.innerHTML = displayTriples.map(t => `
+            <div class="triple-item">
                 <span>${t.a}² + ${t.b}² = ${t.c}²</span>
-                <span class="text-green-400">(${t.a}, ${t.b})</span>
+                <span style="color: ${t.primitive ? '#00ffaa' : '#00aaff'}">(${t.a}, ${t.b})</span>
             </div>
-        `).join('');
+        `).join('') + (this.pythagoreanTriples.length > 20 
+            ? `<div class="text-center text-gray-500 text-xs mt-2">+${this.pythagoreanTriples.length - 20} more...</div>` 
+            : '');
     }
-
+    
     updateSnapHistory(snapped) {
         const history = document.getElementById('snapHistory');
-        if (history.querySelector('.text-gray-500')) {
-            history.innerHTML = '';
-        }
-
+        
+        // Remove placeholder if present
+        const placeholder = history.querySelector('.text-gray-500');
+        if (placeholder) placeholder.remove();
+        
         const entry = document.createElement('div');
-        entry.className = `bg-gray-900 p-2 rounded ${snapped.snapped ? 'border-l-4 border-green-500' : 'border-l-4 border-red-500'}`;
+        entry.className = `snap-entry ${snapped.snapped ? 'snap-success' : 'snap-fail'}`;
         entry.innerHTML = `
-            <div class="font-mono text-xs">
-                (${snapped.original.x.toFixed(2)}, ${snapped.original.y.toFixed(2)})
-                ${snapped.snapped ? `→ (${snapped.snappedTo.x}, ${snapped.snappedTo.y})` : '(no snap)'}
-            </div>
-            ${snapped.snapped ? `<div class="text-xs text-gray-400">Distance: ${snapped.distance.toFixed(3)}</div>` : ''}
+            <div>(${snapped.original.x.toFixed(2)}, ${snapped.original.y.toFixed(2)})</div>
+            ${snapped.snapped 
+                ? `<div style="color: #00ffaa;">→ (${snapped.snappedTo.x}, ${snapped.snappedTo.y})</div>
+                   <div style="color: #888; font-size: 0.7rem;">distance: ${snapped.distance.toFixed(3)}</div>`
+                : '<div style="color: #ff6666;">no snap within threshold</div>'
+            }
         `;
+        
         history.insertBefore(entry, history.firstChild);
+        
+        // Keep only last 20 entries
+        while (history.children.length > 20) {
+            history.removeChild(history.lastChild);
+        }
     }
-
+    
     updateStats() {
         const total = this.points.length;
         const snapped = this.points.filter(p => p.snapped).length;
         const snapRate = total > 0 ? (snapped / total * 100).toFixed(1) : 0;
         const avgDistance = snapped > 0
-            ? (this.points.reduce((sum, p) => sum + (p.distance || 0), 0) / snapped).toFixed(3)
+            ? (this.points.reduce((sum, p) => sum + (p.distance || 0), 0) / snapped).toFixed(2)
             : '0.00';
-
+        
         document.getElementById('totalPoints').textContent = total;
         document.getElementById('snappedPoints').textContent = snapped;
         document.getElementById('snapRate').textContent = `${snapRate}%`;
         document.getElementById('avgDistance').textContent = avgDistance;
     }
-
-    renderEquation() {
-        katex.render('a^2 + b^2 = c^2', document.getElementById('equation'), {
-            throwOnError: false
-        });
-    }
 }
 
-// Initialize on page load
+// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     new PythagoreanSimulator();
 });
