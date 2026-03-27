@@ -1,115 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constraint Theory — Interactive Demos</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: #0f1117;
-      color: #e0e0e6;
-      line-height: 1.6;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    a { color: #7cacf8; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    main {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 4rem 1.5rem 2rem;
-      flex: 1;
-    }
-    h1 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.75rem;
-    }
-    .subtitle {
-      color: #9a9aa8;
-      font-size: 1rem;
-      margin-bottom: 2.5rem;
-      max-width: 560px;
-    }
-    .cards {
-      display: grid;
-      gap: 1rem;
-    }
-    .card {
-      display: block;
-      background: #1a1b26;
-      border: 1px solid #2a2b3a;
-      border-radius: 8px;
-      padding: 1.25rem 1.5rem;
-      transition: border-color 0.15s, background 0.15s;
-      text-decoration: none;
-      color: inherit;
-    }
-    .card:hover {
-      border-color: #7cacf8;
-      background: #1e1f2e;
-      text-decoration: none;
-    }
-    .card h2 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-      color: #f0f0f5;
-    }
-    .card p {
-      font-size: 0.9rem;
-      color: #9a9aa8;
-    }
-    footer {
-      text-align: center;
-      padding: 2rem 1rem;
-      font-size: 0.85rem;
-      color: #6a6a78;
-      border-top: 1px solid #1a1b26;
-    }
-    @media (min-width: 520px) {
-      main { padding-top: 6rem; }
-      h1 { font-size: 2rem; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constraint Theory - Interactive Demos</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0f 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #00d9ff, #7b2cbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle { color: #888; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        .section { margin-bottom: 3rem; }
+        .section h2 {
+            color: #00d9ff;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 0.5rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+        
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            border-color: #00d9ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,217,255,0.1);
+        }
+        .card h3 { color: #fff; margin-bottom: 0.5rem; font-size: 1.1rem; }
+        .card p { color: #888; font-size: 0.9rem; line-height: 1.5; }
+        .card a { color: #00d9ff; text-decoration: none; }
+        .card a:hover { text-decoration: underline; }
+        
+        .ecosystem {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        .ecosystem a {
+            background: rgba(0,217,255,0.1);
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .ecosystem a:hover {
+            background: #00d9ff;
+            color: #0a0a0f;
+        }
+    </style>
 </head>
 <body>
-  <main>
-    <h1>Constraint Theory</h1>
-    <p class="subtitle">
-      A computational framework for constraint-based geometry — expressing
-      spatial relationships through Pythagorean triples, KD-trees, and
-      multi-agent coordination. Explore the interactive demos below.
-    </p>
-
-    <div class="cards">
-      <a class="card" href="simulators/pythagorean/">
-        <h2>Pythagorean Snapping</h2>
-        <p>Core demo: visualize how geometric constraints snap to
-          Pythagorean-triple lattice points in real time.</p>
-      </a>
-
-      <a class="card" href="simulators/kdtree/">
-        <h2>KD-Tree Spatial Queries</h2>
-        <p>Explore nearest-neighbor and range queries over dynamic point
-          sets using an interactive KD-tree.</p>
-      </a>
-
-      <a class="card" href="simulators/swarm/">
-        <h2>Swarm Coordination</h2>
-        <p>Watch autonomous agents self-organize under constraint fields,
-          balancing cohesion, separation, and alignment.</p>
-      </a>
+    <div class="container">
+        <h1>Constraint Theory</h1>
+        <p class="subtitle">Interactive visualizations and demos for deterministic geometric snapping</p>
+        
+        <div class="ecosystem">
+            <a href="https://github.com/SuperInstance/constraint-theory-core">🦀 Core (Rust)</a>
+            <a href="https://github.com/SuperInstance/constraint-theory-python">🐍 Python Bindings</a>
+            <a href="https://github.com/SuperInstance/constraint-theory-research">📚 Research</a>
+        </div>
+        
+        <div class="section" style="margin-top: 3rem;">
+            <h2>🎯 Featured Simulators</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3><a href="./simulators/pythagorean/index.html">Pythagorean Snapping</a></h3>
+                    <p>Interactive visualization of vector snapping to Pythagorean triples</p>
+                </div>
+                <div class="card">
+                    <h3><a href="./simulators/kdtree/index.html">KD-tree Visualization</a></h3>
+                    <p>Visual explanation of O(log n) spatial indexing</p>
+                </div>
+                <div class="card">
+                    <h3><a href="./simulators/swarm/index.html">Swarm Simulation</a></h3>
+                    <p>Multi-agent coordination with constraint-based navigation</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🧮 Mathematical Visualizations</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3><a href="./experiments/mandelbrot/index.html">Mandelbrot Set</a></h3>
+                    <p>Interactive fractal exploration with zoom</p>
+                </div>
+                <div class="card">
+                    <h3><a href="./experiments/fourier-series/index.html">Fourier Series</a></h3>
+                    <p>Wave decomposition and reconstruction</p>
+                </div>
+                <div class="card">
+                    <h3><a href="./experiments/geometric-algebra/index.html">Geometric Algebra</a></h3>
+                    <p>Clifford algebra visualization</p>
+                </div>
+                <div class="card">
+                    <h3><a href="./experiments/holonomy/index.html">Holonomy Transport</a></h3>
+                    <p>Parallel transport on manifolds</p>
+                </div>
+                <div class="card">
+                    <h3><a href="./experiments/rigidity/index.html">Rigidity Analysis</a></h3>
+                    <p>Laman's theorem visualization</p>
+                </div>
+                <div class="card">
+                    <h3><a href="./experiments/complex-plane/index.html">Complex Plane</a></h3>
+                    <p>Complex number operations visualized</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>⚡ Physics Simulations</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3><a href="./experiments/nbody/index.html">N-Body Simulation</a></h3>
+                    <p>Gravitational dynamics with multiple bodies</p>
+                </div>
+                <div class="card">
+                    <h3><a href="./experiments/fluid/index.html">Fluid Dynamics</a></h3>
+                    <p>Navier-Stokes visualization</p>
+                </div>
+                <div class="card">
+                    <h3><a href="./experiments/softbody/index.html">Soft Body Physics</a></h3>
+                    <p>XPBD constraint solver demo</p>
+                </div>
+                <div class="card">
+                    <h3><a href="./experiments/wave-interference/index.html">Wave Interference</a></h3>
+                    <p>Wave propagation and interference patterns</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🔬 All Experiments</h2>
+            <p style="color: #666; margin-bottom: 1rem;">45+ interactive visualizations available</p>
+            <div class="grid">
+                <div class="card"><h3><a href="./experiments/fractal/index.html">Fractals</a></h3></div>
+                <div class="card"><h3><a href="./experiments/quaternion/index.html">Quaternions</a></h3></div>
+                <div class="card"><h3><a href="./experiments/cellular-automata/index.html">Cellular Automata</a></h3></div>
+                <div class="card"><h3><a href="./experiments/voronoi/index.html">Voronoi Diagrams</a></h3></div>
+                <div class="card"><h3><a href="./experiments/delaunay/index.html">Delaunay Triangulation</a></h3></div>
+                <div class="card"><h3><a href="./experiments/attractors/index.html">Strange Attractors</a></h3></div>
+                <div class="card"><h3><a href="./experiments/kepler/index.html">Kepler Orbits</a></h3></div>
+                <div class="card"><h3><a href="./experiments/lissajous/index.html">Lissajous Curves</a></h3></div>
+            </div>
+        </div>
+        
+        <footer style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #333; color: #666;">
+            <p>Constraint Theory © 2025 • <a href="https://github.com/SuperInstance" style="color: #00d9ff;">GitHub</a></p>
+        </footer>
     </div>
-  </main>
-
-  <footer>
-    <a href="https://github.com/SuperInstance/Constraint-Theory">GitHub</a>
-    &middot; More experiments in <a href="experiments/">experiments/</a>
-  </footer>
 </body>
 </html>
