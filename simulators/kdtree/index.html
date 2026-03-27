@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KD-Tree Visualization - Constraint Theory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <link rel="stylesheet" href="/css/main.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+            min-height: 100vh;
+        }
+
+        .control-panel {
+            background: rgba(20, 20, 35, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(68, 102, 255, 0.3);
+            border-radius: 12px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4466ff 0%, #6644ff 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(68, 102, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(68, 102, 255, 0.2);
+            border: 1px solid rgba(68, 102, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(68, 102, 255, 0.3);
+            border-color: rgba(68, 102, 255, 0.8);
+        }
+
+        .canvas-container {
+            background: rgba(15, 15, 25, 0.9);
+            border: 1px solid rgba(68, 102, 255, 0.3);
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .stat-card {
+            background: rgba(20, 20, 35, 0.6);
+            border: 1px solid rgba(68, 102, 255, 0.2);
+            border-radius: 8px;
+        }
+
+        .mode-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 6px 12px;
+            background: rgba(68, 102, 255, 0.2);
+            border: 1px solid rgba(68, 102, 255, 0.5);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #e0e0ff;
+        }
+
+        .slider-container input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(68, 102, 255, 0.3);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #4466ff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .tree-node {
+            transition: all 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .animating {
+            animation: pulse 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="text-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="mb-8">
+            <nav class="mb-6">
+                <a href="/" class="text-blue-400 hover:text-blue-300 transition-colors">← Back to Home</a>
+            </nav>
+            <h1 class="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                KD-Tree Visualization
+            </h1>
+            <p class="text-gray-400 text-lg">
+                Interactive spatial partitioning for O(log n) range queries and nearest-neighbor search
+            </p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Canvas Area -->
+            <div class="lg:col-span-2">
+                <div class="canvas-container p-4">
+                    <canvas id="kdtreeCanvas" width="800" height="600" class="w-full rounded"></canvas>
+                    <div class="mode-indicator" id="modeIndicator">Click to add points</div>
+                </div>
+
+                <!-- Stats Row -->
+                <div class="grid grid-cols-4 gap-4 mt-4">
+                    <div class="stat-card p-3 text-center">
+                        <div class="text-2xl font-bold text-blue-400" id="statPoints">0</div>
+                        <div class="text-xs text-gray-400">Points</div>
+                    </div>
+                    <div class="stat-card p-3 text-center">
+                        <div class="text-2xl font-bold text-purple-400" id="statNodes">0</div>
+                        <div class="text-xs text-gray-400">Tree Nodes</div>
+                    </div>
+                    <div class="stat-card p-3 text-center">
+                        <div class="text-2xl font-bold text-green-400" id="statDepth">0</div>
+                        <div class="text-xs text-gray-400">Max Depth</div>
+                    </div>
+                    <div class="stat-card p-3 text-center">
+                        <div class="text-2xl font-bold text-yellow-400" id="statComparisons">0</div>
+                        <div class="text-xs text-gray-400">Comparisons</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls Panel -->
+            <div class="space-y-4">
+                <!-- Point Management -->
+                <div class="control-panel p-4">
+                    <h3 class="text-lg font-semibold mb-4 text-blue-300">Point Management</h3>
+                    <div class="space-y-3">
+                        <button id="btnAddRandom" class="btn-primary w-full py-2 px-4 rounded-lg font-semibold">
+                            Add 10 Random Points
+                        </button>
+                        <button id="btnAdd50" class="btn-secondary w-full py-2 px-4 rounded-lg font-semibold">
+                            Add 50 Random Points
+                        </button>
+                        <button id="btnClear" class="btn-secondary w-full py-2 px-4 rounded-lg font-semibold text-red-400 border-red-400/50 hover:bg-red-400/20">
+                            Clear All Points
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tree Operations -->
+                <div class="control-panel p-4">
+                    <h3 class="text-lg font-semibold mb-4 text-blue-300">Tree Operations</h3>
+                    <div class="space-y-3">
+                        <button id="btnBuild" class="btn-primary w-full py-2 px-4 rounded-lg font-semibold">
+                            Build Tree
+                        </button>
+                        <button id="btnStepBuild" class="btn-secondary w-full py-2 px-4 rounded-lg font-semibold">
+                            Step-by-Step Build
+                        </button>
+                        <button id="btnResetTree" class="btn-secondary w-full py-2 px-4 rounded-lg font-semibold">
+                            Reset Tree
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Query Operations -->
+                <div class="control-panel p-4">
+                    <h3 class="text-lg font-semibold mb-4 text-blue-300">Query Operations</h3>
+                    <div class="space-y-3">
+                        <button id="btnNearestNeighbor" class="btn-primary w-full py-2 px-4 rounded-lg font-semibold">
+                            Nearest Neighbor
+                        </button>
+                        <button id="btnRangeQuery" class="btn-secondary w-full py-2 px-4 rounded-lg font-semibold">
+                            Range Query
+                        </button>
+                        <button id="btnClearQuery" class="btn-secondary w-full py-2 px-4 rounded-lg font-semibold">
+                            Clear Query
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Animation Controls -->
+                <div class="control-panel p-4">
+                    <h3 class="text-lg font-semibold mb-4 text-blue-300">Animation</h3>
+                    <div class="space-y-3">
+                        <div class="slider-container">
+                            <label class="block text-sm text-gray-400 mb-2">Speed: <span id="speedValue">50</span>ms</label>
+                            <input type="range" id="speedSlider" min="10" max="200" value="50" class="w-full">
+                        </div>
+                        <button id="btnPause" class="btn-secondary w-full py-2 px-4 rounded-lg font-semibold">
+                            Pause/Resume
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Info Panel -->
+                <div class="control-panel p-4">
+                    <h3 class="text-lg font-semibold mb-4 text-blue-300">Information</h3>
+                    <div id="infoPanel" class="text-sm text-gray-400 space-y-2">
+                        <p><strong class="text-gray-300">KD-Tree:</strong> Binary space-partitioning tree for organizing points in k-dimensional space</p>
+                        <p><strong class="text-gray-300">Splits:</strong> Alternates between vertical (x) and horizontal (y) at each level</p>
+                        <p><strong class="text-gray-300">Complexity:</strong> O(log n) for search operations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Algorithm Explanation -->
+        <div class="mt-8 control-panel p-6">
+            <h3 class="text-xl font-semibold mb-4 text-blue-300">How KD-Tree Works</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <h4 class="font-semibold text-purple-300 mb-2">1. Build Phase</h4>
+                    <p class="text-sm text-gray-400">
+                        Recursively split the space by selecting median points. At each level, alternate between splitting on x-axis (vertical) and y-axis (horizontal). This creates a balanced binary tree.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-purple-300 mb-2">2. Nearest Neighbor</h4>
+                    <p class="text-sm text-gray-400">
+                        Traverse down the tree to find the leaf containing the query point. Then backtrack, checking if there could be closer points on the other side of any splitting plane.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-purple-300 mb-2">3. Range Query</h4>
+                    <p class="text-sm text-gray-400">
+                        Recursively search the tree, pruning branches that cannot intersect the query region. This avoids checking all points, achieving O(log n + k) where k is results found.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

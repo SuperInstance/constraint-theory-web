@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stereographic Projection - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Stereographic Projection Simulator</h1>
+            <p class="subtitle">Conformal Mapping from Sphere to Plane</p>
+        </header>
+
+        <main>
+            <div class="canvas-container">
+                <div class="canvas-wrapper">
+                    <h2>Sphere (3D)</h2>
+                    <canvas id="sphereCanvas" width="500" height="500"></canvas>
+                    <div class="canvas-info">
+                        <span class="info-label">Click to project point</span>
+                    </div>
+                </div>
+
+                <div class="projection-info">
+                    <div class="projection-line"></div>
+                    <div class="projection-arrow">→</div>
+                </div>
+
+                <div class="canvas-wrapper">
+                    <h2>Plane (2D Projection)</h2>
+                    <canvas id="planeCanvas" width="500" height="500"></canvas>
+                    <div class="canvas-info">
+                        <span class="info-label">Click to find pre-image</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="control-section">
+                    <h3>Projection Settings</h3>
+
+                    <div class="control-group">
+                        <label for="projectionHeight">Projection Point Height:</label>
+                        <input type="range" id="projectionHeight" min="0.5" max="2" step="0.1" value="1">
+                        <span id="heightValue">1.0</span>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="sphereRadius">Sphere Radius:</label>
+                        <input type="range" id="sphereRadius" min="0.5" max="1.5" step="0.1" value="1">
+                        <span id="radiusValue">1.0</span>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Display Options</h3>
+
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="showLatitudes" checked>
+                            Latitude Lines
+                        </label>
+                    </div>
+
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="showLongitudes" checked>
+                            Longitude Lines
+                        </label>
+                    </div>
+
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="showGreatCircles">
+                            Great Circles
+                        </label>
+                    </div>
+
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="showProjectionLine" checked>
+                            Projection Line
+                        </label>
+                    </div>
+
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="showGrid">
+                            Plane Grid
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Grid Density</h3>
+
+                    <div class="control-group">
+                        <label for="gridDensity">Grid Lines:</label>
+                        <input type="range" id="gridDensity" min="4" max="20" step="2" value="8">
+                        <span id="densityValue">8</span>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Rotation</h3>
+
+                    <div class="control-group">
+                        <label for="rotationSpeed">Auto-rotation:</label>
+                        <input type="range" id="rotationSpeed" min="0" max="0.02" step="0.001" value="0.005">
+                        <span id="rotationValue">0.005</span>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="rotationAxis">Rotation Axis:</label>
+                        <select id="rotationAxis">
+                            <option value="x">X-axis</option>
+                            <option value="y" selected>Y-axis</option>
+                            <option value="z">Z-axis</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Animation</h3>
+
+                    <button id="animatePath" class="btn">Animate Path on Sphere</button>
+                    <button id="resetView" class="btn">Reset View</button>
+                    <button id="clearPoint" class="btn">Clear Point</button>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <h3>About Stereographic Projection</h3>
+
+                <div class="info-content">
+                    <h4>What is it?</h4>
+                    <p>Stereographic projection maps points from a sphere to a plane by projecting from a fixed point (the "north pole"). It's a fundamental concept in complex analysis and geometry.</p>
+
+                    <h4>Key Properties</h4>
+                    <ul>
+                        <li><strong>Conformal:</strong> Preserves angles between curves</li>
+                        <li><strong>Circle-preserving:</strong> Circles on sphere map to circles on plane (or lines)</li>
+                        <li><strong>Bijective:</strong> One-to-one correspondence (except projection point)</li>
+                        <li><strong>Smooth:</strong> Infinitely differentiable</li>
+                    </ul>
+
+                    <h4>Projection Formula</h4>
+                    <p>For a point (x, y, z) on the unit sphere, the stereographic projection to the plane is:</p>
+                    <div class="formula">
+                        X = x / (1 - z)<br>
+                        Y = y / (1 - z)
+                    </div>
+
+                    <p>The inverse projection (plane to sphere) is:</p>
+                    <div class="formula">
+                        x = 2X / (1 + X² + Y²)<br>
+                        y = 2Y / (1 + X² + Y²)<br>
+                        z = (X² + Y² - 1) / (1 + X² + Y²)
+                    </div>
+
+                    <h4>Current Point</h4>
+                    <div id="currentPoint" class="point-info">
+                        <p>Click on either canvas to see projection</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Constraint Theory Research | Stereographic Projection Simulator</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

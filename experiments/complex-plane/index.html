@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complex Plane Explorer - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Complex Plane Explorer</h1>
+            <p class="subtitle">Geometric visualization of complex number operations</p>
+        </header>
+
+        <main>
+            <div class="canvas-container">
+                <canvas id="complexPlane" width="800" height="800"></canvas>
+                <div class="canvas-overlay">
+                    <div class="coordinates" id="coordinates">
+                        Re: <span id="realPart">0.00</span> | Im: <span id="imagPart">0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="controls">
+                <div class="control-group">
+                    <h3>Operation</h3>
+                    <select id="operation" class="styled-select">
+                        <option value="add">Addition (z₁ + z₂)</option>
+                        <option value="subtract">Subtraction (z₁ - z₂)</option>
+                        <option value="multiply">Multiplication (z₁ × z₂)</option>
+                        <option value="divide">Division (z₁ ÷ z₂)</option>
+                        <option value="power">Power (z₁^n)</option>
+                        <option value="root">Root (ⁿ√z₁)</option>
+                        <option value="exp">Exponential (e^z₁)</option>
+                        <option value="log">Logarithm (ln(z₁))</option>
+                        <option value="sin">Sine (sin(z₁))</option>
+                        <option value="cos">Cosine (cos(z₁))</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <h3>Domain Coloring</h3>
+                    <select id="domainColoring" class="styled-select">
+                        <option value="none">None</option>
+                        <option value="z2">z²</option>
+                        <option value="z3">z³</option>
+                        <option value="inverse">1/z</option>
+                        <option value="exp">e^z</option>
+                        <option value="sin">sin(z)</option>
+                        <option value="cos">cos(z)</option>
+                        <option value="mandelbrot">Mandelbrot Set</option>
+                        <option value="julia">Julia Set</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <h3>Display Options</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showGrid" checked>
+                        Show Grid
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showUnitCircle" checked>
+                        Show Unit Circle
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showAxes" checked>
+                        Show Axes
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showLabels" checked>
+                        Show Labels
+                    </label>
+                </div>
+
+                <div class="control-group">
+                    <h3>Complex Numbers</h3>
+                    <div class="number-inputs">
+                        <div class="number-input">
+                            <label>z₁:</label>
+                            <input type="number" id="z1Real" step="0.1" value="1" class="styled-input">
+                            <span>+ </span>
+                            <input type="number" id="z1Imag" step="0.1" value="0" class="styled-input">
+                            <span>i</span>
+                        </div>
+                        <div class="number-input">
+                            <label>z₂:</label>
+                            <input type="number" id="z2Real" step="0.1" value="0" class="styled-input">
+                            <span>+ </span>
+                            <input type="number" id="z2Imag" step="0.1" value="1" class="styled-input">
+                            <span>i</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Power N (for z₁^n)</h>
+                    <input type="range" id="powerN" min="1" max="10" value="2" class="slider">
+                    <span id="powerNValue">2</span>
+                </div>
+
+                <div class="control-group">
+                    <h3>Result</h3>
+                    <div class="result-display" id="result">
+                        <div class="result-row">
+                            <span class="label">Value:</span>
+                            <span class="value" id="resultValue">1.00 + 0.00i</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="label">Modulus:</span>
+                            <span class="value" id="resultModulus">1.00</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="label">Argument:</span>
+                            <span class="value" id="resultArgument">0.00°</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Actions</h3>
+                    <button id="resetBtn" class="btn btn-primary">Reset View</button>
+                    <button id="animateBtn" class="btn btn-secondary">Animate Operation</button>
+                </div>
+
+                <div class="control-group">
+                    <h3>Legend</h3>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #ff6b6b;"></span>
+                            <span>z₁</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #4ecdc4;"></span>
+                            <span>z₂</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #ffe66d;"></span>
+                            <span>Result</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Geometric Interpretation</h3>
+                    <div class="interpretation" id="interpretation">
+                        <p>Click on the complex plane to place z₁ and z₂, then select an operation to see the geometric interpretation.</p>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <footer>
+            <p>Part of <a href="https://constraint-theory.superinstance.ai">Constraint Theory</a> - Geometric approach to deterministic computation</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

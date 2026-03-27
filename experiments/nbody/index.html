@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-Body Gravity Simulator | Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>N-Body Gravity Simulator</h1>
+            <p class="subtitle">Emergent orbital dynamics from gravitational constraints</p>
+        </header>
+
+        <div class="main-content">
+            <aside class="controls-panel">
+                <div class="control-group">
+                    <h3>Presets</h3>
+                    <div class="preset-buttons">
+                        <button class="preset-btn" data-preset="solar">Solar System</button>
+                        <button class="preset-btn" data-preset="binary">Binary Star</button>
+                        <button class="preset-btn" data-preset="figure8">Figure-8</button>
+                        <button class="preset-btn" data-preset="cluster">Random Cluster</button>
+                        <button class="preset-btn" data-preset="galaxy">Galaxy Collision</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Physics Parameters</h3>
+                    <div class="control-item">
+                        <label for="gravitySlider">Gravitational Constant (G)</label>
+                        <input type="range" id="gravitySlider" min="0.1" max="5" step="0.1" value="1">
+                        <span id="gravityValue">1.0</span>
+                    </div>
+                    <div class="control-item">
+                        <label for="timestepSlider">Time Step (dt)</label>
+                        <input type="range" id="timestepSlider" min="0.1" max="2" step="0.1" value="0.5">
+                        <span id="timestepValue">0.5</span>
+                    </div>
+                    <div class="control-item">
+                        <label for="softeningSlider">Softening Parameter</label>
+                        <input type="range" id="softeningSlider" min="0" max="50" step="1" value="5">
+                        <span id="softeningValue">5</span>
+                    </div>
+                    <div class="control-item">
+                        <label for="trailSlider">Trail Length</label>
+                        <input type="range" id="trailSlider" min="0" max="500" step="10" value="100">
+                        <span id="trailValue">100</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Visualization</h3>
+                    <div class="toggle-group">
+                        <label class="toggle">
+                            <input type="checkbox" id="showTrails" checked>
+                            <span>Show Trails</span>
+                        </label>
+                        <label class="toggle">
+                            <input type="checkbox" id="showVelocity">
+                            <span>Show Velocity Vectors</span>
+                        </label>
+                        <label class="toggle">
+                            <input type="checkbox" id="showField">
+                            <span>Show Gravitational Field</span>
+                        </label>
+                        <label class="toggle">
+                            <input type="checkbox" id="mergeCollisions" checked>
+                            <span>Merge on Collision</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Simulation Control</h3>
+                    <div class="sim-buttons">
+                        <button id="playPauseBtn" class="control-btn">Pause</button>
+                        <button id="resetBtn" class="control-btn">Reset</button>
+                        <button id="clearBtn" class="control-btn">Clear All</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Add Bodies</h3>
+                    <div class="add-body-controls">
+                        <div class="control-item">
+                            <label for="massSlider">New Body Mass</label>
+                            <input type="range" id="massSlider" min="10" max="500" step="10" value="100">
+                            <span id="massValue">100</span>
+                        </div>
+                        <p class="hint">Click and drag on canvas to launch new bodies</p>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="simulation-area">
+                <canvas id="simCanvas"></canvas>
+                <div class="canvas-overlay">
+                    <div class="stats-panel">
+                        <div class="stat-item">
+                            <span class="stat-label">Bodies:</span>
+                            <span id="bodyCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Energy:</span>
+                            <span id="totalEnergy" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Momentum:</span>
+                            <span id="totalMomentum" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Center of Mass:</span>
+                            <span id="centerOfMass" class="stat-value">(0, 0)</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <footer>
+            <p>Constraint Theory Research | Gravitational constraints create emergent orbital dynamics</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

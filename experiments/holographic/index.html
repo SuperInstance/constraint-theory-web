@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holographic Projection Simulator - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Holographic Projection Simulator</h1>
+            <p class="subtitle">Geometric Constraints Enable Lossless Dimensional Reduction</p>
+        </header>
+
+        <main>
+            <div class="canvas-container">
+                <div class="canvas-wrapper">
+                    <h2>3D Scene Source</h2>
+                    <canvas id="scene3D" width="500" height="500"></canvas>
+                    <div class="canvas-label">Original 3D Object</div>
+                </div>
+
+                <div class="projection-arrow">→</div>
+
+                <div class="canvas-wrapper">
+                    <h2>2D Holographic Projection</h2>
+                    <canvas id="hologram2D" width="500" height="500"></canvas>
+                    <div class="canvas-label">Holographic Encoding</div>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <h3>Holographic Principle</h3>
+                <p>
+                    A hologram encodes 3D information into a 2D medium using <strong>geometric constraints</strong>.
+                    Each point on the hologram captures not just brightness, but <strong>depth information</strong> through
+                    interference patterns and phase relationships.
+                </p>
+                <p>
+                    <strong>Constraint Theory Connection:</strong> The projection is a deterministic mapping from
+                    3D → 2D where depth is encoded as pixel properties. This is lossless because the geometric
+                    constraints (depth cues) are preserved in the encoding.
+                </p>
+                <p>
+                    <strong>FPS Paradigm:</strong> Each viewing angle reveals a different perspective, just like
+                    agents in cellular systems have unique viewpoints filtered by their position and orientation.
+                </p>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label for="sceneSelect">Scene Shape:</label>
+                    <select id="sceneSelect">
+                        <option value="cube">Cube</option>
+                        <option value="sphere">Sphere</option>
+                        <option value="torus">Torus</option>
+                        <option value="knot" selected>Trefoil Knot</option>
+                        <option value="helix">Double Helix</option>
+                        <option value="text">Text (3D)</option>
+                        <option value="custom">Custom Wave</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="projectionType">Projection Type:</label>
+                    <select id="projectionType">
+                        <option value="orthographic">Orthographic Depth</option>
+                        <option value="perspective" selected>Perspective Depth</option>
+                        <option value="interference">Interference Pattern</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="depthEncoding">Depth Encoding:</label>
+                    <select id="depthEncoding">
+                        <option value="color" selected>Color (Warm→Cool)</option>
+                        <option value="brightness">Brightness (Bright→Dim)</option>
+                        <option value="size">Size (Large→Small)</option>
+                        <option value="opacity">Opacity (Opaque→Clear)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="viewingAngle">Viewing Angle: <span id="angleValue">0°</span></label>
+                    <input type="range" id="viewingAngle" min="0" max="360" value="0">
+                </div>
+
+                <div class="control-group">
+                    <label for="animationSpeed">Animation Speed:</label>
+                    <input type="range" id="animationSpeed" min="0" max="100" value="50">
+                </div>
+
+                <div class="control-group">
+                    <label for="particleCount">Particle Density:</label>
+                    <input type="range" id="particleCount" min="100" max="5000" value="1500">
+                </div>
+
+                <div class="control-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="showScanlines" checked>
+                        Show Scanlines
+                    </label>
+                </div>
+
+                <div class="control-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="showInterference" checked>
+                        Show Interference Pattern
+                    </label>
+                </div>
+
+                <div class="control-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="showGrid">
+                        Show Grid Overlay
+                    </label>
+                </div>
+
+                <div class="control-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="pulseGlow" checked>
+                        Pulse Glow Effect
+                    </label>
+                </div>
+
+                <div class="control-group">
+                    <button id="resetBtn" class="btn">Reset View</button>
+                    <button id="animateBtn" class="btn active">Animate</button>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-label">Particles:</span>
+                    <span id="particleStat">1500</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Frame Rate:</span>
+                    <span id="fpsStat">60 FPS</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Depth Range:</span>
+                    <span id="depthStat">-100 to +100</span>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Constraint Theory Research | Geometric Substrate for Cellular Agents</p>
+            <p>Demonstrates how geometric constraints enable lossless dimensional reduction</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

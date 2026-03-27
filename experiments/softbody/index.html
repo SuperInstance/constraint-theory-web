@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soft Body Simulation - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Soft Body Simulation</h1>
+            <p class="subtitle">Demonstrating Geometric Constraints in Physics</p>
+        </header>
+
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="simulation"></canvas>
+                <div class="overlay-info">
+                    <div class="info-item">
+                        <span class="label">FPS:</span>
+                        <span id="fps" class="value">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Vertices:</span>
+                        <span id="vertices" class="value">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Constraints:</span>
+                        <span id="constraints" class="value">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Max Stress:</span>
+                        <span id="maxStress" class="value">0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="controls">
+                <div class="control-section">
+                    <h3>Presets</h3>
+                    <div class="preset-grid">
+                        <button class="preset-btn active" data-preset="jelly">Jelly Cube</button>
+                        <button class="preset-btn" data-preset="balloon">Balloon</button>
+                        <button class="preset-btn" data-preset="cloth">Cloth Hanging</button>
+                        <button class="preset-btn" data-preset="sphere">Soft Sphere</button>
+                        <button class="preset-btn" data-preset="chain">Chain Links</button>
+                        <button class="preset-btn" data-preset="stressball">Stress Ball</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Physics Parameters</h3>
+                    <div class="control-group">
+                        <label>
+                            <span>Gravity</span>
+                            <input type="range" id="gravity" min="0" max="2000" value="980">
+                            <span class="value">980</span>
+                        </label>
+                    </div>
+                    <div class="control-group">
+                        <label>
+                            <span>Stiffness</span>
+                            <input type="range" id="stiffness" min="1" max="100" value="50">
+                            <span class="value">50%</span>
+                        </label>
+                    </div>
+                    <div class="control-group">
+                        <label>
+                            <span>Damping</span>
+                            <input type="range" id="damping" min="0" max="100" value="5">
+                            <span class="value">5%</span>
+                        </label>
+                    </div>
+                    <div class="control-group">
+                        <label>
+                            <span>Pressure</span>
+                            <input type="range" id="pressure" min="0" max="100" value="0">
+                            <span class="value">0%</span>
+                        </label>
+                    </div>
+                    <div class="control-group">
+                        <label>
+                            <span>Iterations</span>
+                            <input type="range" id="iterations" min="1" max="20" value="5">
+                            <span class="value">5</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Visualization</h3>
+                    <div class="toggle-group">
+                        <label class="toggle">
+                            <input type="checkbox" id="showMesh" checked>
+                            <span>Show Mesh</span>
+                        </label>
+                        <label class="toggle">
+                            <input type="checkbox" id="showConstraints">
+                            <span>Show Constraints</span>
+                        </label>
+                        <label class="toggle">
+                            <input type="checkbox" id="stressColoring" checked>
+                            <span>Stress Coloring</span>
+                        </label>
+                        <label class="toggle">
+                            <input type="checkbox" id="pressureViz">
+                            <span>Pressure Visualization</span>
+                        </label>
+                        <label class="toggle">
+                            <input type="checkbox" id="showTrails">
+                            <span>Deformation Trails</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Interaction</h3>
+                    <div class="interaction-info">
+                        <p>• Drag particles to deform</p>
+                        <p>• Click empty space to apply force</p>
+                        <p>• Scroll to zoom (coming soon)</p>
+                    </div>
+                    <div class="control-group">
+                        <label>
+                            <span>Force Strength</span>
+                            <input type="range" id="forceStrength" min="100" max="2000" value="500">
+                            <span class="value">500</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Actions</h3>
+                    <div class="action-buttons">
+                        <button id="resetBtn" class="action-btn">Reset Simulation</button>
+                        <button id="pauseBtn" class="action-btn">Pause</button>
+                        <button id="explodeBtn" class="action-btn">Explode</button>
+                    </div>
+                </div>
+
+                <div class="control-section info-section">
+                    <h3>About</h3>
+                    <p>This simulation demonstrates how <strong>geometric constraints</strong> create realistic soft body deformation.</p>
+                    <p><strong>Key Concepts:</strong></p>
+                    <ul>
+                        <li><strong>Structural Constraints:</strong> Connect adjacent particles</li>
+                        <li><strong>Shear Constraints:</strong> Connect diagonal particles</li>
+                        <li><strong>Bend Constraints:</strong> Connect every second particle</li>
+                        <li><strong>Pressure Constraints:</strong> Preserve volume (inflation)</li>
+                    </ul>
+                    <p>The shape emerges from satisfying these constraints iteratively - a direct application of constraint theory!</p>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

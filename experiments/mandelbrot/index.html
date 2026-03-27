@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mandelbrot Set Deep Zoom | Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Mandelbrot Set Deep Zoom</h1>
+            <p class="subtitle">Infinite complexity from a simple constraint: z → z² + c</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Controls Panel -->
+            <div class="controls-panel">
+                <h2>Controls</h2>
+
+                <div class="control-group">
+                    <label for="iterations">Max Iterations:</label>
+                    <input type="range" id="iterations" min="50" max="2000" value="500" step="50">
+                    <span id="iterations-value">500</span>
+                </div>
+
+                <div class="control-group">
+                    <label for="escape-radius">Escape Radius:</label>
+                    <input type="range" id="escape-radius" min="2" max="10" value="2" step="0.5">
+                    <span id="escape-radius-value">2</span>
+                </div>
+
+                <div class="control-group">
+                    <label for="color-scheme">Color Scheme:</label>
+                    <select id="color-scheme">
+                        <option value="classic">Classic</option>
+                        <option value="fire">Fire</option>
+                        <option value="ocean">Ocean</option>
+                        <option value="electric">Electric</option>
+                        <option value="grayscale">Grayscale</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="julia-mode">
+                        Julia Set Mode
+                    </label>
+                    <small>Click to set c value for Julia set</small>
+                </div>
+
+                <div class="control-group">
+                    <button id="reset-btn" class="btn">Reset View</button>
+                    <button id="back-btn" class="btn">Back</button>
+                </div>
+
+                <div class="control-group">
+                    <label for="animation-speed">Animation Speed:</label>
+                    <input type="range" id="animation-speed" min="1" max="10" value="5">
+                </div>
+
+                <div class="control-group">
+                    <button id="animate-btn" class="btn btn-primary">Start Animation</button>
+                </div>
+
+                <div class="bookmarks-section">
+                    <h3>Famous Locations</h3>
+                    <div class="bookmark-buttons">
+                        <button class="btn bookmark-btn" data-location="seahorse">Seahorse Valley</button>
+                        <button class="btn bookmark-btn" data-location="elephant">Elephant Valley</button>
+                        <button class="btn bookmark-btn" data-location="mini">Mini Mandelbrot</button>
+                        <button class="btn bookmark-btn" data-location="spiral">Spiral</button>
+                        <button class="btn bookmark-btn" data-location="lightning">Lightning</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Canvas Area -->
+            <div class="canvas-container">
+                <canvas id="mandelbrot-canvas"></canvas>
+                <div class="coordinates-overlay">
+                    <div class="coordinate-item">
+                        <span class="label">Real:</span>
+                        <span id="real-coord">0.000000000000</span>
+                    </div>
+                    <div class="coordinate-item">
+                        <span class="label">Imaginary:</span>
+                        <span id="imag-coord">0.000000000000</span>
+                    </div>
+                    <div class="coordinate-item">
+                        <span class="label">Zoom:</span>
+                        <span id="zoom-level">1x</span>
+                    </div>
+                </div>
+                <div class="instructions">
+                    Left-click to zoom in | Right-click to zoom out | Drag to pan
+                </div>
+            </div>
+
+            <!-- Mini Map -->
+            <div class="minimap-container">
+                <h3>Mini Map</h3>
+                <canvas id="minimap-canvas"></canvas>
+                <div id="view-rectangle"></div>
+            </div>
+        </div>
+
+        <!-- Info Panel -->
+        <div class="info-panel">
+            <h3>About the Mandelbrot Set</h3>
+            <p>
+                The Mandelbrot set is the set of complex numbers c for which the sequence
+                z₀ = 0, zₙ₊₁ = zₙ² + c does not diverge to infinity.
+            </p>
+            <p>
+                <strong>Constraint Theory Connection:</strong> This demonstrates how a single,
+                simple geometric constraint (z² + c) can generate infinite complexity and
+                self-similarity at all scales.
+            </p>
+            <p>
+                <strong>Smooth Coloring:</strong> We use continuous iteration counts to prevent
+                color banding, calculated as: n + 1 - log(log(|z|)) / log(2)
+            </p>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">Render Time:</span>
+                    <span id="render-time">0ms</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Resolution:</span>
+                    <span id="resolution">0x0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

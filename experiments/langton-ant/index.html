@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Langton's Ant & Turing Machine Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Langton's Ant & Turing Machine Simulator</h1>
+            <p class="subtitle">Emergent Complexity from Simple Rules - A Constraint Theory Demonstration</p>
+        </header>
+
+        <div class="controls-section">
+            <div class="control-group">
+                <label class="control-label">Simulation Mode</label>
+                <div class="button-group">
+                    <button id="btn-langton" class="mode-btn active">Langton's Ant</button>
+                    <button id="btn-multistate" class="mode-btn">Multi-State Ant</button>
+                    <button id="btn-turing" class="mode-btn">Turing Machine</button>
+                </div>
+            </div>
+
+            <!-- Langton's Ant Controls -->
+            <div id="langton-controls" class="mode-controls active">
+                <div class="control-group">
+                    <label class="control-label">Speed: <span id="speed-value">100</span> steps/frame</label>
+                    <input type="range" id="speed-slider" min="1" max="10000" value="100" class="slider">
+                </div>
+                <div class="control-group">
+                    <button id="btn-step" class="control-btn">Step</button>
+                    <button id="btn-run" class="control-btn primary">Run</button>
+                    <button id="btn-reset" class="control-btn">Reset</button>
+                </div>
+            </div>
+
+            <!-- Multi-State Ant Controls -->
+            <div id="multistate-controls" class="mode-controls">
+                <div class="control-group">
+                    <label class="control-label">Rule String (L=Left, R=Right, N=No Turn)</label>
+                    <input type="text" id="rule-input" value="RLR" class="text-input" placeholder="e.g., RLR for 3-state">
+                    <small>Each character defines turn direction for that state</small>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Presets</label>
+                    <div class="button-group">
+                        <button class="preset-btn" data-rule="RL">Langton (2-state)</button>
+                        <button class="preset-btn" data-rule="RLR">3-state</button>
+                        <button class="preset-btn" data-rule="RLRR">4-state (chaotic)</button>
+                        <button class="preset-btn" data-rule="RLRRLL">6-state (growing)</button>
+                        <button class="preset-btn" data-rule="RLRLRL">Alternating</button>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Speed: <span id="speed-value-multi">100</span> steps/frame</label>
+                    <input type="range" id="speed-slider-multi" min="1" max="10000" value="100" class="slider">
+                </div>
+                <div class="control-group">
+                    <button id="btn-step-multi" class="control-btn">Step</button>
+                    <button id="btn-run-multi" class="control-btn primary">Run</button>
+                    <button id="btn-reset-multi" class="control-btn">Reset</button>
+                </div>
+            </div>
+
+            <!-- Turing Machine Controls -->
+            <div id="turing-controls" class="mode-controls">
+                <div class="control-group">
+                    <label class="control-label">Alphabet (comma separated)</label>
+                    <input type="text" id="alphabet-input" value="0,1" class="text-input">
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Initial Tape (comma separated)</label>
+                    <input type="text" id="tape-input" value="0,0,0,1,1,1,0,0,0" class="text-input">
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Transition Rules (format: current,read -> next,write,direction)</label>
+                    <textarea id="transitions-input" class="textarea-input" rows="4" placeholder="q0,0 -> q1,1,R&#10;q0,1 -> q0,0,L&#10;q1,0 -> q0,0,L&#10;q1,1 -> halt,1,S">q0,0 -> q1,1,R
+q0,1 -> q0,0,L
+q1,0 -> q0,0,L
+q1,1 -> halt,1,S</textarea>
+                    <small>Directions: L=Left, R=Right, S=Stay</small>
+                </div>
+                <div class="control-group">
+                    <button id="btn-step-turing" class="control-btn">Step</button>
+                    <button id="btn-run-turing" class="control-btn primary">Run</button>
+                    <button id="btn-reset-turing" class="control-btn">Reset</button>
+                </div>
+            </div>
+
+            <!-- Zoom Controls -->
+            <div class="control-group">
+                <label class="control-label">Zoom</label>
+                <div class="button-group">
+                    <button id="btn-zoom-out" class="control-btn">-</button>
+                    <button id="btn-zoom-reset" class="control-btn">Reset</button>
+                    <button id="btn-zoom-in" class="control-btn">+</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="simulation-canvas"></canvas>
+                <div class="canvas-overlay">
+                    <div class="overlay-info">
+                        <span id="coordinates">Position: (0, 0)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-panel">
+                <h3>Statistics</h3>
+                <div class="stat-item">
+                    <span class="stat-label">Steps:</span>
+                    <span id="stat-steps" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Cells Visited:</span>
+                    <span id="stat-visited" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Current Direction:</span>
+                    <span id="stat-direction" class="stat-value">Right</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Current State:</span>
+                    <span id="stat-state" class="stat-value">0</span>
+                </div>
+                <div id="turing-specific-stats" class="turing-specific">
+                    <div class="stat-item">
+                        <span class="stat-label">Head Position:</span>
+                        <span id="stat-head-pos" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Tape Length:</span>
+                        <span id="stat-tape-length" class="stat-value">0</span>
+                    </div>
+                </div>
+
+                <div class="info-panel">
+                    <h4>About Langton's Ant</h4>
+                    <p>Langton's ant is a 2D Turing machine with simple rules that produce emergent complexity. Starting from a uniform grid, the ant follows these rules:</p>
+                    <ul>
+                        <li>On a white square: Turn right, flip color, move forward</li>
+                        <li>On a black square: Turn left, flip color, move forward</li>
+                    </ul>
+                    <p>Despite these simple rules, the ant builds complex structures including the mysterious "highway" pattern that emerges after ~10,000 steps.</p>
+                    <p><strong>Constraint Theory Connection:</strong> This demonstrates how local constraints (simple rules at each cell) create global emergent behavior - a core principle of constraint theory.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tape-display" id="tape-display">
+            <h4>Tape Display</h4>
+            <div id="tape-content" class="tape-content"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

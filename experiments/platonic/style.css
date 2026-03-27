@@ -1,0 +1,435 @@
+/* Dark Theme with Golden Ratio Accent */
+:root {
+    --bg-primary: #0a0a0f;
+    --bg-secondary: #12121a;
+    --bg-tertiary: #1a1a25;
+    --text-primary: #e4e4e7;
+    --text-secondary: #a1a1aa;
+    --accent: #D4AF37;
+    --accent-glow: rgba(212, 175, 55, 0.3);
+    --border: #2a2a35;
+    --success: #22c55e;
+    --warning: #f59e0b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    padding: 30px 20px;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    border-radius: 15px;
+    margin-bottom: 30px;
+    border: 1px solid var(--border);
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--accent) 0%, #f4d03f 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 300px 1fr 320px;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* Panel Styles */
+.control-panel,
+.properties-panel {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    height: fit-content;
+}
+
+.panel-section {
+    margin-bottom: 25px;
+}
+
+.panel-section:last-child {
+    margin-bottom: 0;
+}
+
+.panel-section h3 {
+    color: var(--accent);
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 8px;
+}
+
+/* Solid Selector */
+.solid-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.solid-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.solid-btn:hover {
+    border-color: var(--accent);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.solid-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.solid-icon {
+    width: 30px;
+    height: 30px;
+}
+
+.solid-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Mode Selector */
+.mode-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.mode-btn {
+    padding: 10px;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+}
+
+.mode-btn:hover {
+    border-color: var(--accent);
+}
+
+.mode-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+}
+
+/* Animation Controls */
+.animation-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.toggle-label:hover {
+    background: var(--bg-tertiary);
+}
+
+.toggle-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 6px;
+    background: var(--bg-tertiary);
+    border-radius: 3px;
+    outline: none;
+    accent-color: var(--accent);
+}
+
+/* Canvas Container */
+.canvas-container {
+    position: relative;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    overflow: hidden;
+    min-height: 600px;
+}
+
+#canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.canvas-overlay {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(10, 10, 15, 0.9);
+    padding: 15px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    backdrop-filter: blur(10px);
+}
+
+.solid-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--accent);
+    margin-bottom: 5px;
+}
+
+.solid-formula {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    font-family: 'Courier New', monospace;
+}
+
+/* Properties Panel */
+.properties-grid {
+    display: grid;
+    gap: 10px;
+}
+
+.property-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent);
+}
+
+.property-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.property-value {
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 0.95rem;
+}
+
+/* Symmetry Info */
+.symmetry-info {
+    background: var(--bg-tertiary);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.symmetry-name {
+    font-size: 1.1rem;
+    color: var(--accent);
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.symmetry-order {
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.symmetry-axes {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.axis-item {
+    padding: 5px 10px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Dual Info */
+.dual-info {
+    background: var(--bg-tertiary);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.dual-name {
+    font-size: 1.1rem;
+    color: var(--accent);
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.dual-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Formula Display */
+.formula-display {
+    background: var(--bg-tertiary);
+    padding: 15px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    color: var(--accent);
+    font-size: 1rem;
+    text-align: center;
+    border: 1px solid var(--border);
+}
+
+/* Golden Ratio Section */
+.golden-ratio {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(244, 208, 63, 0.05) 100%);
+    border: 2px solid var(--accent);
+}
+
+.golden-info {
+    padding: 10px;
+}
+
+.golden-value {
+    font-size: 1.1rem;
+    color: var(--accent);
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.golden-desc {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border);
+    margin-top: 30px;
+}
+
+footer strong {
+    color: var(--accent);
+}
+
+/* Responsive Design */
+@media (max-width: 1400px) {
+    .main-content {
+        grid-template-columns: 280px 1fr 280px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .canvas-container {
+        min-height: 500px;
+    }
+}
+
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.8rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+    }
+
+    .solid-selector,
+    .mode-selector {
+        grid-template-columns: 1fr;
+    }
+
+    .canvas-overlay {
+        top: 10px;
+        left: 10px;
+        padding: 10px 15px;
+    }
+
+    .solid-name {
+        font-size: 1.2rem;
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #f4d03f;
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}

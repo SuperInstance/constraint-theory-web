@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voxel XPBD Physics Simulator | Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Voxel XPBD Physics Simulator</h1>
+            <p class="subtitle">Extended Position-Based Dynamics - Constraint Theory in Action</p>
+        </header>
+
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="simulationCanvas"></canvas>
+                <div class="stats" id="stats">
+                    <div class="stat">
+                        <span class="stat-label">FPS:</span>
+                        <span class="stat-value" id="fps">60</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Particles:</span>
+                        <span class="stat-value" id="particleCount">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Constraints:</span>
+                        <span class="stat-value" id="constraintCount">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Iterations:</span>
+                        <span class="stat-value" id="iterations">10</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="control-section">
+                    <h3>Simulation Controls</h3>
+                    <div class="control-group">
+                        <button id="playPauseBtn" class="btn btn-primary">▶ Play</button>
+                        <button id="stepBtn" class="btn btn-secondary">⏯ Step</button>
+                        <button id="resetBtn" class="btn btn-secondary">↺ Reset</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Physics Parameters</h3>
+                    <div class="control">
+                        <label for="gravity">Gravity: <span id="gravityValue">9.8</span></label>
+                        <input type="range" id="gravity" min="0" max="30" step="0.1" value="9.8">
+                    </div>
+                    <div class="control">
+                        <label for="stiffness">Constraint Stiffness: <span id="stiffnessValue">0.5</span></label>
+                        <input type="range" id="stiffness" min="0.1" max="1.0" step="0.05" value="0.5">
+                    </div>
+                    <div class="control">
+                        <label for="iterations">Constraint Iterations: <span id="iterationsValue">10</span></label>
+                        <input type="range" id="iterations" min="1" max="50" step="1" value="10">
+                    </div>
+                    <div class="control">
+                        <label for="damping">Damping: <span id="dampingValue">0.99</span></label>
+                        <input type="range" id="damping" min="0.9" max="1.0" step="0.01" value="0.99">
+                    </div>
+                    <div class="control">
+                        <label for="voxelSize">Voxel Size: <span id="voxelSizeValue">30</span>px</label>
+                        <input type="range" id="voxelSize" min="15" max="60" step="5" value="30">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Visualization</h3>
+                    <div class="control">
+                        <label>
+                            <input type="checkbox" id="showConstraints" checked>
+                            Show Constraints
+                        </label>
+                    </div>
+                    <div class="control">
+                        <label>
+                            <input type="checkbox" id="showStress">
+                            Color by Stress
+                        </label>
+                    </div>
+                    <div class="control">
+                        <label>
+                            <input type="checkbox" id="showTrails">
+                            Show Trails
+                        </label>
+                    </div>
+                    <div class="control">
+                        <label>
+                            <input type="checkbox" id="showGrid" checked>
+                            Show Grid
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Presets</h3>
+                    <div class="preset-buttons">
+                        <button class="btn btn-preset" data-preset="cube">Soft Body Cube</button>
+                        <button class="btn btn-preset" data-preset="rope">Rope/Chain</button>
+                        <button class="btn btn-preset" data-preset="cloth">Cloth</button>
+                        <button class="btn btn-preset" data-preset="stack">Stacking</button>
+                        <button class="btn btn-preset" data-preset="bridge">Bridge</button>
+                        <button class="btn btn-preset" data-preset="jelly">Jelly Cube</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Interaction</h3>
+                    <p class="help-text">Click and drag particles to interact with the simulation</p>
+                    <div class="control">
+                        <label for="mouseRadius">Mouse Radius: <span id="mouseRadiusValue">50</span>px</label>
+                        <input type="range" id="mouseRadius" min="20" max="150" step="10" value="50">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>About XPBD</h3>
+                    <div class="info-box">
+                        <p><strong>Extended Position-Based Dynamics</strong> demonstrates how geometric constraints directly determine physical behavior.</p>
+                        <ul>
+                            <li>Particles move to satisfy distance constraints</li>
+                            <li>Volume constraints maintain soft body shape</li>
+                            <li>Iterative constraint solving converges to equilibrium</li>
+                            <li>Red = high constraint stress</li>
+                            <li>Blue = relaxed constraints</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

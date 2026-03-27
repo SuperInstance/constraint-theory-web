@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voronoi Diagram Simulator - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Voronoi Diagram Simulator</h1>
+            <p class="subtitle">Geometric basis of cellular agent regions - each cell contains points closest to its seed</p>
+        </header>
+
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="voronoiCanvas" width="800" height="600"></canvas>
+                <div class="canvas-overlay">
+                    <div class="instruction">Click on canvas to add points</div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="control-section">
+                    <h3>Point Controls</h3>
+                    <div class="button-group">
+                        <button id="add10" class="btn btn-primary">+10 Points</button>
+                        <button id="add50" class="btn btn-primary">+50 Points</button>
+                        <button id="add100" class="btn btn-primary">+100 Points</button>
+                    </div>
+                    <div class="button-group">
+                        <button id="clearPoints" class="btn btn-danger">Clear All</button>
+                        <button id="randomReset" class="btn btn-secondary">Random Reset</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Display Options</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showVoronoi" checked>
+                            <span>Voronoi Edges</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showDelaunay">
+                            <span>Delaunay Edges</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showSeeds" checked>
+                            <span>Show Seeds</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showCellAreas">
+                            <span>Show Cell Areas</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Distance Metric</h3>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="distance" value="euclidean" checked>
+                            <span>Euclidean (L²)</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="distance" value="manhattan">
+                            <span>Manhattan (L¹)</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="distance" value="chebyshev">
+                            <span>Chebyshev (L∞)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Color Mode</h3>
+                    <select id="colorMode" class="select">
+                        <option value="random">Random Colors</option>
+                        <option value="area">By Cell Area</option>
+                        <option value="distance">By Centroid Distance</option>
+                        <option value="gradient">Gradient Map</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <h3>Animation</h3>
+                    <div class="button-group">
+                        <button id="animateAdd" class="btn btn-secondary">Animate Add</button>
+                        <button id="lloydRelax" class="btn btn-accent">Lloyd's Relax</button>
+                    </div>
+                    <div class="slider-group">
+                        <label for="relaxIterations">Iterations: <span id="iterValue">5</span></label>
+                        <input type="range" id="relaxIterations" min="1" max="20" value="5">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Cells:</span>
+                            <span class="stat-value" id="statCells">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Area:</span>
+                            <span class="stat-value" id="statTotalArea">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Avg Area:</span>
+                            <span class="stat-value" id="statAvgArea">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Largest:</span>
+                            <span class="stat-value" id="statLargest">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Smallest:</span>
+                            <span class="stat-value" id="statSmallest">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Render Time:</span>
+                            <span class="stat-value" id="statRenderTime">0ms</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>FPS Paradigm Connection:</strong> Each Voronoi cell represents an agent's region of influence in geometric space. Just as each pixel belongs to its nearest seed, each data point in a cellular agent system belongs to the agent best positioned to handle it.</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

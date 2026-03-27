@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quaternion Explorer - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Quaternion Explorer</h1>
+            <p class="subtitle">Interactive 3D Rotation Visualization for Geometric Constraint Theory</p>
+        </header>
+
+        <main>
+            <!-- 3D Canvas Section -->
+            <section class="canvas-section">
+                <div id="canvas-container"></div>
+                <div class="canvas-info">
+                    <div class="info-box">
+                        <h3>Current Rotation</h3>
+                        <div class="quaternion-display">
+                            <span class="quaternion-label">q =</span>
+                            <span id="quaternion-w" class="component w">1.00</span>
+                            <span> + </span>
+                            <span id="quaternion-x" class="component x">0.00</span>
+                            <span class="imaginary">i</span>
+                            <span> + </span>
+                            <span id="quaternion-y" class="component y">0.00</span>
+                            <span class="imaginary">j</span>
+                            <span> + </span>
+                            <span id="quaternion-z" class="component z">0.00</span>
+                            <span class="imaginary">k</span>
+                        </div>
+                        <div class="magnitude">
+                            |q| = <span id="magnitude">1.000</span>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <h3>Rotation Matrix</h3>
+                        <div id="rotation-matrix" class="matrix-display"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Controls Section -->
+            <section class="controls-section">
+                <div class="control-panel">
+                    <h2>Rotation Controls</h2>
+
+                    <!-- Rotation Mode -->
+                    <div class="control-group">
+                        <label>Rotation Mode</label>
+                        <select id="rotation-mode">
+                            <option value="quaternion">Quaternion</option>
+                            <option value="euler">Euler Angles</option>
+                        </select>
+                    </div>
+
+                    <!-- Axis Selection -->
+                    <div class="control-group quaternion-mode">
+                        <label>Rotation Axis</label>
+                        <div class="axis-buttons">
+                            <button class="axis-btn active" data-axis="x">X</button>
+                            <button class="axis-btn" data-axis="y">Y</button>
+                            <button class="axis-btn" data-axis="z">Z</button>
+                            <button class="axis-btn" data-axis="custom">Custom</button>
+                        </div>
+                    </div>
+
+                    <!-- Custom Axis Input -->
+                    <div class="control-group custom-axis-group" style="display: none;">
+                        <label>Custom Axis (normalized)</label>
+                        <div class="axis-inputs">
+                            <div>
+                                <span class="axis-label">x:</span>
+                                <input type="number" id="axis-x" value="1" step="0.1" min="-1" max="1">
+                            </div>
+                            <div>
+                                <span class="axis-label">y:</span>
+                                <input type="number" id="axis-y" value="1" step="0.1" min="-1" max="1">
+                            </div>
+                            <div>
+                                <span class="axis-label">z:</span>
+                                <input type="number" id="axis-z" value="1" step="0.1" min="-1" max="1">
+                            </div>
+                            <button id="normalize-axis" class="secondary-btn">Normalize</button>
+                        </div>
+                    </div>
+
+                    <!-- Angle Slider -->
+                    <div class="control-group quaternion-mode">
+                        <label>Rotation Angle: <span id="angle-value">0</span>°</label>
+                        <input type="range" id="rotation-angle" min="0" max="360" value="0" step="1">
+                        <div class="angle-presets">
+                            <button class="angle-preset" data-angle="0">0°</button>
+                            <button class="angle-preset" data-angle="90">90°</button>
+                            <button class="angle-preset" data-angle="180">180°</button>
+                            <button class="angle-preset" data-angle="270">270°</button>
+                        </div>
+                    </div>
+
+                    <!-- Euler Angles -->
+                    <div class="control-group euler-mode" style="display: none;">
+                        <label>Euler Angles (XYZ order)</label>
+                        <div class="euler-inputs">
+                            <div>
+                                <span class="axis-label">X:</span>
+                                <input type="range" id="euler-x" min="0" max="360" value="0">
+                                <span class="angle-value" id="euler-x-val">0°</span>
+                            </div>
+                            <div>
+                                <span class="axis-label">Y:</span>
+                                <input type="range" id="euler-y" min="0" max="360" value="0">
+                                <span class="angle-value" id="euler-y-val">0°</span>
+                            </div>
+                            <div>
+                                <span class="axis-label">Z:</span>
+                                <input type="range" id="euler-z" min="0" max="360" value="0">
+                                <span class="angle-value" id="euler-z-val">0°</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Animation Controls -->
+                    <div class="control-group">
+                        <label>Animation</label>
+                        <div class="animation-controls">
+                            <button id="animate-btn" class="primary-btn">Animate Rotation</button>
+                            <button id="reset-btn" class="secondary-btn">Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Operations Panel -->
+                <div class="control-panel">
+                    <h2>Quaternion Operations</h2>
+
+                    <!-- Quaternion Multiplication -->
+                    <div class="operation-group">
+                        <label>Quaternion Multiplication</label>
+                        <div class="quaternion-inputs">
+                            <div class="q-input">
+                                <span class="q-label">q₁ =</span>
+                                <input type="number" id="q1-w" value="1" step="0.1" class="q-w">
+                                <input type="number" id="q1-x" value="0" step="0.1" class="q-x">
+                                <input type="number" id="q1-y" value="0" step="0.1" class="q-y">
+                                <input type="number" id="q1-z" value="0" step="0.1" class="q-z">
+                            </div>
+                            <span class="operator">×</span>
+                            <div class="q-input">
+                                <span class="q-label">q₂ =</span>
+                                <input type="number" id="q2-w" value="0.707" step="0.1" class="q-w">
+                                <input type="number" id="q2-x" value="0.707" step="0.1" class="q-x">
+                                <input type="number" id="q2-y" value="0" step="0.1" class="q-y">
+                                <input type="number" id="q2-z" value="0" step="0.1" class="q-z">
+                            </div>
+                            <span class="operator">=</span>
+                            <div class="q-result" id="multiply-result">
+                                <span class="q-label">result</span>
+                            </div>
+                        </div>
+                        <button id="multiply-btn" class="secondary-btn">Multiply</button>
+                    </div>
+
+                    <!-- Single Quaternion Operations -->
+                    <div class="operation-group">
+                        <label>Single Quaternion Operations</label>
+                        <div class="single-ops">
+                            <button id="conjugate-btn" class="secondary-btn">Conjugate</button>
+                            <button id="inverse-btn" class="secondary-btn">Inverse</button>
+                            <button id="normalize-btn" class="secondary-btn">Normalize</button>
+                        </div>
+                        <div id="op-result" class="op-result"></div>
+                    </div>
+                </div>
+
+                <!-- Presets Panel -->
+                <div class="control-panel">
+                    <h2>Preset Rotations</h2>
+                    <div class="preset-grid">
+                        <button class="preset-btn" data-preset="90x">90° around X</button>
+                        <button class="preset-btn" data-preset="90y">90° around Y</button>
+                        <button class="preset-btn" data-preset="90z">90° around Z</button>
+                        <button class="preset-btn" data-preset="180x">180° around X</button>
+                        <button class="preset-btn" data-preset="180y">180° around Y</button>
+                        <button class="preset-btn" data-preset="180z">180° around Z</button>
+                        <button class="preset-btn" data-preset="gimbal">Gimbal Lock Demo</button>
+                        <button class="preset-btn" data-preset="slerp">SLERP Demo</button>
+                    </div>
+                </div>
+
+                <!-- Comparison Panel -->
+                <div class="control-panel">
+                    <h2>Euler vs Quaternion Comparison</h2>
+                    <div class="comparison-info">
+                        <p class="warning">
+                            <strong>Gimbal Lock Warning:</strong> Euler angles can lose a degree of freedom
+                            when two axes become aligned. Quaternions avoid this problem.
+                        </p>
+                        <div class="comparison-stats">
+                            <div class="stat">
+                                <label>Euler Angles</label>
+                                <div id="euler-status" class="status normal">Normal</div>
+                            </div>
+                            <div class="stat">
+                                <label>Quaternion</label>
+                                <div id="quaternion-status" class="status normal">Always Valid</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="compare-btn" class="primary-btn">Compare Rotations</button>
+                </div>
+
+                <!-- SLERP Panel -->
+                <div class="control-panel">
+                    <h2>SLERP Interpolation</h2>
+                    <div class="slerp-controls">
+                        <label>Interpolation: <span id="slerp-value">0</span>%</label>
+                        <input type="range" id="slerp-slider" min="0" max="100" value="0">
+                        <div class="slerp-info">
+                            <p>Interpolates between two rotations along the shortest path</p>
+                            <div class="slerp-quaternions">
+                                <div>Start: <span id="slerp-start">identity</span></div>
+                                <div>End: <span id="slerp-end">90° X</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="animate-slerp-btn" class="primary-btn">Animate SLERP</button>
+                </div>
+
+                <!-- Path Visualization -->
+                <div class="control-panel">
+                    <h2>Rotation Path</h2>
+                    <div class="path-controls">
+                        <label>Show rotation path</label>
+                        <div class="path-options">
+                            <button id="show-path-btn" class="secondary-btn">Show Path</button>
+                            <button id="clear-path-btn" class="secondary-btn">Clear Path</button>
+                        </div>
+                        <div class="path-settings">
+                            <label>
+                                <input type="checkbox" id="auto-record">
+                                Auto-record rotations
+                            </label>
+                        </div>
+                    </div>
+                    <div id="path-info" class="path-info">
+                        <p>Path points: <span id="path-count">0</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Theory Section -->
+            <section class="theory-section">
+                <h2>Quaternion Theory</h2>
+                <div class="theory-content">
+                    <div class="theory-block">
+                        <h3>Definition</h3>
+                        <p>A quaternion is an extension of complex numbers to 4D:</p>
+                        <div class="formula">q = w + xi + yj + zk</div>
+                        <p>where i² = j² = k² = ijk = -1</p>
+                    </div>
+
+                    <div class="theory-block">
+                        <h3>Rotation Quaternion</h3>
+                        <p>For rotation by angle θ around axis (x, y, z):</p>
+                        <div class="formula">q = cos(θ/2) + sin(θ/2)(xi + yj + zk)</div>
+                    </div>
+
+                    <div class="theory-block">
+                        <h3>Advantages over Euler Angles</h3>
+                        <ul>
+                            <li>No gimbal lock</li>
+                            <li>Smooth interpolation (SLERP)</li>
+                            <li>Efficient composition</li>
+                            <li>Numerical stability</li>
+                        </ul>
+                    </div>
+
+                    <div class="theory-block">
+                        <h3>Operations</h3>
+                        <ul>
+                            <li><strong>Multiplication:</strong> Combines rotations</li>
+                            <li><strong>Conjugate:</strong> q* = w - xi - yj - zk (inverse rotation)</li>
+                            <li><strong>Inverse:</strong> q⁻¹ = q*/|q|² (for unit quaternions, q⁻¹ = q*)</li>
+                            <li><strong>SLERP:</strong> Smooth interpolation between rotations</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Constraint Theory Research - Geometric Constraint Transformations</p>
+            <p>Interactive visualization for understanding quaternions as fundamental rotation operators</p>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

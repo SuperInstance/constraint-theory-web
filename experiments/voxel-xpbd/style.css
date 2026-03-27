@@ -1,0 +1,365 @@
+/* Voxel XPBD Physics Simulator - Dark Theme Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0a0a0f;
+    color: #e0e0ff;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0f 100%);
+    border-radius: 10px;
+    border: 1px solid #4466ff;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    color: #4466ff;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(68, 102, 255, 0.5);
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #8888aa;
+    font-style: italic;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 20px;
+}
+
+.canvas-container {
+    position: relative;
+    background: #0a0a0f;
+    border: 2px solid #4466ff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(68, 102, 255, 0.2);
+}
+
+#simulationCanvas {
+    display: block;
+    width: 100%;
+    height: 700px;
+    cursor: crosshair;
+}
+
+.stats {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(10, 10, 15, 0.9);
+    border: 1px solid #4466ff;
+    border-radius: 8px;
+    padding: 10px 15px;
+    display: flex;
+    gap: 20px;
+    font-size: 0.9rem;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-label {
+    color: #8888aa;
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+}
+
+.stat-value {
+    color: #4466ff;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.controls {
+    background: #1a1a2e;
+    border: 1px solid #4466ff;
+    border-radius: 10px;
+    padding: 20px;
+    max-height: 700px;
+    overflow-y: auto;
+}
+
+.control-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #2a2a4e;
+}
+
+.control-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.control-section h3 {
+    color: #4466ff;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.control-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.btn {
+    flex: 1;
+    padding: 12px 20px;
+    border: 1px solid #4466ff;
+    background: #0a0a0f;
+    color: #4466ff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn:hover {
+    background: #4466ff;
+    color: #0a0a0f;
+    box-shadow: 0 0 15px rgba(68, 102, 255, 0.5);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    background: #4466ff;
+    color: #0a0a0f;
+}
+
+.btn-primary:hover {
+    background: #5577ff;
+}
+
+.btn-secondary {
+    background: #2a2a4e;
+    color: #e0e0ff;
+    border-color: #8888aa;
+}
+
+.btn-secondary:hover {
+    background: #3a3a6e;
+    border-color: #4466ff;
+}
+
+.control {
+    margin-bottom: 15px;
+}
+
+.control label {
+    display: block;
+    color: #8888aa;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+}
+
+.control input[type="range"] {
+    width: 100%;
+    height: 6px;
+    background: #2a2a4e;
+    border-radius: 3px;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #4466ff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(68, 102, 255, 0.5);
+    transition: all 0.2s ease;
+}
+
+.control input[type="range"]::-webkit-slider-thumb:hover {
+    background: #5577ff;
+    transform: scale(1.2);
+}
+
+.control input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #4466ff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(68, 102, 255, 0.5);
+    transition: all 0.2s ease;
+}
+
+.control input[type="range"]::-moz-range-thumb:hover {
+    background: #5577ff;
+    transform: scale(1.2);
+}
+
+.control input[type="checkbox"] {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.preset-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.btn-preset {
+    padding: 10px 15px;
+    font-size: 0.85rem;
+}
+
+.btn-preset.active {
+    background: #4466ff;
+    color: #0a0a0f;
+}
+
+.help-text {
+    color: #8888aa;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.info-box {
+    background: #0a0a0f;
+    border: 1px solid #2a2a4e;
+    border-radius: 6px;
+    padding: 15px;
+    font-size: 0.85rem;
+}
+
+.info-box p {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.info-box p:last-child {
+    margin-bottom: 0;
+}
+
+.info-box strong {
+    color: #4466ff;
+}
+
+.info-box ul {
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.info-box li {
+    margin-bottom: 5px;
+    line-height: 1.4;
+    color: #a0a0cc;
+}
+
+/* Scrollbar Styling */
+.controls::-webkit-scrollbar {
+    width: 8px;
+}
+
+.controls::-webkit-scrollbar-track {
+    background: #0a0a0f;
+    border-radius: 4px;
+}
+
+.controls::-webkit-scrollbar-thumb {
+    background: #4466ff;
+    border-radius: 4px;
+}
+
+.controls::-webkit-scrollbar-thumb:hover {
+    background: #5577ff;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+
+    .controls {
+        max-height: none;
+    }
+
+    #simulationCanvas {
+        height: 500px;
+    }
+}
+
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.8rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+    }
+
+    .preset-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .stats {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    #simulationCanvas {
+        height: 400px;
+    }
+}
+
+/* Animation for pulse effect */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.btn-primary:hover {
+    animation: pulse 1s ease-in-out infinite;
+}
+
+/* Gradient text effect */
+.gradient-text {
+    background: linear-gradient(135deg, #4466ff 0%, #8888ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}

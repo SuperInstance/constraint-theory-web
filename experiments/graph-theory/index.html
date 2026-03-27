@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Theory Explorer | Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Graph Theory Explorer</h1>
+            <p class="subtitle">Interactive Graph Algorithm Visualization</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Control Panel -->
+            <aside class="control-panel">
+                <div class="panel-section">
+                    <h3>Graph Controls</h3>
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="directedToggle" checked>
+                            Directed Graph
+                        </label>
+                    </div>
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="weightedToggle">
+                            Weighted Edges
+                        </label>
+                    </div>
+                    <div class="control-group" id="weightInputGroup" style="display: none;">
+                        <label>Edge Weight:</label>
+                        <input type="number" id="edgeWeight" value="1" min="1" max="99">
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Presets</h3>
+                    <div class="button-grid">
+                        <button class="preset-btn" data-preset="tree">Tree</button>
+                        <button class="preset-btn" data-preset="cycle">Cycle</button>
+                        <button class="preset-btn" data-preset="complete">Complete</button>
+                        <button class="preset-btn" data-preset="grid">Grid</button>
+                        <button class="preset-btn" data-preset="random">Random</button>
+                        <button class="preset-btn" data-preset="bipartite">Bipartite</button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Algorithms</h3>
+                    <select id="algorithmSelect">
+                        <option value="">Select Algorithm</option>
+                        <option value="bfs">BFS (Breadth-First Search)</option>
+                        <option value="dfs">DFS (Depth-First Search)</option>
+                        <option value="dijkstra">Dijkstra's Shortest Path</option>
+                        <option value="astar">A* Search</option>
+                        <option value="kruskal">Kruskal's MST</option>
+                        <option value="prim">Prim's MST</option>
+                        <option value="topological">Topological Sort</option>
+                        <option value="euler">Euler Path</option>
+                        <option value="coloring">Graph Coloring</option>
+                    </select>
+                    <div class="button-group">
+                        <button id="runBtn" class="run-btn">Run</button>
+                        <button id="stepBtn" class="step-btn" disabled>Step</button>
+                        <button id="resetBtn" class="reset-btn">Reset</button>
+                    </div>
+                    <div id="sourceNodeSelect" style="display: none;">
+                        <label>Source Node:</label>
+                        <input type="number" id="sourceNode" value="0" min="0">
+                    </div>
+                    <div id="targetNodeSelect" style="display: none;">
+                        <label>Target Node:</label>
+                        <input type="number" id="targetNode" value="1" min="0">
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Actions</h3>
+                    <div class="button-grid">
+                        <button id="clearBtn" class="action-btn">Clear Graph</button>
+                        <button id="addNodeBtn" class="action-btn">Add Node</button>
+                        <button id="randomGraphBtn" class="action-btn">Random Graph</button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Statistics</h3>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Vertices:</span>
+                            <span id="vertexCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Edges:</span>
+                            <span id="edgeCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Components:</span>
+                            <span id="componentCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Density:</span>
+                            <span id="density" class="stat-value">0.00</span>
+                        </div>
+                        <div id="mstWeight" class="stat-item" style="display: none;">
+                            <span class="stat-label">MST Weight:</span>
+                            <span id="mstWeightValue" class="stat-value">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Algorithm Info</h3>
+                    <div id="algorithmInfo" class="algorithm-info">
+                        <p>Select an algorithm to see information</p>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Algorithm Output</h3>
+                    <div id="algorithmOutput" class="algorithm-output">
+                        <p>Output will appear here</p>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Canvas Area -->
+            <main class="canvas-container">
+                <canvas id="graphCanvas"></canvas>
+                <div class="canvas-controls">
+                    <button id="zoomInBtn" title="Zoom In">+</button>
+                    <button id="zoomOutBtn" title="Zoom Out">-</button>
+                    <button id="fitBtn" title="Fit to Screen">Fit</button>
+                    <button id="layoutBtn" title="Apply Force Layout">Layout</button>
+                </div>
+                <div class="canvas-info">
+                    <span class="info-item">
+                        <strong>Click:</strong> Add node / Select
+                    </span>
+                    <span class="info-item">
+                        <strong>Drag:</strong> Move node / Create edge
+                    </span>
+                    <span class="info-item">
+                        <strong>Right-click:</strong> Delete node/edge
+                    </span>
+                    <span class="info-item">
+                        <strong>Shift+Drag:</strong> Create edge
+                    </span>
+                </div>
+            </main>
+        </div>
+
+        <footer>
+            <p>Graph Theory Explorer | Part of Constraint Theory Research</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

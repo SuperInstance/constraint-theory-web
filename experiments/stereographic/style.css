@@ -1,0 +1,410 @@
+/* Stereographic Projection Simulator Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #eaeaea;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+header h1 {
+    font-size: 2.5em;
+    color: #64ffda;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(100, 255, 218, 0.3);
+}
+
+.subtitle {
+    font-size: 1.1em;
+    color: #8892b0;
+    font-style: italic;
+}
+
+/* Main Content */
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Canvas Container */
+.canvas-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.canvas-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.canvas-wrapper h2 {
+    color: #64ffda;
+    font-size: 1.3em;
+    margin-bottom: 10px;
+}
+
+canvas {
+    border: 2px solid rgba(100, 255, 218, 0.3);
+    border-radius: 8px;
+    background: #0a192f;
+    cursor: crosshair;
+    box-shadow: 0 0 30px rgba(100, 255, 218, 0.1);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+canvas:hover {
+    border-color: rgba(100, 255, 218, 0.6);
+    box-shadow: 0 0 40px rgba(100, 255, 218, 0.2);
+}
+
+.canvas-info {
+    text-align: center;
+    font-size: 0.9em;
+    color: #8892b0;
+}
+
+.info-label {
+    background: rgba(100, 255, 218, 0.1);
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+/* Projection Info */
+.projection-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.projection-line {
+    width: 2px;
+    height: 30px;
+    background: linear-gradient(to bottom, transparent, #64ffda, transparent);
+}
+
+.projection-arrow {
+    font-size: 2em;
+    color: #64ffda;
+    text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+}
+
+/* Controls Panel */
+.controls-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.control-section {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.control-section h3 {
+    color: #64ffda;
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(100, 255, 218, 0.2);
+}
+
+.control-group {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.control-group label {
+    flex: 1;
+    font-size: 0.9em;
+    color: #ccd6f6;
+}
+
+.control-group input[type="range"] {
+    flex: 2;
+    height: 6px;
+    -webkit-appearance: none;
+    background: rgba(100, 255, 218, 0.2);
+    border-radius: 3px;
+    outline: none;
+}
+
+.control-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #64ffda;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+}
+
+.control-group input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #64ffda;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+}
+
+.control-group span {
+    min-width: 50px;
+    text-align: right;
+    font-family: monospace;
+    color: #64ffda;
+}
+
+.control-group select {
+    flex: 2;
+    padding: 6px 10px;
+    background: rgba(10, 25, 47, 0.8);
+    border: 1px solid rgba(100, 255, 218, 0.3);
+    border-radius: 4px;
+    color: #ccd6f6;
+    cursor: pointer;
+}
+
+.control-group select:focus {
+    outline: none;
+    border-color: #64ffda;
+}
+
+.control-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #64ffda;
+}
+
+/* Buttons */
+.btn {
+    width: 100%;
+    padding: 10px 15px;
+    background: linear-gradient(135deg, rgba(100, 255, 218, 0.1), rgba(100, 255, 218, 0.05));
+    border: 1px solid rgba(100, 255, 218, 0.3);
+    border-radius: 6px;
+    color: #64ffda;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 8px;
+}
+
+.btn:hover {
+    background: linear-gradient(135deg, rgba(100, 255, 218, 0.2), rgba(100, 255, 218, 0.1));
+    border-color: #64ffda;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(100, 255, 218, 0.2);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Info Panel */
+.info-panel {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-panel h3 {
+    color: #64ffda;
+    font-size: 1.3em;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(100, 255, 218, 0.2);
+}
+
+.info-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.info-content h4 {
+    color: #8892b0;
+    font-size: 1.1em;
+    margin-bottom: 8px;
+    margin-top: 15px;
+}
+
+.info-content h4:first-child {
+    margin-top: 0;
+}
+
+.info-content p {
+    color: #ccd6f6;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.info-content ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.info-content li {
+    color: #ccd6f6;
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.info-content li:before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+    color: #64ffda;
+}
+
+.formula {
+    background: rgba(10, 25, 47, 0.5);
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 3px solid #64ffda;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95em;
+    color: #64ffda;
+    margin: 10px 0;
+    line-height: 1.8;
+}
+
+.point-info {
+    background: rgba(100, 255, 218, 0.05);
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    font-family: monospace;
+}
+
+.point-info p {
+    margin: 5px 0;
+    color: #64ffda;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+    color: #8892b0;
+    font-size: 0.9em;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .canvas-container {
+        flex-direction: column;
+    }
+
+    .projection-info {
+        flex-direction: row;
+    }
+
+    .projection-line {
+        width: 30px;
+        height: 2px;
+        background: linear-gradient(to right, transparent, #64ffda, transparent);
+    }
+
+    .projection-arrow {
+        transform: rotate(90deg);
+    }
+}
+
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2em;
+    }
+
+    .controls-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .info-content {
+        grid-template-columns: 1fr;
+    }
+
+    canvas {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+/* Animations */
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(100, 255, 218, 0.1);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(100, 255, 218, 0.2);
+    }
+}
+
+canvas {
+    animation: glow 3s ease-in-out infinite;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(10, 25, 47, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(100, 255, 218, 0.3);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 255, 218, 0.5);
+}

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Network Topology - Traditional vs Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Neural Network Topology Simulator</h1>
+            <p class="subtitle">Comparing Traditional Neural Networks with Constraint Theory Geometric Networks</p>
+        </header>
+
+        <div class="architecture-selector">
+            <label>Network Architecture:</label>
+            <select id="architectureSelect">
+                <option value="simple">Simple 3-Layer (2-3-1)</option>
+                <option value="deep">Deep 6-Layer (2-4-4-4-4-1)</option>
+                <option value="conv">Convolutional-like (Local Constraints)</option>
+                <option value="recurrent">Recurrent-like (Feedback Constraints)</option>
+            </select>
+        </div>
+
+        <div class="networks-container">
+            <!-- Traditional Neural Network -->
+            <div class="network-panel traditional">
+                <div class="panel-header">
+                    <h2>Traditional Neural Network</h2>
+                    <span class="approach-badge">Matrix Multiplication + Activation</span>
+                </div>
+                <canvas id="traditionalCanvas" class="network-canvas"></canvas>
+                <div class="network-stats">
+                    <div class="stat">
+                        <span class="stat-label">Parameters:</span>
+                        <span id="traditionalParams" class="stat-value">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Activation Sum:</span>
+                        <span id="traditionalActivation" class="stat-value">0.00</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Gradient Flow:</span>
+                        <span id="traditionalGradient" class="stat-value">0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Constraint Theory Neural Network -->
+            <div class="network-panel constraint">
+                <div class="panel-header">
+                    <h2>Constraint Theory Network</h2>
+                    <span class="approach-badge">Geometric Constraint Satisfaction</span>
+                </div>
+                <canvas id="constraintCanvas" class="network-canvas"></canvas>
+                <div class="network-stats">
+                    <div class="stat">
+                        <span class="stat-label">Constraints:</span>
+                        <span id="constraintParams" class="stat-value">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Satisfaction:</span>
+                        <span id="constraintSatisfaction" class="stat-value">0.00</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Violations:</span>
+                        <span id="constraintViolations" class="stat-value">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="control-group">
+                <h3>Input Controls</h3>
+                <div class="input-controls">
+                    <div class="input-pair">
+                        <label>Input 1:</label>
+                        <input type="range" id="input1" min="0" max="1" step="0.1" value="0">
+                        <span id="input1Value">0.0</span>
+                    </div>
+                    <div class="input-pair">
+                        <label>Input 2:</label>
+                        <input type="range" id="input2" min="0" max="1" step="0.1" value="0">
+                        <span id="input2Value">0.0</span>
+                    </div>
+                </div>
+                <button id="randomInput" class="btn btn-secondary">Random Input</button>
+            </div>
+
+            <div class="control-group">
+                <h3>Visualization</h3>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showWeights" checked>
+                        Show Weights/Constraints
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showActivations" checked>
+                        Show Activations/Satisfaction
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showGradients">
+                        Show Gradient Flow
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="animatePass" checked>
+                        Animate Forward Pass
+                    </label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Training</h3>
+                <div class="training-controls">
+                    <select id="problemSelect">
+                        <option value="xor">XOR Problem</option>
+                        <option value="and">AND Problem</option>
+                        <option value="or">OR Problem</option>
+                        <option value="circle">Circle Classification</option>
+                    </select>
+                    <button id="trainStep" class="btn btn-primary">Train Step</button>
+                    <button id="trainEpoch" class="btn btn-primary">Train Epoch (4 steps)</button>
+                    <button id="autoTrain" class="btn btn-accent">Auto Train</button>
+                    <button id="resetNetwork" class="btn btn-secondary">Reset Network</button>
+                </div>
+                <div class="training-progress">
+                    <div class="progress-bar">
+                        <div id="trainingProgress" class="progress-fill"></div>
+                    </div>
+                    <span id="epochCount">Epoch: 0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loss Graph -->
+        <div class="loss-section">
+            <h3>Training Loss Comparison</h3>
+            <div class="loss-legend">
+                <span class="legend-item traditional">Traditional NN</span>
+                <span class="legend-item constraint">Constraint NN</span>
+            </div>
+            <canvas id="lossCanvas" class="loss-canvas"></canvas>
+        </div>
+
+        <!-- Info Section -->
+        <div class="info-section">
+            <div class="info-card">
+                <h4>Traditional Neural Network</h4>
+                <ul>
+                    <li><strong>Neurons:</strong> Weighted sum + activation function</li>
+                    <li><strong>Learning:</strong> Gradient descent on loss function</li>
+                    <li><strong>Forward Pass:</strong> y = σ(Wx + b)</li>
+                    <li><strong>Backprop:</strong> Chain rule for gradients</li>
+                    <li><strong>Parameters:</strong> Weights + biases per connection</li>
+                </ul>
+            </div>
+            <div class="info-card">
+                <h4>Constraint Theory Network</h4>
+                <ul>
+                    <li><strong>Neurons:</strong> Geometric constraint satisfaction points</li>
+                    <li><strong>Learning:</strong> Constraint optimization</li>
+                    <li><strong>Forward Pass:</strong> Pythagorean snapping to constraints</li>
+                    <li><strong>Backprop:</strong> Constraint violation propagation</li>
+                    <li><strong>Parameters:</strong> Geometric constraints (distances, angles)</li>
+                </ul>
+            </div>
+            <div class="info-card">
+                <h4>Key Differences</h4>
+                <ul>
+                    <li><strong>Activation:</strong> σ(x) vs geometric snapping</li>
+                    <li><strong>Weights:</strong> Matrix vs constraint edges</li>
+                    <li><strong>Optimization:</strong> Gradient descent vs constraint satisfaction</li>
+                    <li><strong>Interpretability:</strong> Black box vs geometric intuition</li>
+                    <li><strong>Robustness:</strong> Sensitive vs geometric invariants</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

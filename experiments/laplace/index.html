@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laplace Equation Simulator - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>∇²φ = 0</h1>
+            <h2>Laplace Equation Interactive Simulator</h2>
+            <p class="subtitle">The ultimate constraint: solution must satisfy boundary conditions at every point simultaneously</p>
+        </header>
+
+        <div class="main-content">
+            <div class="canvas-section">
+                <div class="canvas-container">
+                    <canvas id="laplaceCanvas"></canvas>
+                    <div class="canvas-info">
+                        <span id="iterationCount">Iterations: 0</span>
+                        <span id="residual">Residual: 0.0000</span>
+                        <span id="convergenceStatus">Status: Ready</span>
+                    </div>
+                </div>
+
+                <div class="mode-selector">
+                    <button class="mode-btn active" data-mode="boundary">
+                        <span class="mode-icon">⬚</span>
+                        Boundary Mode
+                    </button>
+                    <button class="mode-btn" data-mode="source">
+                        <span class="mode-icon">+</span>
+                        Add Source
+                    </button>
+                    <button class="mode-btn" data-mode="sink">
+                        <span class="mode-icon">−</span>
+                        Add Sink
+                    </button>
+                    <button class="mode-btn" data-mode="erase">
+                        <span class="mode-icon">✕</span>
+                        Erase
+                    </button>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <div class="control-group">
+                    <h3>Solver Method</h3>
+                    <select id="solverMethod">
+                        <option value="jacobi">Jacobi Iteration</option>
+                        <option value="gauss-seidel" selected>Gauss-Seidel</option>
+                        <option value="sor">Successive Over-Relaxation (SOR)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <h3>Grid Parameters</h3>
+                    <div class="slider-group">
+                        <label>Grid Size: <span id="gridSizeValue">64</span></label>
+                        <input type="range" id="gridSize" min="32" max="128" value="64" step="16">
+                    </div>
+                    <div class="slider-group">
+                        <label>Max Iterations: <span id="maxIterationsValue">1000</span></label>
+                        <input type="range" id="maxIterations" min="100" max="5000" value="1000" step="100">
+                    </div>
+                </div>
+
+                <div class="control-group" id="sorGroup">
+                    <h3>SOR Parameter</h3>
+                    <div class="slider-group">
+                        <label>Omega (ω): <span id="omegaValue">1.85</span></label>
+                        <input type="range" id="omega" min="1.0" max="1.99" value="1.85" step="0.01">
+                        <small>Optimal: 1.7-1.9 for most problems</small>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Boundary Value</h3>
+                    <div class="slider-group">
+                        <label>Value: <span id="boundaryValueDisplay">1.0</span></label>
+                        <input type="range" id="boundaryValue" min="-1" max="1" value="1" step="0.1">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Visualization</h3>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="showHeatmap" checked>
+                            Heat Map
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showEquipotential">
+                            Equipotential Lines
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showFieldLines">
+                            Field Lines (Gradient)
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showGrid">
+                            Grid Overlay
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Animation</h3>
+                    <div class="slider-group">
+                        <label>Speed: <span id="animSpeedValue">50</span> ms/iter</label>
+                        <input type="range" id="animSpeed" min="1" max="200" value="50" step="1">
+                    </div>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="animateConvergence">
+                        Animate Convergence
+                    </label>
+                </div>
+
+                <div class="control-group">
+                    <h3>Presets</h3>
+                    <div class="preset-buttons">
+                        <button class="preset-btn" data-preset="parallel">Parallel Plates</button>
+                        <button class="preset-btn" data-preset="point">Point Charge</button>
+                        <button class="preset-btn" data-preset="dipole">Dipole</button>
+                        <button class="preset-btn" data-preset="capacitor">Capacitor</button>
+                        <button class="preset-btn" data-preset="ground">Grounding</button>
+                        <button class="preset-btn" data-preset="corner">Corner Problem</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Controls</h3>
+                    <div class="action-buttons">
+                        <button id="startBtn" class="action-btn primary">
+                            <span class="btn-icon">▶</span>
+                            Solve
+                        </button>
+                        <button id="stepBtn" class="action-btn secondary">
+                            <span class="btn-icon">→</span>
+                            Step
+                        </button>
+                        <button id="pauseBtn" class="action-btn secondary">
+                            <span class="btn-icon">⏸</span>
+                            Pause
+                        </button>
+                        <button id="resetBtn" class="action-btn danger">
+                            <span class="btn-icon">⟲</span>
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Convergence</h3>
+                    <div class="convergence-info">
+                        <div class="info-item">
+                            <span class="info-label">Target:</span>
+                            <span class="info-value" id="targetResidual">1e-6</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Current:</span>
+                            <span class="info-value" id="currentResidual">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Rate:</span>
+                            <span class="info-value" id="convergenceRate">—</span>
+                        </div>
+                    </div>
+                    <div class="slider-group">
+                        <label>Target Residual: <span id="targetResidualValue">1e-6</span></label>
+                        <input type="range" id="targetResidualSlider" min="-10" max="-2" value="-6" step="1">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h3>About the Laplace Equation</h3>
+            <p>
+                The Laplace equation ∇²φ = 0 describes steady-state systems where the value at any point
+                is the average of its neighbors. This creates a "smooth" field that satisfies boundary
+                constraints everywhere simultaneously.
+            </p>
+            <div class="info-sections">
+                <div class="info-section">
+                    <h4>Physical Examples</h4>
+                    <ul>
+                        <li>Electrostatic potential in charge-free regions</li>
+                        <li>Steady-state heat distribution</li>
+                        <li>Fluid flow in porous media</li>
+                        <li>Gravitational potential in empty space</li>
+                    </ul>
+                </div>
+                <div class="info-section">
+                    <h4>Numerical Methods</h4>
+                    <ul>
+                        <li><strong>Jacobi:</strong> Simple but slow (O(n) iterations)</li>
+                        <li><strong>Gauss-Seidel:</strong> Faster, uses updated values</li>
+                        <li><strong>SOR:</strong> Fastest with optimal ω (~1.8)</li>
+                    </ul>
+                </div>
+                <div class="info-section">
+                    <h4>Using the Simulator</h4>
+                    <ul>
+                        <li>Select <strong>Boundary Mode</strong> and click edges to set fixed values</li>
+                        <li>Use <strong>Source/Sink</strong> to add interior charges</li>
+                        <li>Choose a <strong>Preset</strong> for classic configurations</li>
+                        <li>Click <strong>Solve</strong> to iterate until convergence</li>
+                        <li>Enable <strong>Animate</strong> to watch convergence in real-time</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Constraint Theory Research | Cellular Agent Infrastructure | Geometric Substrate</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

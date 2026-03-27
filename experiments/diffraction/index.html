@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diffraction Grating Simulator - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Diffraction Grating Simulator</h1>
+            <p class="subtitle">Geometric Constraints in Wave Optics</p>
+        </header>
+
+        <main>
+            <!-- Grating View -->
+            <section class="canvas-section">
+                <h2>Grating View</h2>
+                <canvas id="gratingCanvas" width="800" height="200"></canvas>
+                <p class="canvas-label">Physical grating structure (top view)</p>
+            </section>
+
+            <!-- Diffraction Pattern -->
+            <section class="canvas-section">
+                <h2>Diffraction Pattern</h2>
+                <canvas id="patternCanvas" width="800" height="300"></canvas>
+                <p class="canvas-label">Intensity distribution vs angle</p>
+            </section>
+
+            <!-- Controls -->
+            <section class="controls-section">
+                <h2>Parameters</h2>
+
+                <div class="control-group">
+                    <label for="slitCount">Number of Slits: <span id="slitCountValue">5</span></label>
+                    <input type="range" id="slitCount" min="1" max="50" value="5" step="1">
+                </div>
+
+                <div class="control-group">
+                    <label for="slitSpacing">Slit Spacing (d): <span id="slitSpacingValue">5.0</span> μm</label>
+                    <input type="range" id="slitSpacing" min="1" max="20" value="5" step="0.1">
+                </div>
+
+                <div class="control-group">
+                    <label for="slitWidth">Slit Width (a): <span id="slitWidthValue">1.0</span> μm</label>
+                    <input type="range" id="slitWidth" min="0.1" max="5" value="1" step="0.1">
+                </div>
+
+                <div class="control-group">
+                    <label for="wavelength">Wavelength (λ): <span id="wavelengthValue">500</span> nm</label>
+                    <input type="range" id="wavelength" min="380" max="750" value="500" step="1">
+                    <div class="color-preview" id="colorPreview"></div>
+                </div>
+
+                <div class="control-group">
+                    <label for="screenDistance">Screen Distance: <span id="screenDistanceValue">1.0</span> m</label>
+                    <input type="range" id="screenDistance" min="0.1" max="5" value="1" step="0.1">
+                </div>
+            </section>
+
+            <!-- Presets -->
+            <section class="presets-section">
+                <h2>Presets</h2>
+                <div class="preset-buttons">
+                    <button class="preset-btn" data-preset="single">Single Slit</button>
+                    <button class="preset-btn" data-preset="double">Double Slit</button>
+                    <button class="preset-btn" data-preset="grating">Grating (10 slits)</button>
+                    <button class="preset-btn" data-preset="circular">Circular Aperture</button>
+                    <button class="preset-btn" data-preset="custom">Custom Grating</button>
+                </div>
+            </section>
+
+            <!-- Display Options -->
+            <section class="display-section">
+                <h2>Display Options</h2>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showEnvelope" checked>
+                        Show Envelope (single slit)
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showIndividual">
+                        Show Individual Slit Pattern
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showCombined" checked>
+                        Show Combined Pattern
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showIntensity">
+                        Show Intensity Values
+                    </label>
+                </div>
+            </section>
+
+            <!-- Animation Controls -->
+            <section class="animation-section">
+                <h2>Animation</h2>
+                <div class="animation-controls">
+                    <button id="animateBtn" class="animate-btn">Animate Wavelength</button>
+                    <button id="resetBtn" class="reset-btn">Reset</button>
+                </div>
+                <div class="animation-info">
+                    <p>Animation speed: <span id="animationSpeed">1.0</span>x</p>
+                    <input type="range" id="speedControl" min="0.1" max="3" value="1" step="0.1">
+                </div>
+            </section>
+
+            <!-- Theory Section -->
+            <section class="theory-section">
+                <h2>Theory</h2>
+                <div class="theory-content">
+                    <h3>Diffraction Grating Equation</h3>
+                    <div class="equation">
+                        d·sin(θ) = m·λ
+                    </div>
+                    <p>Where d = slit spacing, θ = diffraction angle, m = order (0, ±1, ±2, ...), λ = wavelength</p>
+
+                    <h3>Intensity Distribution</h3>
+                    <div class="equation">
+                        I(θ) = I₀ · [sinc(β)]² · [sin(Nα)/sin(α)]²
+                    </div>
+                    <p>Where β = (π·a·sinθ)/λ, α = (π·d·sinθ)/λ, N = number of slits, a = slit width</p>
+
+                    <h3>Key Principles</h3>
+                    <ul>
+                        <li><strong>Geometric Constraint:</strong> Equally spaced slits create interference pattern</li>
+                        <li><strong>Single Slit Envelope:</strong> Modulates overall intensity (sinc² function)</li>
+                        <li><strong>Multi-Slit Interference:</strong> Creates sharp principal maxima</li>
+                        <li><strong>Principal Maxima:</strong> Occur at angles where path difference = m·λ</li>
+                        <li><strong>Secondary Maxima:</strong> N-2 smaller peaks between principal maxima</li>
+                    </ul>
+
+                    <h3>Applications</h3>
+                    <ul>
+                        <li>Spectroscopy - separating light into component wavelengths</li>
+                        <li>Wavelength measurement - precise determination of light properties</li>
+                        <li>Optical communications - wavelength division multiplexing</li>
+                        <li>Laser systems - beam shaping and filtering</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Measurements Panel -->
+            <section class="measurements-section">
+                <h2>Measurements</h2>
+                <div class="measurements-grid">
+                    <div class="measurement-item">
+                        <span class="measurement-label">First Order Angle:</span>
+                        <span class="measurement-value" id="firstOrderAngle">-</span>
+                    </div>
+                    <div class="measurement-item">
+                        <span class="measurement-label">Angular Separation:</span>
+                        <span class="measurement-value" id="angularSeparation">-</span>
+                    </div>
+                    <div class="measurement-item">
+                        <span class="measurement-label">Resolving Power:</span>
+                        <span class="measurement-value" id="resolvingPower">-</span>
+                    </div>
+                    <div class="measurement-item">
+                        <span class="measurement-label">Dispersion:</span>
+                        <span class="measurement-value" id="dispersion">-</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Constraint Theory Research Project | Interactive Physics Simulators</p>
+            <p>Exploring geometric constraints in wave optics</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

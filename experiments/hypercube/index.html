@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4D Hypercube Simulator | Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>4D Hypercube Simulator</h1>
+            <p class="subtitle">Interactive visualization of 4D polytopes projected into 3D space</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Canvas Container -->
+            <div class="canvas-container">
+                <canvas id="hypercube-canvas"></canvas>
+
+                <!-- Info Panel -->
+                <div class="info-panel">
+                    <h3>Object Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Vertices:</span>
+                            <span class="info-value" id="vertex-count">16</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Edges:</span>
+                            <span class="info-value" id="edge-count">32</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Faces:</span>
+                            <span class="info-value" id="face-count">24</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Cells:</span>
+                            <span class="info-value" id="cell-count">8</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Euler Characteristic:</span>
+                            <span class="info-value" id="euler-characteristic">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls Panel -->
+            <div class="controls-panel">
+                <div class="control-section">
+                    <h3>4D Object</h3>
+                    <select id="object-selector" class="control-select">
+                        <option value="tesseract">Tesseract (4D Cube)</option>
+                        <option value="pentachoron">Pentachoron (4D Simplex)</option>
+                        <option value="twentyfourcell">24-Cell</option>
+                        <option value="hundredtwentycell">120-Cell</option>
+                        <option value="sixhundredcell">600-Cell</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <h3>Projection Mode</h3>
+                    <select id="projection-mode" class="control-select">
+                        <option value="perspective">Perspective Projection</option>
+                        <option value="orthographic">Orthographic Projection</option>
+                        <option value="stereographic">Stereographic Projection</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <h3>4D Rotations</h3>
+
+                    <div class="rotation-control">
+                        <label class="rotation-label">XY Plane</label>
+                        <input type="range" id="rotation-xy" class="rotation-slider" min="0" max="360" value="0">
+                        <span class="rotation-value" id="value-xy">0°</span>
+                    </div>
+
+                    <div class="rotation-control">
+                        <label class="rotation-label">XZ Plane</label>
+                        <input type="range" id="rotation-xz" class="rotation-slider" min="0" max="360" value="0">
+                        <span class="rotation-value" id="value-xz">0°</span>
+                    </div>
+
+                    <div class="rotation-control">
+                        <label class="rotation-label">XW Plane</label>
+                        <input type="range" id="rotation-xw" class="rotation-slider" min="0" max="360" value="0">
+                        <span class="rotation-value" id="value-xw">0°</span>
+                    </div>
+
+                    <div class="rotation-control">
+                        <label class="rotation-label">YZ Plane</label>
+                        <input type="range" id="rotation-yz" class="rotation-slider" min="0" max="360" value="0">
+                        <span class="rotation-value" id="value-yz">0°</span>
+                    </div>
+
+                    <div class="rotation-control">
+                        <label class="rotation-label">YW Plane</label>
+                        <input type="range" id="rotation-yw" class="rotation-slider" min="0" max="360" value="0">
+                        <span class="rotation-value" id="value-yw">0°</span>
+                    </div>
+
+                    <div class="rotation-control">
+                        <label class="rotation-label">ZW Plane</label>
+                        <input type="range" id="rotation-zw" class="rotation-slider" min="0" max="360" value="0">
+                        <span class="rotation-value" id="value-zw">0°</span>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Animation</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="auto-rotate">
+                        Auto-rotate
+                    </label>
+
+                    <div class="rotation-control">
+                        <label class="rotation-label">Speed</label>
+                        <input type="range" id="rotation-speed" class="rotation-slider" min="1" max="100" value="20">
+                        <span class="rotation-value" id="value-speed">20%</span>
+                    </div>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="auto-rotate-4d">
+                        Auto-rotate 4D planes
+                    </label>
+                </div>
+
+                <div class="control-section">
+                    <h3>Visual Options</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="show-vertices" checked>
+                        Show vertices
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="show-edges" checked>
+                        Show edges
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="show-faces">
+                        Show faces
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="show-cells">
+                        Show cells
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="show-axes">
+                        Show 4D axes
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="depth-coloring" checked>
+                        Depth-based coloring
+                    </label>
+                </div>
+
+                <div class="control-section">
+                    <h3>4D Depth Range</h3>
+                    <div class="rotation-control">
+                        <label class="rotation-label">W Range</label>
+                        <input type="range" id="w-range" class="rotation-slider" min="100" max="500" value="200">
+                        <span class="rotation-value" id="value-w-range">±2.0</span>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <button id="reset-rotations" class="reset-button">Reset Rotations</button>
+                </div>
+
+                <div class="control-section">
+                    <h3>Constraint Theory Info</h3>
+                    <p class="info-text">
+                        4D polytopes demonstrate how geometric constraints in higher dimensions create new topological properties.
+                        The tesseract has Euler characteristic χ = 0, different from 3D cubes (χ = 2).
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Constraint Theory Research | Cellular Agent Infrastructure | <a href="https://github.com/SuperInstance/constrainttheory">GitHub</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

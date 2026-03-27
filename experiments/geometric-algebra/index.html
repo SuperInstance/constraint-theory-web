@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometric Algebra Visualizer - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Geometric Algebra Visualizer</h1>
+            <p class="subtitle">Interactive exploration of Clifford Algebra operations</p>
+        </header>
+
+        <main>
+            <div class="canvas-container">
+                <canvas id="gaCanvas" width="800" height="600"></canvas>
+                <div class="canvas-overlay">
+                    <div class="grade-display" id="gradeDisplay">
+                        <div class="grade-title">Multivector Decomposition</div>
+                        <div class="grade-components" id="gradeComponents"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="control-section">
+                    <h3>Operations</h3>
+                    <div class="operation-grid">
+                        <button class="op-btn active" data-op="addition">
+                            <span class="op-symbol">+</span>
+                            <span class="op-name">Vector Addition</span>
+                        </button>
+                        <button class="op-btn" data-op="subtraction">
+                            <span class="op-symbol">−</span>
+                            <span class="op-name">Vector Subtraction</span>
+                        </button>
+                        <button class="op-btn" data-op="inner">
+                            <span class="op-symbol">⋅</span>
+                            <span class="op-name">Inner Product</span>
+                        </button>
+                        <button class="op-btn" data-op="outer">
+                            <span class="op-symbol">∧</span>
+                            <span class="op-name">Outer Product</span>
+                        </button>
+                        <button class="op-btn" data-op="geometric">
+                            <span class="op-symbol">Geometric</span>
+                            <span class="op-name">Geometric Product</span>
+                        </button>
+                        <button class="op-btn" data-op="rotor">
+                            <span class="op-symbol">R</span>
+                            <span class="op-name">Rotor Rotation</span>
+                        </button>
+                        <button class="op-btn" data-op="reflection">
+                            <span class="op-symbol">Ref</span>
+                            <span class="op-name">Reflection</span>
+                        </button>
+                        <button class="op-btn" data-op="projection">
+                            <span class="op-symbol">Proj</span>
+                            <span class="op-name">Projection</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Presets</h3>
+                    <div class="preset-grid">
+                        <button class="preset-btn" data-preset="rotation90">
+                            90° Rotation
+                        </button>
+                        <button class="preset-btn" data-preset="rotation45">
+                            45° Rotation
+                        </button>
+                        <button class="preset-btn" data-preset="perpendicular">
+                            Perpendicular Vectors
+                        </button>
+                        <button class="preset-btn" data-preset="parallel">
+                            Parallel Vectors
+                        </button>
+                        <button class="preset-btn" data-preset="reflection">
+                            Line Reflection
+                        </button>
+                        <button class="preset-btn" data-preset="bivector">
+                            Pure Bivector
+                        </button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Vector Controls</h3>
+                    <div class="vector-controls">
+                        <div class="vector-input-group">
+                            <label>Vector A:</label>
+                            <input type="number" id="vectorA-x" value="2" step="0.5" min="-5" max="5">
+                            <input type="number" id="vectorA-y" value="1" step="0.5" min="-5" max="5">
+                        </div>
+                        <div class="vector-input-group">
+                            <label>Vector B:</label>
+                            <input type="number" id="vectorB-x" value="1" step="0.5" min="-5" max="5">
+                            <input type="number" id="vectorB-y" value="2" step="0.5" min="-5" max="5">
+                        </div>
+                        <div class="vector-input-group" id="vectorC-group" style="display: none;">
+                            <label>Vector C:</label>
+                            <input type="number" id="vectorC-x" value="0" step="0.5" min="-5" max="5">
+                            <input type="number" id="vectorC-y" value="0" step="0.5" min="-5" max="5">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Animation</h3>
+                    <div class="animation-controls">
+                        <button class="anim-btn" id="animateBtn">
+                            <span>▶</span> Animate Operation
+                        </button>
+                        <div class="slider-group">
+                            <label>Animation Speed:</label>
+                            <input type="range" id="speedSlider" min="0.1" max="2" step="0.1" value="1">
+                            <span id="speedValue">1.0x</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Display Options</h3>
+                    <div class="display-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showGrid" checked>
+                            Show Grid
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showLabels" checked>
+                            Show Labels
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showComponents" checked>
+                            Show Components
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showAngles" checked>
+                            Show Angles
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <h3>Current Operation</h3>
+                <div id="operationInfo">
+                    <div class="operation-title">Vector Addition</div>
+                    <div class="operation-description">
+                        Combines two vectors using the parallelogram rule. The result is
+                        the diagonal of the parallelogram formed by the two vectors.
+                    </div>
+                    <div class="operation-formula">
+                        C = A + B
+                    </div>
+                    <div class="mathematical-detail">
+                        <strong>Grade:</strong> 1 (vector)<br>
+                        <strong>Commutative:</strong> Yes<br>
+                        <strong>Associative:</strong> Yes
+                    </div>
+                </div>
+
+                <h3>Mathematical Background</h3>
+                <div class="math-background">
+                    <p><strong>Geometric Algebra</strong> extends vector algebra with blades of different grades:</p>
+                    <ul>
+                        <li><strong>Grade 0 (Scalar):</strong> Pure numbers, magnitude without direction</li>
+                        <li><strong>Grade 1 (Vector):</strong> Directed lengths, e₁ and e₂ basis</li>
+                        <li><strong>Grade 2 (Bivector):</strong> Directed areas/rotations, e₁∧e₂ basis</li>
+                        <li><strong>Grade 3 (Trivector):</strong> Directed volumes (in 3D)</li>
+                    </ul>
+                    <p>The <strong>Geometric Product</strong> combines inner (dot) and outer (wedge) products:</p>
+                    <div class="formula">
+                        ab = a·b + a∧b
+                    </div>
+                    <p><strong>Rotors</strong> generalize quaternions: R = exp(-θB/2) where B is a bivector</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Part of the <a href="https://constraint-theory.superinstance.ai">Constraint Theory</a> Research Project</p>
+            <p>Visualizing the algebraic structure of geometric constraints</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

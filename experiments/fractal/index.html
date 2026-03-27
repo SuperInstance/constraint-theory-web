@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fractal Dimension Calculator | Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fractal Dimension Calculator</h1>
+            <p class="subtitle">Explore how geometric constraints create complexity at every scale</p>
+        </header>
+
+        <main>
+            <div class="control-panel">
+                <div class="control-section">
+                    <h3>Fractal Type</h3>
+                    <select id="fractalType">
+                        <option value="sierpinski">Sierpinski Triangle</option>
+                        <option value="koch">Koch Snowflake</option>
+                        <option value="mandelbrot">Mandelbrot Set</option>
+                        <option value="julia">Julia Set</option>
+                        <option value="barnsley">Barnsley Fern</option>
+                        <option value="dragon">Dragon Curve</option>
+                        <option value="lsystem">Custom L-System</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <h3>Generation Parameters</h3>
+                    <div class="control-row">
+                        <label for="iterations">
+                            Iterations: <span id="iterationsValue">5</span>
+                        </label>
+                        <input type="range" id="iterations" min="1" max="15" value="5">
+                    </div>
+
+                    <div class="control-row">
+                        <label for="zoom">
+                            Zoom: <span id="zoomValue">1.0</span>x
+                        </label>
+                        <input type="range" id="zoom" min="0.5" max="10" step="0.1" value="1">
+                    </div>
+
+                    <div class="control-row" id="juliaParams" style="display: none;">
+                        <label>Julia Constant (c):</label>
+                        <div class="complex-input">
+                            <input type="number" id="juliaReal" value="-0.7" step="0.01">
+                            <span>+</span>
+                            <input type="number" id="juliaImag" value="0.27015" step="0.01">
+                            <span>i</span>
+                        </div>
+                    </div>
+
+                    <div class="control-row" id="lsystemParams" style="display: none;">
+                        <label for="axiom">Axiom:</label>
+                        <input type="text" id="axiom" value="F">
+                        <label for="rules">Rules:</label>
+                        <input type="text" id="rules" value="F=F+F-F-F+F">
+                        <label for="angle">Angle:</label>
+                        <input type="number" id="angle" value="90" step="15">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Box-Counting Dimension</h3>
+                    <div class="control-row">
+                        <label for="minBoxSize">
+                            Min Box Size: <span id="minBoxSizeValue">2</span>px
+                        </label>
+                        <input type="range" id="minBoxSize" min="1" max="10" value="2">
+                    </div>
+
+                    <div class="control-row">
+                        <label for="maxBoxSize">
+                            Max Box Size: <span id="maxBoxSizeValue">64</span>px
+                        </label>
+                        <input type="range" id="maxBoxSize" min="20" max="200" value="64">
+                    </div>
+
+                    <div class="control-row">
+                        <label for="boxScales">
+                            Scale Count: <span id="boxScalesValue">8</span>
+                        </label>
+                        <input type="range" id="boxScales" min="3" max="15" value="8">
+                    </div>
+
+                    <button id="calculateDimension" class="btn-primary">
+                        Calculate Dimension
+                    </button>
+
+                    <button id="toggleGrid" class="btn-secondary">
+                        Toggle Grid Overlay
+                    </button>
+
+                    <button id="animateGrowth" class="btn-secondary">
+                        Animate Growth
+                    </button>
+                </div>
+
+                <div class="control-section">
+                    <h3>Visualization</h3>
+                    <div class="control-row">
+                        <label for="colorScheme">Color Scheme:</label>
+                        <select id="colorScheme">
+                            <option value="classic">Classic</option>
+                            <option value="fire">Fire</option>
+                            <option value="ocean">Ocean</option>
+                            <option value="monochrome">Monochrome</option>
+                            <option value="rainbow">Rainbow</option>
+                        </select>
+                    </div>
+
+                    <div class="control-row">
+                        <label for="showGlow">
+                            <input type="checkbox" id="showGlow" checked>
+                            Glow Effect
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Actions</h3>
+                    <button id="generate" class="btn-primary">Generate Fractal</button>
+                    <button id="reset" class="btn-secondary">Reset View</button>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="fractalCanvas" width="800" height="600"></canvas>
+                <canvas id="gridCanvas" width="800" height="600" class="overlay"></canvas>
+            </div>
+
+            <div class="results-panel">
+                <h3>Dimension Analysis</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Calculated Dimension</div>
+                        <div class="stat-value" id="calculatedDim">-</div>
+                        <div class="stat-description">
+                            D = lim(log(N(ε))/log(1/ε)) as ε→0
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Theoretical Dimension</div>
+                        <div class="stat-value" id="theoreticalDim">-</div>
+                        <div class="stat-description" id="theoreticalDesc">
+                            Known value for this fractal
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Error</div>
+                        <div class="stat-value" id="dimensionError">-</div>
+                        <div class="stat-description">
+                            |calculated - theoretical|
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Boxes Analyzed</div>
+                        <div class="stat-value" id="boxesAnalyzed">-</div>
+                        <div class="stat-description">
+                            Total boxes across all scales
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">R² Value</div>
+                        <div class="stat-value" id="rSquared">-</div>
+                        <div class="stat-description">
+                            Fit quality of log-log regression
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Rendering Time</div>
+                        <div class="stat-value" id="renderTime">-</div>
+                        <div class="stat-description">
+                            Time to generate fractal
+                        </div>
+                    </div>
+                </div>
+
+                <div class="log-log-plot">
+                    <h4>Log-Log Plot: log(N) vs log(1/ε)</h4>
+                    <canvas id="logLogCanvas" width="400" height="300"></canvas>
+                    <div class="plot-legend">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #00ff88;"></span>
+                            Data Points
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #ff6b6b;"></span>
+                            Best Fit Line
+                        </div>
+                    </div>
+                </div>
+
+                <div class="formula-display">
+                    <h4>Box-Counting Dimension Formula</h4>
+                    <div class="formula">
+                        D = lim<sub>ε→0</sub> (log(N(ε)) / log(1/ε))
+                    </div>
+                    <div class="formula-explanation">
+                        Where N(ε) is the number of boxes of size ε needed to cover the fractal
+                    </div>
+                </div>
+
+                <div class="constraint-insight">
+                    <h4>Connection to Constraint Theory</h4>
+                    <p id="constraintInsight">
+                        Fractals emerge from simple geometric constraints applied recursively.
+                        The non-integer dimension reflects how the constraint system fills space
+                        more efficiently than a 1D line but less completely than a 2D area.
+                    </p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Constraint Theory Research | Geometric Substrate for Cellular Agents</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

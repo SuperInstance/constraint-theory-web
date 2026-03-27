@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tree of Thoughts Simulator - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Tree of Thoughts Simulator</h1>
+            <p class="subtitle">Constraint Theory: Deterministic Reasoning Paths</p>
+        </header>
+
+        <div class="main-content">
+            <div class="control-panel">
+                <div class="control-section">
+                    <h3>Search Strategy</h3>
+                    <div class="button-group">
+                        <button class="strategy-btn active" data-strategy="bfs">BFS</button>
+                        <button class="strategy-btn" data-strategy="dfs">DFS</button>
+                        <button class="strategy-btn" data-strategy="best-first">Best-First</button>
+                        <button class="strategy-btn" data-strategy="astar">A*</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Problem Type</h3>
+                    <select id="problem-type">
+                        <option value="maze">8-Puzzle</option>
+                        <option value="pathfinding">Path Finding</option>
+                        <option value="math">Math Proof</option>
+                        <option value="csp">Constraint Satisfaction</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <h3>Controls</h3>
+                    <div class="control-row">
+                        <label for="speed">Speed:</label>
+                        <input type="range" id="speed" min="1" max="100" value="50">
+                    </div>
+                    <div class="button-row">
+                        <button id="start-btn" class="action-btn primary">Start</button>
+                        <button id="pause-btn" class="action-btn" disabled>Pause</button>
+                        <button id="reset-btn" class="action-btn">Reset</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Show/Hide</h3>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" checked data-show="explored"> Explored Nodes</label>
+                        <label><input type="checkbox" checked data-show="pruned"> Pruned Branches</label>
+                        <label><input type="checkbox" checked data-show="optimal"> Optimal Path</label>
+                        <label><input type="checkbox" checked data-show="constraints"> Constraints</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="tree-canvas"></canvas>
+                <div class="canvas-overlay">
+                    <div class="stats-panel">
+                        <div class="stat-item">
+                            <span class="stat-label">State:</span>
+                            <span id="current-state" class="stat-value">Ready</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Nodes Explored:</span>
+                            <span id="nodes-explored" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Branches Pruned:</span>
+                            <span id="branches-pruned" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Solution Depth:</span>
+                            <span id="solution-depth" class="stat-value">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="legend-panel">
+            <h3>Legend</h3>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <div class="legend-color unexplored"></div>
+                    <span>Unexplored</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color exploring"></div>
+                    <span>Exploring</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color explored"></div>
+                    <span>Explored</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color pruned"></div>
+                    <span>Pruned (Constraint Violation)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color optimal"></div>
+                    <span>Optimal Path</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color goal"></div>
+                    <span>Goal State</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h3>Current Node</h3>
+            <div id="node-info">
+                <p class="info-text">Click on a node to see details</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

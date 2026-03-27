@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Constraint Theory — Interactive Demos</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #0f1117;
+      color: #e0e0e6;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    a { color: #7cacf8; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 4rem 1.5rem 2rem;
+      flex: 1;
+    }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+    .subtitle {
+      color: #9a9aa8;
+      font-size: 1rem;
+      margin-bottom: 2.5rem;
+      max-width: 560px;
+    }
+    .cards {
+      display: grid;
+      gap: 1rem;
+    }
+    .card {
+      display: block;
+      background: #1a1b26;
+      border: 1px solid #2a2b3a;
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      transition: border-color 0.15s, background 0.15s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .card:hover {
+      border-color: #7cacf8;
+      background: #1e1f2e;
+      text-decoration: none;
+    }
+    .card h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      color: #f0f0f5;
+    }
+    .card p {
+      font-size: 0.9rem;
+      color: #9a9aa8;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.85rem;
+      color: #6a6a78;
+      border-top: 1px solid #1a1b26;
+    }
+    @media (min-width: 520px) {
+      main { padding-top: 6rem; }
+      h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Constraint Theory</h1>
+    <p class="subtitle">
+      A computational framework for constraint-based geometry — expressing
+      spatial relationships through Pythagorean triples, KD-trees, and
+      multi-agent coordination. Explore the interactive demos below.
+    </p>
+
+    <div class="cards">
+      <a class="card" href="simulators/pythagorean/">
+        <h2>Pythagorean Snapping</h2>
+        <p>Core demo: visualize how geometric constraints snap to
+          Pythagorean-triple lattice points in real time.</p>
+      </a>
+
+      <a class="card" href="simulators/kdtree/">
+        <h2>KD-Tree Spatial Queries</h2>
+        <p>Explore nearest-neighbor and range queries over dynamic point
+          sets using an interactive KD-tree.</p>
+      </a>
+
+      <a class="card" href="simulators/swarm/">
+        <h2>Swarm Coordination</h2>
+        <p>Watch autonomous agents self-organize under constraint fields,
+          balancing cohesion, separation, and alignment.</p>
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    <a href="https://github.com/SuperInstance/Constraint-Theory">GitHub</a>
+    &middot; More experiments in <a href="experiments/">experiments/</a>
+  </footer>
+</body>
+</html>

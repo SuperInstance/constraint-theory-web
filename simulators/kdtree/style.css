@@ -1,0 +1,423 @@
+/**
+ * KD-Tree Visualization Styles
+ * Dark theme for Constraint Theory project
+ * https://constraint-theory.superinstance.ai
+ */
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+    color: #e0e0ff;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* ============================================
+   CANVAS STYLES
+   ============================================ */
+
+.canvas-container {
+    background: rgba(15, 15, 25, 0.9);
+    border: 1px solid rgba(68, 102, 255, 0.3);
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.canvas-container:hover {
+    border-color: rgba(68, 102, 255, 0.5);
+    box-shadow: 0 0 30px rgba(68, 102, 255, 0.2);
+}
+
+#kdtreeCanvas {
+    display: block;
+    cursor: crosshair;
+    border-radius: 8px;
+}
+
+/* ============================================
+   CONTROL PANEL STYLES
+   ============================================ */
+
+.control-panel {
+    background: rgba(20, 20, 35, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(68, 102, 255, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.control-panel:hover {
+    border-color: rgba(68, 102, 255, 0.5);
+}
+
+.control-panel h3 {
+    color: #a5b4fc;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(68, 102, 255, 0.2);
+    padding-bottom: 0.5rem;
+}
+
+/* ============================================
+   BUTTON STYLES
+   ============================================ */
+
+.btn-primary {
+    background: linear-gradient(135deg, #4466ff 0%, #6644ff 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(68, 102, 255, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: rgba(68, 102, 255, 0.2);
+    border: 1px solid rgba(68, 102, 255, 0.5);
+    color: #e0e0ff;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.btn-secondary:hover {
+    background: rgba(68, 102, 255, 0.3);
+    border-color: rgba(68, 102, 255, 0.8);
+    transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+    transform: translateY(0);
+}
+
+/* ============================================
+   STAT CARD STYLES
+   ============================================ */
+
+.stat-card {
+    background: rgba(20, 20, 35, 0.6);
+    border: 1px solid rgba(68, 102, 255, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    border-color: rgba(68, 102, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.stat-card .text-2xl {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.stat-card .text-xs {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ============================================
+   MODE INDICATOR
+   ============================================ */
+
+.mode-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 6px 12px;
+    background: rgba(68, 102, 255, 0.2);
+    border: 1px solid rgba(68, 102, 255, 0.5);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #e0e0ff;
+    font-weight: 500;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+.mode-indicator:hover {
+    background: rgba(68, 102, 255, 0.3);
+    border-color: rgba(68, 102, 255, 0.7);
+}
+
+/* ============================================
+   SLIDER STYLES
+   ============================================ */
+
+.slider-container {
+    margin-bottom: 1rem;
+}
+
+.slider-container label {
+    display: block;
+    font-size: 0.875rem;
+    color: #9ca3af;
+    margin-bottom: 0.5rem;
+}
+
+.slider-container input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    background: rgba(68, 102, 255, 0.3);
+    border-radius: 3px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.slider-container input[type="range"]:hover {
+    background: rgba(68, 102, 255, 0.4);
+}
+
+.slider-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #4466ff;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.slider-container input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 10px rgba(68, 102, 255, 0.5);
+}
+
+.slider-container input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #4466ff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.slider-container input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 10px rgba(68, 102, 255, 0.5);
+}
+
+/* ============================================
+   INFO PANEL STYLES
+   ============================================ */
+
+#infoPanel {
+    font-size: 0.875rem;
+    color: #9ca3af;
+    line-height: 1.6;
+}
+
+#infoPanel strong {
+    color: #e0e0ff;
+    font-weight: 600;
+}
+
+#infoPanel p {
+    margin-bottom: 0.75rem;
+}
+
+#infoPanel p:last-child {
+    margin-bottom: 0;
+}
+
+/* ============================================
+   ANIMATION STYLES
+   ============================================ */
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.animating {
+    animation: pulse 0.5s ease-in-out;
+}
+
+/* ============================================
+   RESPONSIVE STYLES
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .control-panel {
+        padding: 1rem;
+    }
+
+    .stat-card {
+        padding: 0.75rem;
+    }
+
+    .stat-card .text-2xl {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .control-panel h3 {
+        font-size: 1rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.875rem;
+    }
+
+    .mode-indicator {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+}
+
+/* ============================================
+   ACCESSIBILITY STYLES
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus styles for keyboard navigation */
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid #4466ff;
+    outline-offset: 2px;
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+    body {
+        background: white;
+        color: black;
+    }
+
+    .control-panel,
+    .mode-indicator {
+        background: white;
+        border: 1px solid #ccc;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        background: #eee;
+        color: black;
+    }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.text-blue-400 {
+    color: #60a5fa;
+}
+
+.text-blue-300 {
+    color: #93c5fd;
+}
+
+.text-purple-400 {
+    color: #c084fc;
+}
+
+.text-purple-300 {
+    color: #d8b4fe;
+}
+
+.text-green-400 {
+    color: #4ade80;
+}
+
+.text-yellow-400 {
+    color: #facc15;
+}
+
+.text-gray-300 {
+    color: #d1d5db;
+}
+
+.text-gray-400 {
+    color: #9ca3af;
+}
+
+.bg-gradient-to-r {
+    background-image: linear-gradient(to right, var(--tw-gradient-stops));
+}
+
+.from-blue-400 {
+    --tw-gradient-from: #60a5fa;
+    --tw-gradient-to: rgb(96 165 250 / 0);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.to-purple-400 {
+    --tw-gradient-to: #c084fc;
+}
+
+.bg-clip-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.text-transparent {
+    color: transparent;
+}
+
+.hover\:text-blue-300:hover {
+    color: #93c5fd;
+}
+
+.transition-colors {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}

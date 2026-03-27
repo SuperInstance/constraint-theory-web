@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Max-Flow Min-Cut Simulator | Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Max-Flow Min-Cut Simulator</h1>
+            <p class="subtitle">Flow Network Optimization with Constraint Visualization</p>
+        </header>
+
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="flowCanvas"></canvas>
+                <div class="canvas-overlay">
+                    <div class="overlay-text">
+                        <p>Click empty space to add node</p>
+                        <p>Drag between nodes to add edge</p>
+                        <p>Right-click to delete</p>
+                        <p>Click node to set source/sink</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="control-section">
+                    <h3>Network Presets</h3>
+                    <div class="button-group">
+                        <button id="simplePreset" class="btn btn-primary">Simple</button>
+                        <button id="gridPreset" class="btn btn-primary">Grid</button>
+                        <button id="treePreset" class="btn btn-primary">Binary Tree</button>
+                        <button id="randomPreset" class="btn btn-primary">Random</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Algorithm Control</h3>
+                    <div class="button-group">
+                        <button id="stepForward" class="btn btn-success">Step Forward</button>
+                        <button id="runAuto" class="btn btn-success">Run Auto</button>
+                        <button id="pause" class="btn btn-warning">Pause</button>
+                        <button id="reset" class="btn btn-danger">Reset</button>
+                    </div>
+                    <div class="slider-group">
+                        <label for="speedSlider">Animation Speed:</label>
+                        <input type="range" id="speedSlider" min="1" max="10" value="5">
+                        <span id="speedValue">5x</span>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Display Options</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showCapacities" checked>
+                            Show Capacities
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showFlow" checked>
+                            Show Flow Amounts
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showResidual">
+                            Show Residual Graph
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showMinCut">
+                            Show Min-Cut
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showParticles" checked>
+                            Show Flow Particles
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Max Flow:</span>
+                            <span id="maxFlowValue" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Min Cut:</span>
+                            <span id="minCutValue" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Augmenting Paths:</span>
+                            <span id="pathsFound" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Iterations:</span>
+                            <span id="iterations" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Algorithm:</span>
+                            <span id="algorithmType" class="stat-value">Edmonds-Karp</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Current Path</h3>
+                    <div id="currentPath" class="path-display">
+                        No augmenting path found
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Legend</h3>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <span class="legend-color source"></span>
+                            <span>Source Node</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color sink"></span>
+                            <span>Sink Node</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color normal"></span>
+                            <span>Normal Node</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color saturated"></span>
+                            <span>Saturated Edge</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color mincut"></span>
+                            <span>Min-Cut Edge</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color augmenting"></span>
+                            <span>Augmenting Path</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Constraint Theory Research | Max-Flow Min-Cut Theorem: Maximum flow equals minimum cut capacity</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

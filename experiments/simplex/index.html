@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5D Simplex Projection - Constraint Theory Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>5D Simplex Projection Simulator</h1>
+            <p class="subtitle">Interactive visualization of N-dimensional simplex geometry projected into 2D/3D</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Canvas Section -->
+            <div class="canvas-container">
+                <canvas id="simplexCanvas" width="800" height="600"></canvas>
+                <div class="canvas-info">
+                    <span id="dimensionLabel">5-Simplex</span>
+                    <span id="vertexCount">6 vertices, 15 edges, 20 faces</span>
+                </div>
+            </div>
+
+            <!-- Controls Panel -->
+            <div class="controls-panel">
+                <div class="control-section">
+                    <h3>Dimension Selection</h3>
+                    <div class="dimension-buttons">
+                        <button class="dim-btn" data-dim="2">2D (Triangle)</button>
+                        <button class="dim-btn" data-dim="3">3D (Tetrahedron)</button>
+                        <button class="dim-btn" data-dim="4">4D</button>
+                        <button class="dim-btn active" data-dim="5">5D</button>
+                        <button class="dim-btn" data-dim="6">6D</button>
+                        <button class="dim-btn" data-dim="7">7D</button>
+                        <button class="dim-btn" data-dim="8">8D</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Rotation Controls</h3>
+                    <div id="rotationControls" class="rotation-controls">
+                        <!-- Dynamically populated based on dimension -->
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Projection Mode</h3>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="projection" value="perspective" checked>
+                            Perspective
+                        </label>
+                        <label>
+                            <input type="radio" name="projection" value="orthographic">
+                            Orthographic
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Display Options</h3>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="showVertices" checked>
+                            Show Vertices
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showEdges" checked>
+                            Show Edges
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showFaces" checked>
+                            Show Faces
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showLabels">
+                            Show Labels
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showRotationPlanes">
+                            Show Rotation Planes
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Animation</h3>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="autoRotate">
+                            Auto-Rotate All
+                        </label>
+                        <label>
+                            <input type="checkbox" id="morphDimension">
+                            Morph Between Dimensions
+                        </label>
+                    </div>
+                    <div class="slider-group">
+                        <label>Morph Speed:</label>
+                        <input type="range" id="morphSpeed" min="0.1" max="2" step="0.1" value="0.5">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Camera</h3>
+                    <div class="slider-group">
+                        <label>Distance:</label>
+                        <input type="range" id="cameraDistance" min="2" max="10" step="0.1" value="4">
+                    </div>
+                    <div class="slider-group">
+                        <label>Field of View:</label>
+                        <input type="range" id="fieldOfView" min="30" max="120" step="5" value="60">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <button id="resetBtn" class="reset-btn">Reset All</button>
+                </div>
+            </div>
+
+            <!-- Info Panel -->
+            <div class="info-panel">
+                <h3>Simplex Properties</h3>
+                <div class="property-grid">
+                    <div class="property-item">
+                        <span class="property-label">Dimension:</span>
+                        <span class="property-value" id="propDimension">5</span>
+                    </div>
+                    <div class="property-item">
+                        <span class="property-label">Vertices:</span>
+                        <span class="property-value" id="propVertices">6</span>
+                    </div>
+                    <div class="property-item">
+                        <span class="property-label">Edges:</span>
+                        <span class="property-value" id="propEdges">15</span>
+                    </div>
+                    <div class="property-item">
+                        <span class="property-label">Faces:</span>
+                        <span class="property-value" id="propFaces">20</span>
+                    </div>
+                    <div class="property-item">
+                        <span class="property-label">Rotation Planes:</span>
+                        <span class="property-value" id="propPlanes">10</span>
+                    </div>
+                    <div class="property-item">
+                        <span class="property-label">Facets:</span>
+                        <span class="property-value" id="propFacets">6</span>
+                    </div>
+                </div>
+
+                <div class="formula-section">
+                    <h4>Volume Formula (n-simplex with edge length a):</h4>
+                    <div class="formula" id="volumeFormula">
+                        V = (√5 / 96√3) × a⁵ ≈ 0.0147 × a⁵
+                    </div>
+                </div>
+
+                <div class="explanation-section">
+                    <h4>What is a Simplex?</h4>
+                    <p>A simplex is the generalization of the notion of a triangle or tetrahedron to arbitrary dimensions. It is the smallest possible convex set containing a given set of points.</p>
+
+                    <h4>Why 5D?</h4>
+                    <p>In Constraint Theory, the 5-simplex represents the minimal constraint structure in 5-dimensional space. The dodecet encoding system uses 5D geometry to efficiently encode 12-bit geometric information.</p>
+
+                    <h4>Rotation in 5D</h4>
+                    <p>Unlike 3D (where rotation is around an axis), rotation in 5D happens in <strong>planes</strong>. A 5D simplex has C(5,2) = 10 independent rotation planes!</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Constraint Theory Research Simulator | Part of the SuperInstance Cellular Agent Infrastructure</p>
+            <p>Explore geometric constraints in higher dimensions</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

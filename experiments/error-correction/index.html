@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error-Correcting Codes Simulator | Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Error-Correcting Codes Simulator</h1>
+            <p class="subtitle">Geometric Constraints for Error Detection & Correction</p>
+        </header>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="codeType">Code Type:</label>
+                <select id="codeType">
+                    <option value="hamming74">Hamming(7,4) - 1 error correction</option>
+                    <option value="hamming1511">Hamming(15,11) - 1 error correction</option>
+                    <option value="repetition31">Repetition(3,1) - Majority vote</option>
+                    <option value="parity">Simple Parity - Detection only</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="messageInput">Message (binary):</label>
+                <input type="text" id="messageInput" value="1011" maxlength="11">
+            </div>
+
+            <div class="control-group">
+                <label for="noiseSlider">Channel Noise: <span id="noiseValue">0</span>%</label>
+                <input type="range" id="noiseSlider" min="0" max="50" value="0">
+            </div>
+
+            <div class="control-group">
+                <button id="encodeBtn">Encode</button>
+                <button id="transmitBtn">Transmit (Add Noise)</button>
+                <button id="decodeBtn">Decode</button>
+                <button id="resetBtn">Reset</button>
+            </div>
+
+            <div class="control-group">
+                <button id="stepEncodeBtn" class="step-btn">Step Encode</button>
+                <button id="stepDecodeBtn" class="step-btn">Step Decode</button>
+                <button id="animateBtn" class="step-btn">Animate All</button>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat">
+                <span class="stat-label">Message Length:</span>
+                <span class="stat-value" id="messageLength">4</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Code Word Length:</span>
+                <span class="stat-value" id="codeWordLength">7</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Overhead:</span>
+                <span class="stat-value" id="overhead">75%</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Errors Detected:</span>
+                <span class="stat-value" id="errorsDetected">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Errors Corrected:</span>
+                <span class="stat-value" id="errorsCorrected">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">BER:</span>
+                <span class="stat-value" id="ber">0.000</span>
+            </div>
+        </div>
+
+        <div class="visualization-container">
+            <div class="viz-panel">
+                <h3>Encoding Process</h3>
+                <canvas id="encodingCanvas" width="400" height="300"></canvas>
+                <div class="bits-display" id="encodingBits">
+                    <div class="bit-group">
+                        <span class="group-label">Message:</span>
+                        <div class="bits" id="messageBits">_ _ _ _</div>
+                    </div>
+                    <div class="bit-group">
+                        <span class="group-label">Parity Bits:</span>
+                        <div class="bits" id="parityBits">_ _ _</div>
+                    </div>
+                    <div class="bit-group">
+                        <span class="group-label">Code Word:</span>
+                        <div class="bits code-word" id="codeWord">_ _ _ _ _ _ _</div>
+                    </div>
+                </div>
+                <div class="explanation" id="encodingExplanation">
+                    Enter a message and click "Encode" to see how parity bits are calculated.
+                </div>
+            </div>
+
+            <div class="viz-panel">
+                <h3>Code Space Visualization</h3>
+                <canvas id="codeSpaceCanvas" width="400" height="300"></canvas>
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="legend-color valid"></span>
+                        <span>Valid Code Word</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color invalid"></span>
+                        <span>Invalid Word</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color received"></span>
+                        <span>Received Word</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color corrected"></span>
+                        <span>Corrected Word</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="visualization-container">
+            <div class="viz-panel">
+                <h3>Channel Transmission</h3>
+                <canvas id="channelCanvas" width="400" height="200"></canvas>
+                <div class="bits-display" id="channelBits">
+                    <div class="bit-group">
+                        <span class="group-label">Sent:</span>
+                        <div class="bits" id="sentBits">_ _ _ _ _ _ _</div>
+                    </div>
+                    <div class="bit-group">
+                        <span class="group-label">Received:</span>
+                        <div class="bits" id="receivedBits">_ _ _ _ _ _ _</div>
+                    </div>
+                    <div class="bit-group">
+                        <span class="group-label">Errors:</span>
+                        <div class="bits" id="errorBits">_ _ _ _ _ _ _</div>
+                    </div>
+                </div>
+                <div class="explanation" id="channelExplanation">
+                    Click "Transmit" to simulate channel noise and bit flips.
+                </div>
+            </div>
+
+            <div class="viz-panel">
+                <h3>Decoding Process</h3>
+                <canvas id="decodingCanvas" width="400" height="300"></canvas>
+                <div class="bits-display" id="decodingBits">
+                    <div class="bit-group">
+                        <span class="group-label">Syndrome:</span>
+                        <div class="bits syndrome" id="syndromeBits">_ _ _</div>
+                    </div>
+                    <div class="bit-group">
+                        <span class="group-label">Error Position:</span>
+                        <span class="position" id="errorPosition">-</span>
+                    </div>
+                    <div class="bit-group">
+                        <span class="group-label">Corrected:</span>
+                        <div class="bits corrected" id="correctedBits">_ _ _ _ _ _ _</div>
+                    </div>
+                    <div class="bit-group">
+                        <span class="group-label">Decoded Message:</span>
+                        <div class="bits decoded" id="decodedMessage">_ _ _ _</div>
+                    </div>
+                </div>
+                <div class="explanation" id="decodingExplanation">
+                    Click "Decode" to see how errors are detected and corrected using syndrome calculation.
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h3>How Error-Correcting Codes Work</h3>
+            <div class="info-content">
+                <div class="info-section">
+                    <h4>Geometric Constraints</h4>
+                    <p>Error-correcting codes add redundancy using geometric constraints. Valid code words occupy specific positions in a constrained subspace. When errors occur, the received word "violates" these constraints, allowing detection and correction.</p>
+                </div>
+                <div class="info-section">
+                    <h4>Hamming Distance</h4>
+                    <p>The Hamming distance between two code words is the number of bit positions where they differ. A code can detect up to d-1 errors and correct up to ⌊(d-1)/2⌋ errors, where d is the minimum Hamming distance between any two valid code words.</p>
+                </div>
+                <div class="info-section">
+                    <h4>Parity Constraints</h4>
+                    <p>Each parity bit enforces a constraint: the sum of bits in specific positions must be even (or odd). When constraints are violated, the pattern of violations (syndrome) identifies the error location.</p>
+                </div>
+                <div class="info-section">
+                    <h4>Code Types</h4>
+                    <ul>
+                        <li><strong>Hamming(7,4):</strong> 4 data bits + 3 parity bits = 7 total. Can correct 1 error.</li>
+                        <li><strong>Hamming(15,11):</strong> 11 data bits + 4 parity bits = 15 total. Can correct 1 error.</li>
+                        <li><strong>Repetition(3,1):</strong> Repeat each bit 3 times. Majority vote decoding.</li>
+                        <li><strong>Simple Parity:</strong> Add 1 parity bit. Can detect 1 error, cannot correct.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Constraint Theory Research Project | Interactive Error-Correcting Codes Simulator</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

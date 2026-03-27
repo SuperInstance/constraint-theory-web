@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discrete Holonomy Simulator - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Discrete Holonomy Simulator</h1>
+            <p class="subtitle">Parallel Transport on Platonic Symmetries</p>
+        </header>
+
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="holonomyCanvas"></canvas>
+                <div class="canvas-overlay">
+                    <div id="holonomyDisplay" class="holonomy-display">
+                        <div class="holonomy-value">Holonomy: <span id="holonomyAngle">0.00</span>°</div>
+                        <div class="holonomy-status" id="holonomyStatus">Closed Loop</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label class="control-label">Platonic Solid</label>
+                    <select id="solidType" class="control-select">
+                        <option value="tetrahedron">Tetrahedron (4 faces)</option>
+                        <option value="cube">Cube (6 faces)</option>
+                        <option value="octahedron">Octahedron (8 faces)</option>
+                        <option value="dodecahedron">Dodecahedron (12 faces)</option>
+                        <option value="icosahedron">Icosahedron (20 faces)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Transport Path</label>
+                    <select id="pathType" class="control-select">
+                        <option value="triangular">Triangular Loop</option>
+                        <option value="square">Square Loop</option>
+                        <option value="pentagonal">Pentagonal Loop</option>
+                        <option value="face">Face Boundary</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Options</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showPath" checked>
+                            <span>Show Transport Path</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showVectors" checked>
+                            <span>Show Vectors</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showHolonomy" checked>
+                            <span>Show Holonomy Gap</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="animate" checked>
+                            <span>Animate Transport</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showParticles" checked>
+                            <span>Show Particle Trail</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Animation Speed: <span id="speedValue">1.0x</span></label>
+                    <input type="range" id="speedSlider" min="0.1" max="3" step="0.1" value="1" class="control-slider">
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Vector Size: <span id="vectorSizeValue">1.0</span></label>
+                    <input type="range" id="vectorSizeSlider" min="0.5" max="2" step="0.1" value="1" class="control-slider">
+                </div>
+
+                <div class="control-group">
+                    <button id="resetBtn" class="btn btn-primary">Reset Simulation</button>
+                    <button id="autoRotateBtn" class="btn btn-secondary">Auto-Rotate: OFF</button>
+                </div>
+
+                <div class="info-panel">
+                    <h3>Symmetry Information</h3>
+                    <div id="symmetryInfo" class="info-content">
+                        <p><strong>Solid:</strong> <span id="solidName">Tetrahedron</span></p>
+                        <p><strong>Symmetry Group:</strong> <span id="symmetryGroup">T<sub>d</sub></span></p>
+                        <p><strong>Faces:</strong> <span id="faceCount">4</span></p>
+                        <p><strong>Edges:</strong> <span id="edgeCount">6</span></p>
+                        <p><strong>Vertices:</strong> <span id="vertexCount">4</span></p>
+                        <p><strong>Gaussian Curvature:</strong> <span id="curvature">Positive</span></p>
+                    </div>
+                </div>
+
+                <div class="explanation-panel">
+                    <h3>What is Holonomy?</h3>
+                    <div class="explanation-content">
+                        <p>When you parallel-transport a vector around a closed loop on a curved surface, it may not return to its original orientation. The angle between the start and end vectors is called the <strong>holonomy</strong>.</p>
+
+                        <div class="formula">
+                            Holonomy = ∫<sub>loop</sub> K dA
+                        </div>
+
+                        <p>Where K is Gaussian curvature and A is area. On positively curved surfaces (like spheres), vectors rotate clockwise. On negatively curved surfaces (like saddles), they rotate counterclockwise.</p>
+
+                        <h4>Key Concepts:</h4>
+                        <ul>
+                            <li><strong>Parallel Transport:</strong> Moving a vector while keeping it parallel to itself</li>
+                            <li><strong>Closed Loop:</strong> A path that returns to its starting point</li>
+                            <li><strong>Holonomy Gap:</strong> The difference between start and end orientations</li>
+                            <li><strong>Gaussian Curvature:</strong> Intrinsic curvature of the surface</li>
+                        </ul>
+
+                        <h4>Platonic Solids:</h4>
+                        <p>These five regular polyhedra exhibit discrete holonomy due to their angular defects at vertices. The holonomy relates to the symmetry group and the total curvature enclosed by the loop.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Constraint Theory Research | Discrete Holonomy Simulator</p>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

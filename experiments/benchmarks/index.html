@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Benchmarks - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Performance Benchmarks</h1>
+            <p class="subtitle">Comparing Constraint Theory vs Traditional Approaches</p>
+        </header>
+
+        <div class="controls">
+            <button id="runAllBtn" class="btn btn-primary">Run All Benchmarks</button>
+            <button id="stopBtn" class="btn btn-secondary">Stop</button>
+            <div class="status">
+                <span id="statusText">Ready</span>
+                <div class="spinner" id="spinner"></div>
+            </div>
+        </div>
+
+        <div class="chart-type-selector">
+            <button class="chart-type-btn active" data-type="bar">Bar Charts</button>
+            <button class="chart-type-btn" data-type="radar">Radar Chart</button>
+            <button class="chart-type-btn" data-type="table">Comparison Table</button>
+        </div>
+
+        <div id="chartsContainer" class="charts-container"></div>
+
+        <div id="radarChartContainer" class="radar-chart-container" style="display: none;">
+            <canvas id="radarChart"></canvas>
+        </div>
+
+        <div id="tableContainer" class="table-container" style="display: none;">
+            <table id="comparisonTable">
+                <thead>
+                    <tr>
+                        <th>Benchmark</th>
+                        <th>Constraint Theory</th>
+                        <th>Traditional</th>
+                        <th>Speedup</th>
+                        <th>Winner</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="benchmark-descriptions">
+            <h2>Benchmark Descriptions</h2>
+            <div class="description-grid">
+                <div class="description-card">
+                    <h3>Pythagorean Snapping vs MLP</h3>
+                    <p><strong>Test:</strong> Constraint satisfaction speed for snapping coordinates to geometric constraints.</p>
+                    <p><strong>Constraint Theory:</strong> Uses geometric constraints (Pythagorean theorem) for deterministic snapping.</p>
+                    <p><strong>Traditional:</strong> Uses Multi-Layer Perceptron (MLP) neural network for pattern matching.</p>
+                    <p><strong>Expected:</strong> Constraint theory is ~100x faster due to direct geometric calculation.</p>
+                </div>
+                <div class="description-card">
+                    <h3>KD-Tree vs Linear Search</h3>
+                    <p><strong>Test:</strong> Spatial query performance for finding nearest neighbors.</p>
+                    <p><strong>Constraint Theory:</strong> Uses KD-tree with O(log n) query complexity.</p>
+                    <p><strong>Traditional:</strong> Uses linear search with O(n) complexity.</p>
+                    <p><strong>Expected:</strong> KD-tree scales logarithmically, especially beneficial for large datasets.</p>
+                </div>
+                <div class="description-card">
+                    <h3>Geometric Constraint vs Force-Based</h3>
+                    <p><strong>Test:</strong> Physics simulation step time for constrained systems.</p>
+                    <p><strong>Constraint Theory:</strong> Uses geometric constraint solving (Lagrange multipliers).</p>
+                    <p><strong>Traditional:</strong> Uses force-based integration with penalty methods.</p>
+                    <p><strong>Expected:</strong> Geometric constraints are more stable and faster for stiff systems.</p>
+                </div>
+                <div class="description-card">
+                    <h3>Deterministic vs Stochastic</h3>
+                    <p><strong>Test:</strong> Output variance measured over multiple runs.</p>
+                    <p><strong>Constraint Theory:</strong> Deterministic output guarantee - same input always produces same output.</p>
+                    <p><strong>Traditional:</strong> Stochastic methods have inherent randomness.</p>
+                    <p><strong>Expected:</strong> Constraint theory has zero variance (0.0) vs traditional (0.1-1.0).</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary">
+            <h2>Performance Summary</h2>
+            <div class="summary-stats">
+                <div class="stat-card">
+                    <div class="stat-label">Average Speedup</div>
+                    <div class="stat-value" id="avgSpeedup">-</div>
+                    <div class="stat-unit">x faster</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Tests Run</div>
+                    <div class="stat-value" id="testsRun">0</div>
+                    <div class="stat-unit">benchmarks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Winner</div>
+                    <div class="stat-value" id="overallWinner">-</div>
+                    <div class="stat-unit">approach</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Operations</div>
+                    <div class="stat-value" id="totalOps">-</div>
+                    <div class="stat-unit">ops/sec</div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Constraint Theory Performance Benchmarks | Research Release</p>
+            <p class="disclaimer">These benchmarks demonstrate theoretical advantages. Real-world performance varies based on implementation and use case.</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FFT Signal Processing Simulator - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>FFT Signal Processing Simulator</h1>
+            <p class="subtitle">Exploring Geometric Constraints in Frequency Domain</p>
+            <div class="theory-box">
+                <p><strong>Fourier's Theorem:</strong> Any periodic signal can be decomposed into a sum of sine waves.</p>
+                <p><strong>Constraint Theory:</strong> The frequency domain representation is a set of geometric constraints that shape the signal.</p>
+            </div>
+        </header>
+
+        <main>
+            <!-- Signal Controls -->
+            <section class="controls-section">
+                <h2>Signal Controls</h2>
+
+                <div class="control-group">
+                    <label for="signalType">Signal Type:</label>
+                    <select id="signalType">
+                        <option value="sine">Sine Wave</option>
+                        <option value="square">Square Wave</option>
+                        <option value="sawtooth">Sawtooth Wave</option>
+                        <option value="triangle">Triangle Wave</option>
+                        <option value="composite">Composite Signal</option>
+                        <option value="custom">Custom Draw</option>
+                        <option value="noise">White Noise</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="baseFrequency">Base Frequency: <span id="freqValue">5</span> Hz</label>
+                    <input type="range" id="baseFrequency" min="1" max="50" value="5" step="1">
+                </div>
+
+                <div class="control-group">
+                    <label for="amplitude">Amplitude: <span id="ampValue">1.0</span></label>
+                    <input type="range" id="amplitude" min="0" max="2" value="1" step="0.1">
+                </div>
+
+                <div class="control-group">
+                    <label for="phase">Phase: <span id="phaseValue">0</span>°</label>
+                    <input type="range" id="phase" min="0" max="360" value="0" step="5">
+                </div>
+
+                <div class="control-group">
+                    <label for="sampleRate">Sample Rate: <span id="sampleRateValue">1000</span> Hz</label>
+                    <input type="range" id="sampleRate" min="100" max="2000" value="1000" step="100">
+                </div>
+
+                <div class="control-group">
+                    <label for="windowFunction">Window Function:</label>
+                    <select id="windowFunction">
+                        <option value="none">None (Rectangular)</option>
+                        <option value="hanning">Hanning</option>
+                        <option value="hamming">Hamming</option>
+                        <option value="blackman">Blackman</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Harmonics Controls -->
+            <section class="controls-section">
+                <h2>Harmonics</h2>
+                <div class="control-group">
+                    <label for="numHarmonics">Number of Harmonics: <span id="harmValue">5</span></label>
+                    <input type="range" id="numHarmonics" min="1" max="20" value="5" step="1">
+                </div>
+
+                <div id="harmonicControls" class="harmonic-controls">
+                    <!-- Dynamic harmonic controls will be inserted here -->
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="showHarmonics" checked>
+                        Show Individual Harmonics
+                    </label>
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="showEnvelope">
+                        Show Envelope
+                    </label>
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="animateDecomposition">
+                        Animate Decomposition
+                    </label>
+                </div>
+            </section>
+
+            <!-- Filter Controls -->
+            <section class="controls-section">
+                <h2>Filter</h2>
+                <div class="control-group">
+                    <label for="filterType">Filter Type:</label>
+                    <select id="filterType">
+                        <option value="none">None</option>
+                        <option value="lowpass">Low-Pass</option>
+                        <option value="highpass">High-Pass</option>
+                        <option value="bandpass">Band-Pass</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="cutoffFreq">Cutoff Frequency: <span id="cutoffValue">20</span> Hz</label>
+                    <input type="range" id="cutoffFreq" min="1" max="100" value="20" step="1">
+                </div>
+
+                <div class="control-group" id="bandwidthControl" style="display: none;">
+                    <label for="bandwidth">Bandwidth: <span id="bandwidthValue">10</span> Hz</label>
+                    <input type="range" id="bandwidth" min="1" max="50" value="10" step="1">
+                </div>
+            </section>
+
+            <!-- Display Options -->
+            <section class="controls-section">
+                <h2>Display Options</h2>
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="showPhase" checked>
+                        Show Phase Spectrum
+                    </label>
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="showSpectrogram">
+                        Show Spectrogram
+                    </label>
+                </div>
+
+                <div class="control-group">
+                    <label for="fftSize">FFT Size: <span id="fftSizeValue">1024</span></label>
+                    <select id="fftSize">
+                        <option value="256">256</option>
+                        <option value="512">512</option>
+                        <option value="1024" selected>1024</option>
+                        <option value="2048">2048</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="fftScale">FFT Scale:</label>
+                    <select id="fftScale">
+                        <option value="linear">Linear</option>
+                        <option value="logarithmic">Logarithmic</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Visualization Canvases -->
+            <section class="visualization-section">
+                <div class="canvas-container">
+                    <h3>Time Domain - Signal Waveform</h3>
+                    <canvas id="timeCanvas" width="800" height="300"></canvas>
+                    <p class="canvas-hint">Draw on canvas to create custom signal</p>
+                </div>
+
+                <div class="canvas-container">
+                    <h3>Frequency Domain - FFT Spectrum</h3>
+                    <canvas id="frequencyCanvas" width="800" height="300"></canvas>
+                    <p class="canvas-hint">Drag to set filter cutoff frequency</p>
+                </div>
+
+                <div class="canvas-container">
+                    <h3>Individual Harmonics</h3>
+                    <canvas id="harmonicsCanvas" width="800" height="300"></canvas>
+                </div>
+
+                <div class="canvas-container" id="phaseContainer">
+                    <h3>Phase Spectrum</h3>
+                    <canvas id="phaseCanvas" width="800" height="200"></canvas>
+                </div>
+
+                <div class="canvas-container" id="spectrogramContainer" style="display: none;">
+                    <h3>Spectrogram (Frequency vs Time)</h3>
+                    <canvas id="spectrogramCanvas" width="800" height="300"></canvas>
+                </div>
+
+                <div class="canvas-container">
+                    <h3>Reconstructed Signal (Inverse FFT)</h3>
+                    <canvas id="reconstructedCanvas" width="800" height="300"></canvas>
+                </div>
+            </section>
+
+            <!-- Statistics Panel -->
+            <section class="stats-section">
+                <h2>Signal Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">RMS Value:</span>
+                        <span class="stat-value" id="rmsValue">0.000</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Peak Amplitude:</span>
+                        <span class="stat-value" id="peakValue">0.000</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Dominant Frequency:</span>
+                        <span class="stat-value" id="dominantFreq">0 Hz</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Bandwidth:</span>
+                        <span class="stat-value" id="bandwidthValue">0 Hz</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">THD:</span>
+                        <span class="stat-value" id="thdValue">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">SNR:</span>
+                        <span class="stat-value" id="snrValue">0 dB</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Theory Explanation -->
+            <section class="theory-section">
+                <h2>Constraint Theory Perspective</h2>
+                <div class="theory-content">
+                    <h3>Geometric Constraints in Frequency Domain</h3>
+                    <p>The FFT reveals that any signal is constrained by its frequency components. Each frequency
+                    acts as a geometric constraint that shapes the signal's behavior in time.</p>
+
+                    <h4>Key Insights:</h4>
+                    <ul>
+                        <li><strong>Harmonic Series:</strong> Integer multiples of fundamental frequency create
+                        geometric progressions in frequency space.</li>
+                        <li><strong>Pythagorean Ratios:</strong> Musical intervals emerge naturally from frequency
+                        ratios (2:1 octave, 3:2 fifth, 4:3 fourth).</li>
+                        <li><strong>Constraint Propagation:</strong> Removing frequency components (filtering)
+                        propagates constraints through the signal, altering its shape.</li>
+                        <li><strong>Time-Frequency Duality:</strong> Sharp features in time require broad
+                        frequency support (uncertainty principle).</li>
+                    </ul>
+
+                    <h4>Interactive Exploration:</h4>
+                    <ul>
+                        <li>Draw custom signals to see their frequency content</li>
+                        <li>Add harmonics to understand complex waveform construction</li>
+                        <li>Apply filters to see constraint propagation</li>
+                        <li>Watch animated decomposition to see harmonics building the signal</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>FFT Signal Processing Simulator | Constraint Theory Research Project</p>
+            <p>Exploring the geometric foundations of signal processing</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

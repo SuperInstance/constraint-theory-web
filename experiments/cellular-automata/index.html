@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cellular Automata Simulator - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Cellular Automata Simulator</h1>
+            <p class="subtitle">Demonstrating emergent complexity from simple local constraints</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Control Panel -->
+            <aside class="controls">
+                <div class="control-section">
+                    <h3>Rules</h3>
+                    <select id="ruleSelect">
+                        <option value="B3/S23">Conway's Game of Life (B3/S23)</option>
+                        <option value="B36/S23">HighLife (B36/S23)</option>
+                        <option value="B3678/S34678">Day & Night (B3678/S34678)</option>
+                        <option value="B2/S">Seeds (B2/S)</option>
+                        <option value="BriansBrain">Brian's Brain (3-state)</option>
+                        <option value="B1/S12">Gnarl (B1/S12)</option>
+                        <option value="B34/S34">34 Life (B34/S34)</option>
+                        <option value="custom">Custom Rule</option>
+                    </select>
+
+                    <div id="customRuleInputs" class="custom-rule hidden">
+                        <label>
+                            Born (B):
+                            <input type="text" id="bornRule" placeholder="3" value="3">
+                        </label>
+                        <label>
+                            Survive (S):
+                            <input type="text" id="surviveRule" placeholder="23" value="23">
+                        </label>
+                        <button id="applyCustomRule">Apply Custom Rule</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Grid Settings</h3>
+                    <label>
+                        Grid Size:
+                        <input type="range" id="gridSize" min="50" max="200" value="100">
+                        <span id="gridSizeValue">100x100</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="wrapEdges" checked>
+                        Wrap Edges (Toroidal)
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showGrid">
+                        Show Grid Lines
+                    </label>
+                </div>
+
+                <div class="control-section">
+                    <h3>Simulation Speed</h3>
+                    <label>
+                        Generations/sec:
+                        <input type="range" id="speed" min="1" max="60" value="30">
+                        <span id="speedValue">30</span>
+                    </label>
+                </div>
+
+                <div class="control-section">
+                    <h3>Color Mode</h3>
+                    <select id="colorMode">
+                        <option value="binary">Binary (Black/White)</option>
+                        <option value="age">Age (Blue → Red → White)</option>
+                        <option value="heatmap">Heat Map (Activity)</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <h3>Drawing Tools</h3>
+                    <div class="tool-buttons">
+                        <button id="drawTool" class="tool-btn active">Draw</button>
+                        <button id="eraseTool" class="tool-btn">Erase</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Pattern Library</h3>
+                    <select id="patternSelect">
+                        <option value="">-- Select Pattern --</option>
+                        <option value="glider">Glider</option>
+                        <option value="lwss">Lightweight Spaceship (LWSS)</option>
+                        <option value="mwss">Middleweight Spaceship (MWSS)</option>
+                        <option value="hwss">Heavyweight Spaceship (HWSS)</option>
+                        <option value="pulsar">Pulsar (Period 3)</option>
+                        <option value="gosperGun">Gosper Glider Gun</option>
+                        <option value="rpentomino">R-pentomino</option>
+                        <option value="acorn">Acorn</option>
+                        <option value="diehard">Diehard</option>
+                        <option value="infinite">Infinite Growth</option>
+                    </select>
+                    <p class="pattern-hint">Select pattern, then click on grid to place</p>
+                </div>
+
+                <div class="control-section">
+                    <h3>Simulation Controls</h3>
+                    <div class="sim-buttons">
+                        <button id="startBtn" class="primary-btn">▶ Start</button>
+                        <button id="stepBtn" class="secondary-btn">→ Step</button>
+                        <button id="clearBtn" class="danger-btn">✕ Clear</button>
+                        <button id="randomBtn" class="secondary-btn">? Random</button>
+                    </div>
+                </div>
+
+                <div class="control-section stats">
+                    <h3>Statistics</h3>
+                    <div class="stat-row">
+                        <span>Generation:</span>
+                        <span id="generation">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Population:</span>
+                        <span id="population">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Birth Rate:</span>
+                        <span id="birthRate">0%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Death Rate:</span>
+                        <span id="deathRate">0%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Density:</span>
+                        <span id="density">0%</span>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Population History</h3>
+                    <canvas id="populationGraph" width="250" height="100"></canvas>
+                </div>
+            </aside>
+
+            <!-- Main Canvas Area -->
+            <main class="canvas-container">
+                <div class="canvas-wrapper">
+                    <canvas id="automataCanvas"></canvas>
+                    <div class="canvas-overlay">
+                        <div class="zoom-controls">
+                            <button id="zoomIn" title="Zoom In">+</button>
+                            <button id="zoomOut" title="Zoom Out">-</button>
+                            <button id="resetZoom" title="Reset Zoom">↺</button>
+                        </div>
+                        <div class="coordinates">
+                            <span id="coords">X: 0, Y: 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-panel">
+                    <h3>About Cellular Automata</h3>
+                    <p>
+                        Cellular automata demonstrate how <strong>simple local constraints</strong>
+                        create <strong>complex emergent behavior</strong> — the core thesis of
+                        <a href="https://github.com/SuperInstance/constrainttheory" target="_blank">Constraint Theory</a>.
+                    </p>
+                    <p>
+                        Each cell follows deterministic rules based only on its immediate neighbors,
+                        yet the system exhibits computation, self-organization, and even
+                        universal computation.
+                    </p>
+                    <h4>Key Concepts:</h4>
+                    <ul>
+                        <li><strong>Local Perception:</strong> Each cell only sees its neighbors (FPS paradigm)</li>
+                        <li><strong>Constraint Satisfaction:</strong> State = solution to local constraints</li>
+                        <li><strong>Emergence:</strong> Global patterns from local rules</li>
+                        <li><strong>Universality:</strong> Some rules can simulate any computation</li>
+                    </ul>
+                    <h4>Current Rule:</h4>
+                    <p id="ruleDescription">
+                        <strong>Conway's Game of Life (B3/S23):</strong>
+                        A cell is born with exactly 3 neighbors and survives with 2 or 3 neighbors.
+                        This simple rule creates gliders, guns, oscillators, and universal computation.
+                    </p>
+                </div>
+            </main>
+        </div>
+
+        <footer>
+            <p>
+                Part of the <a href="https://constraint-theory.superinstance.ai" target="_blank">Constraint Theory</a>
+                research project — Exploring geometric constraints for deterministic AI
+            </p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

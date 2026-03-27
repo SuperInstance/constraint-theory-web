@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constraint Propagation Network Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔗 Constraint Propagation Network</h1>
+            <p class="subtitle">Watch how constraints propagate through a network of variables</p>
+        </header>
+
+        <div class="main-content">
+            <aside class="controls-panel">
+                <div class="control-section">
+                    <h3>Problem Type</h3>
+                    <select id="problemSelect" class="select-input">
+                        <option value="map-coloring">Map Coloring (Australia)</option>
+                        <option value="sudoku">Sudoku (4×4)</option>
+                        <option value="nqueens">N-Queens (4×4)</option>
+                        <option value="schedule">Meeting Scheduling</option>
+                        <option value="custom">Custom Network</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <h3>Algorithm</h3>
+                    <select id="algorithmSelect" class="select-input">
+                        <option value="forward-checking">Forward Checking</option>
+                        <option value="ac3">Arc Consistency (AC-3)</option>
+                        <option value="backtracking">Backtracking + Propagation</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <h3>Controls</h3>
+                    <div class="button-group">
+                        <button id="stepBtn" class="btn btn-primary">▶ Step</button>
+                        <button id="runBtn" class="btn btn-success">► Run</button>
+                        <button id="resetBtn" class="btn btn-secondary">↺ Reset</button>
+                    </div>
+                    <div class="speed-control">
+                        <label>Speed:</label>
+                        <input type="range" id="speedSlider" min="100" max="2000" value="500" class="slider">
+                        <span id="speedValue">500ms</span>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Variables:</span>
+                            <span id="varCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Constraints:</span>
+                            <span id="constraintCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Domain Reductions:</span>
+                            <span id="reductionCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Backtracks:</span>
+                            <span id="backtrackCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Steps:</span>
+                            <span id="stepCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Status:</span>
+                            <span id="statusValue" class="stat-value status-ready">Ready</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Instructions</h3>
+                    <ul class="instructions">
+                        <li><strong>Click a variable</strong> to assign it a value</li>
+                        <li><strong>Right-click</strong> to unassign</li>
+                        <li><strong>Watch</strong> constraints propagate</li>
+                        <li><strong>Red</strong> = conflict detected</li>
+                        <li><strong>Green</strong> = satisfied constraint</li>
+                        <li><strong>Yellow</strong> = domain reduced</li>
+                    </ul>
+                </div>
+
+                <div class="control-section">
+                    <h3>Domain Legend</h3>
+                    <div id="domainLegend" class="domain-legend"></div>
+                </div>
+            </aside>
+
+            <main class="canvas-container">
+                <canvas id="networkCanvas"></canvas>
+                <div id="tooltip" class="tooltip"></div>
+            </main>
+        </div>
+
+        <footer>
+            <div class="explanation">
+                <h3>What's Happening?</h3>
+                <p id="explanationText">
+                    Select a problem type and click "Step" or "Run" to watch constraint propagation in action.
+                    Variables show their domain as colored dots below them. When a constraint fires,
+                    you'll see it pulse along the edge connecting variables.
+                </p>
+            </div>
+            <div class="key-concepts">
+                <h3>Key Concepts</h3>
+                <div class="concept-grid">
+                    <div class="concept-card">
+                        <h4>🎯 Constraint Satisfaction</h4>
+                        <p>Find values for variables that satisfy all constraints simultaneously</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>🌊 Propagation</h4>
+                        <p>When a variable is assigned, constraints reduce domains of neighboring variables</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>🔄 Arc Consistency</h4>
+                        <p>Every value in a variable's domain has a compatible value in neighboring domains</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>↩️ Backtracking</h4>
+                        <p>When stuck, undo assignments and try alternative values</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Information Entropy Simulator - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Information Entropy Simulator</h1>
+            <p class="subtitle">Visualizing Shannon Entropy, Signal vs Noise, and Constraint-Based Uncertainty Reduction</p>
+            <div class="formula-display">
+                <span class="formula">H(X) = -Σ p(x) log₂ p(x)</span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Canvas Area -->
+            <div class="canvas-container">
+                <div class="canvas-wrapper">
+                    <h2>Signal View</h2>
+                    <canvas id="signalCanvas" width="600" height="400"></canvas>
+                    <div class="canvas-label">Raw Signal + Noise</div>
+                </div>
+                <div class="canvas-wrapper">
+                    <h2>Entropy Distribution</h2>
+                    <canvas id="entropyCanvas" width="600" height="400"></canvas>
+                    <div class="canvas-label">Probability Distribution & Information Content</div>
+                </div>
+            </div>
+
+            <!-- Entropy Graph -->
+            <div class="graph-container">
+                <h2>Entropy Over Time</h2>
+                <canvas id="entropyGraphCanvas" width="1200" height="200"></canvas>
+            </div>
+
+            <!-- Stats Display -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Raw Entropy</div>
+                    <div class="stat-value" id="rawEntropy">0.00</div>
+                    <div class="stat-unit">bits/symbol</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Constrained Entropy</div>
+                    <div class="stat-value constrained" id="constrainedEntropy">0.00</div>
+                    <div class="stat-unit">bits/symbol</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Entropy Reduction</div>
+                    <div class="stat-value reduction" id="entropyReduction">0.00</div>
+                    <div class="stat-unit">bits/symbol</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Information Gain</div>
+                    <div class="stat-value gain" id="informationGain">0.00</div>
+                    <div class="stat-unit">%</div>
+                </div>
+            </div>
+
+            <!-- Entropy Gauge -->
+            <div class="gauge-container">
+                <h3>Entropy Meter</h3>
+                <div class="gauge">
+                    <div class="gauge-bar">
+                        <div class="gauge-fill" id="entropyGauge"></div>
+                    </div>
+                    <div class="gauge-labels">
+                        <span>0 bits</span>
+                        <span>Certain</span>
+                        <span>4 bits</span>
+                        <span>Uncertain</span>
+                        <span>8 bits</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-section">
+                <h2>Simulation Controls</h2>
+
+                <div class="control-group">
+                    <label for="signalType">Signal Type:</label>
+                    <select id="signalType">
+                        <option value="uniform">Uniform Distribution</option>
+                        <option value="binary">Binary (0/1)</option>
+                        <option value="gaussian">Gaussian (Normal)</option>
+                        <option value="text">English Text</option>
+                        <option value="custom">Custom Pattern</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="noiseLevel">Noise Level: <span id="noiseValue">50</span>%</label>
+                    <input type="range" id="noiseLevel" min="0" max="100" value="50">
+                    <div class="slider-labels">
+                        <span>Pure Signal</span>
+                        <span>Noisy</span>
+                        <span>Random</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="constraintStrength">Constraint Strength: <span id="constraintValue">50</span>%</label>
+                    <input type="range" id="constraintStrength" min="0" max="100" value="50">
+                    <div class="slider-labels">
+                        <span>No Constraints</span>
+                        <span>Moderate</span>
+                        <span>Strong</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="sampleSize">Sample Size: <span id="sampleValue">1000</span></label>
+                    <input type="range" id="sampleSize" min="100" max="5000" value="1000" step="100">
+                </div>
+
+                <div class="control-group">
+                    <label for="animationSpeed">Animation Speed: <span id="speedValue">50</span>ms</label>
+                    <input type="range" id="animationSpeed" min="10" max="200" value="50" step="10">
+                </div>
+
+                <div class="button-group">
+                    <button id="startBtn" class="btn btn-primary">Start Simulation</button>
+                    <button id="stopBtn" class="btn btn-secondary">Stop</button>
+                    <button id="resetBtn" class="btn btn-secondary">Reset</button>
+                    <button id="stepBtn" class="btn btn-secondary">Single Step</button>
+                </div>
+
+                <div class="toggle-group">
+                    <label class="toggle">
+                        <input type="checkbox" id="showDistribution" checked>
+                        <span>Show Distribution</span>
+                    </label>
+                    <label class="toggle">
+                        <input type="checkbox" id="showBitLevel">
+                        <span>Show Bit-Level View</span>
+                    </label>
+                    <label class="toggle">
+                        <input type="checkbox" id="showCompression">
+                        <span>Show Compression</span>
+                    </label>
+                    <label class="toggle">
+                        <input type="checkbox" id="showConstraints" checked>
+                        <span>Show Constraint Effect</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Information Theory Explanation -->
+            <div class="info-section">
+                <h3>Information Entropy Explained</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>What is Entropy?</h4>
+                        <p>Entropy measures uncertainty or randomness in a signal. Higher entropy means more uncertainty and more information needed to describe the signal.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Signal vs Noise</h4>
+                        <p><strong>Signal:</strong> Meaningful information you want to transmit. <strong>Noise:</strong> Random interference that increases entropy without adding information.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Constraints Reduce Entropy</h4>
+                        <p>Constraint theory reduces uncertainty by enforcing geometric rules (like Pythagorean snapping). This forces signals into discrete states, lowering entropy.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>FPS Paradigm Connection</h4>
+                        <p>Each agent has partial information (low entropy locally) rather than global knowledge. Spatial constraints naturally limit what each agent perceives.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bit-Level View -->
+            <div class="bit-view" id="bitView" style="display: none;">
+                <h3>Bit-Level Information View</h3>
+                <div class="bit-container" id="bitContainer"></div>
+                <div class="bit-legend">
+                    <span class="legend-item"><span class="bit-box high"></span> High Information (Rare)</span>
+                    <span class="legend-item"><span class="bit-box medium"></span> Medium Information</span>
+                    <span class="legend-item"><span class="bit-box low"></span> Low Information (Common)</span>
+                </div>
+            </div>
+
+            <!-- Compression View -->
+            <div class="compression-view" id="compressionView" style="display: none;">
+                <h3>Huffman Encoding Visualization</h3>
+                <div class="compression-stats">
+                    <div class="comp-stat">
+                        <div class="comp-label">Original Size</div>
+                        <div class="comp-value" id="originalSize">0</div>
+                        <div class="comp-unit">bits</div>
+                    </div>
+                    <div class="comp-stat">
+                        <div class="comp-label">Compressed Size</div>
+                        <div class="comp-value" id="compressedSize">0</div>
+                        <div class="comp-unit">bits</div>
+                    </div>
+                    <div class="comp-stat">
+                        <div class="comp-label">Compression Ratio</div>
+                        <div class="comp-value" id="compressionRatio">0.00</div>
+                        <div class="comp-unit">x</div>
+                    </div>
+                </div>
+                <div class="tree-container" id="treeContainer"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Constraint Theory Research | Information Entropy Simulator</p>
+            <p>Visualizing how geometric constraints reduce uncertainty in cellular agent systems</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

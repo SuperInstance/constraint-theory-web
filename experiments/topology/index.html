@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topology Explorer - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Topology Explorer</h1>
+            <p class="subtitle">Interactive exploration of surfaces and their topological properties</p>
+        </header>
+
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="topologyCanvas"></canvas>
+                <div class="canvas-overlay">
+                    <div class="property-display">
+                        <div class="property-item">
+                            <span class="property-label">Euler Characteristic (χ)</span>
+                            <span class="property-value" id="eulerCharacteristic">0</span>
+                        </div>
+                        <div class="property-item">
+                            <span class="property-label">Genus</span>
+                            <span class="property-value" id="genus">0</span>
+                        </div>
+                        <div class="property-item">
+                            <span class="property-label">Orientability</span>
+                            <span class="property-value" id="orientability">Yes</span>
+                        </div>
+                        <div class="property-item">
+                            <span class="property-label">Boundary</span>
+                            <span class="property-value" id="boundary">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="control-section">
+                    <h3>Surface Type</h3>
+                    <select id="surfaceSelect" class="control-select">
+                        <option value="torus">Torus</option>
+                        <option value="mobius">Möbius Strip</option>
+                        <option value="klein">Klein Bottle</option>
+                        <option value="sphere">Sphere</option>
+                        <option value="projective">Projective Plane</option>
+                        <option value="genus2">Genus-2 Surface</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <h3>Visualization Mode</h3>
+                    <div class="mode-buttons">
+                        <button class="mode-btn active" data-mode="wireframe">Wireframe</button>
+                        <button class="mode-btn" data-mode="solid">Solid</button>
+                        <button class="mode-btn" data-mode="both">Both</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Coloring</h3>
+                    <select id="coloringSelect" class="control-select">
+                        <option value="curvature">Gaussian Curvature</option>
+                        <option value="solid">Solid Color</option>
+                        <option value="orientation">Orientation</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <h3>Deformation</h3>
+                    <div class="slider-container">
+                        <label class="slider-label">Stretch Factor: <span id="stretchValue">1.0</span></label>
+                        <input type="range" id="stretchSlider" min="0.5" max="2" step="0.1" value="1">
+                    </div>
+                    <div class="slider-container">
+                        <label class="slider-label">Twist Factor: <span id="twistValue">0</span></label>
+                        <input type="range" id="twistSlider" min="-2" max="2" step="0.1" value="0">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Resolution</h3>
+                    <div class="slider-container">
+                        <label class="slider-label">Mesh Detail: <span id="resolutionValue">30</span></label>
+                        <input type="range" id="resolutionSlider" min="10" max="60" step="5" value="30">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Topological Operations</h3>
+                    <div class="operation-buttons">
+                        <button class="operation-btn" id="cutBtn">✂️ Cut Surface</button>
+                        <button class="operation-btn" id="unpasteBtn">🔗 Unpaste & Analyze</button>
+                        <button class="operation-btn" id="resetBtn">🔄 Reset</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Animation</h3>
+                    <button class="toggle-btn active" id="animateBtn">▶️ Auto-Rotate</button>
+                </div>
+
+                <div class="control-section info-section">
+                    <h3>Topological Info</h3>
+                    <div class="info-box">
+                        <p><strong>Euler Characteristic:</strong> χ = V - E + F</p>
+                        <p><strong>Genus:</strong> Number of "holes" in the surface</p>
+                        <p><strong>Orientability:</strong> Whether surface has two distinct sides</p>
+                        <p><strong>Boundary:</strong> Number of edge components</p>
+                    </div>
+                </div>
+
+                <div class="control-section info-section">
+                    <h3>Current Surface</h3>
+                    <div class="info-box" id="surfaceInfo">
+                        <p><strong>Torus</strong></p>
+                        <p>χ = 0, Genus = 1</p>
+                        <p>Orientable, No boundary</p>
+                        <p>Can be deformed into a coffee mug</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>Instructions</h3>
+            <ul>
+                <li><strong>Click & Drag:</strong> Rotate the surface</li>
+                <li><strong>Scroll:</strong> Zoom in/out</li>
+                <li><strong>Surface Type:</strong> Select different topological surfaces</li>
+                <li><strong>Deformation:</strong> Adjust stretch and twist to see continuous deformations</li>
+                <li><strong>Topological Operations:</strong> Cut and unpaste to understand surface structure</li>
+                <li><strong>Coloring:</strong> View Gaussian curvature distribution</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

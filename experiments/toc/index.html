@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theory of Constraints Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Theory of Constraints Simulator</h1>
+            <p class="subtitle">Experience how bottlenecks determine system throughput</p>
+        </header>
+
+        <main>
+            <!-- Pipeline Canvas -->
+            <section class="pipeline-section">
+                <div class="canvas-container">
+                    <canvas id="pipelineCanvas" width="1200" height="400"></canvas>
+                </div>
+            </section>
+
+            <!-- Dashboard -->
+            <section class="dashboard-section">
+                <div class="dashboard-grid">
+                    <!-- Throughput Graph -->
+                    <div class="dashboard-card">
+                        <h3>Throughput Over Time</h3>
+                        <div class="throughput-value">
+                            <span id="throughputValue">0</span> items/min
+                        </div>
+                        <canvas id="throughputGraph" width="400" height="150"></canvas>
+                    </div>
+
+                    <!-- Bottleneck Indicator -->
+                    <div class="dashboard-card">
+                        <h3>Current Constraint</h3>
+                        <div id="bottleneckIndicator" class="bottleneck-indicator">
+                            <div class="bottleneck-station">Station <span id="bottleneckStation">-</span></div>
+                            <div class="bottleneck-capacity">Capacity: <span id="bottleneckCapacity">-</span></div>
+                            <div class="bottleneck-queue">Queue: <span id="bottleneckQueue">-</span></div>
+                        </div>
+                        <div class="system-throughput">
+                            System Throughput: <span id="systemThroughput">0</span> items/min
+                        </div>
+                    </div>
+
+                    <!-- WIP Summary -->
+                    <div class="dashboard-card">
+                        <h3>Work In Progress</h3>
+                        <div id="wipSummary" class="wip-summary"></div>
+                        <div class="total-wip">
+                            Total WIP: <span id="totalWIP">0</span> items
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Controls -->
+            <section class="controls-section">
+                <div class="controls-grid">
+                    <!-- Station Capacity Controls -->
+                    <div class="control-group">
+                        <h3>Station Capacities</h3>
+                        <div id="capacityControls" class="capacity-controls"></div>
+                    </div>
+
+                    <!-- System Controls -->
+                    <div class="control-group">
+                        <h3>System Controls</h3>
+                        <div class="system-controls">
+                            <div class="control-item">
+                                <label for="inputRate">Input Rate:</label>
+                                <input type="range" id="inputRate" min="1" max="20" value="10" class="slider">
+                                <span id="inputRateValue">10</span> items/min
+                            </div>
+                            <div class="control-item">
+                                <label for="speedControl">Simulation Speed:</label>
+                                <input type="range" id="speedControl" min="0.5" max="3" step="0.1" value="1" class="slider">
+                                <span id="speedValue">1</span>x
+                            </div>
+                            <div class="control-item">
+                                <button id="startStopBtn" class="btn btn-primary">Start Simulation</button>
+                                <button id="resetBtn" class="btn btn-secondary">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TOC 5 Focusing Steps -->
+                    <div class="control-group">
+                        <h3>5 Focusing Steps</h3>
+                        <div class="focusing-steps">
+                            <button id="identifyStep" class="btn btn-step" data-step="1">
+                                <span class="step-number">1</span>
+                                Identify
+                            </button>
+                            <button id="exploitStep" class="btn btn-step" data-step="2">
+                                <span class="step-number">2</span>
+                                Exploit
+                            </button>
+                            <button id="subordinateStep" class="btn btn-step" data-step="3">
+                                <span class="step-number">3</span>
+                                Subordinate
+                            </button>
+                            <button id="elevateStep" class="btn btn-step" data-step="4">
+                                <span class="step-number">4</span>
+                                Elevate
+                            </button>
+                            <button id="repeatStep" class="btn btn-step" data-step="5">
+                                <span class="step-number">5</span>
+                                Repeat
+                            </button>
+                        </div>
+                        <div id="stepDescription" class="step-description"></div>
+                    </div>
+
+                    <!-- Preset Scenarios -->
+                    <div class="control-group">
+                        <h3>Preset Scenarios</h3>
+                        <div class="preset-buttons">
+                            <button class="btn btn-preset" data-preset="balanced">Balanced Line</button>
+                            <button class="btn btn-preset" data-preset="one-bottleneck">One Bottleneck</button>
+                            <button class="btn btn-preset" data-preset="two-bottlenecks">Two Bottlenecks</button>
+                            <button class="btn btn-preset" data-preset="cascading">Cascading</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Legend -->
+            <section class="legend-section">
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color legend-flowing"></div>
+                        <span>Flowing</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-queuing"></div>
+                        <span>Queuing</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-blocked"></div>
+                        <span>Blocked</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-bottleneck"></div>
+                        <span>Bottleneck</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Based on Eliyahu Goldratt's Theory of Constraints • The constraint determines the throughput of the entire system</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

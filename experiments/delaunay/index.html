@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delaunay Triangulation - Constraint Theory Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Delaunay Triangulation</h1>
+            <p class="subtitle">Geometric Optimization: Maximizing Minimum Angles</p>
+        </header>
+
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="triangulationCanvas"></canvas>
+            </div>
+
+            <div class="controls">
+                <div class="control-section">
+                    <h3>Points</h3>
+                    <button id="addRandomBtn" class="btn btn-primary">Add Random Point</button>
+                    <button id="addMultipleBtn" class="btn btn-secondary">Add 10 Random</button>
+                    <button id="clearBtn" class="btn btn-danger">Clear All</button>
+                </div>
+
+                <div class="control-section">
+                    <h3>Animation</h3>
+                    <button id="animateBtn" class="btn btn-primary">Animate Construction</button>
+                    <div class="slider-container">
+                        <label for="speedSlider">Animation Speed:</label>
+                        <input type="range" id="speedSlider" min="1" max="100" value="50">
+                        <span id="speedValue">50</span>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Visibility</h3>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="showTriangles" checked>
+                            Show Triangles
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showCircumcircles">
+                            Show Circumcircles
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showEdges" checked>
+                            Show Edges
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showVertices" checked>
+                            Show Vertices
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showConvexHull">
+                            Show Convex Hull
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Highlight</h3>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="highlightMinAngle">
+                            Highlight Min Angle
+                        </label>
+                        <label>
+                            <input type="checkbox" id="highlightMaxArea">
+                            Highlight Max Area
+                        </label>
+                        <label>
+                            <input type="checkbox" id="colorByQuality" checked>
+                            Color by Quality
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Statistics</h3>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-label">Vertices:</span>
+                            <span id="vertexCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Triangles:</span>
+                            <span id="triangleCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Edges:</span>
+                            <span id="edgeCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Min Angle:</span>
+                            <span id="minAngle" class="stat-value">-</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Avg Angle:</span>
+                            <span id="avgAngle" class="stat-value">-</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Max Angle:</span>
+                            <span id="maxAngle" class="stat-value">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Info</h3>
+                    <div class="info-box">
+                        <p><strong>Click on canvas</strong> to add points</p>
+                        <p><strong>Delaunay constraint:</strong> No point lies inside the circumcircle of any triangle</p>
+                        <p><strong>Optimization:</strong> Maximizes the minimum angle of all triangles</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,515 @@
+/* Cellular Automata Simulator - Dark Theme
+ * Constraint Theory Research Project
+ */
+
+:root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-tertiary: #21262d;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --accent: #4CAF50;
+    --accent-hover: #45a049;
+    --danger: #f85149;
+    --danger-hover: #da3633;
+    --border: #30363d;
+    --input-bg: #0d1117;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial,
+        sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+/* Main Content Layout */
+.main-content {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 30px;
+    flex: 1;
+}
+
+/* Control Panel */
+.controls {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    height: fit-content;
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+}
+
+.control-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.control-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.control-section h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.control-section label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.control-section select,
+.control-section input[type="text"] {
+    width: 100%;
+    padding: 8px 12px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.control-section select:focus,
+.control-section input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.control-section input[type="range"] {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.custom-rule {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: var(--bg-tertiary);
+    border-radius: 6px;
+}
+
+.custom-rule.hidden {
+    display: none;
+}
+
+.custom-rule label {
+    margin-bottom: 8px;
+}
+
+.custom-rule input {
+    width: 100%;
+    padding: 6px 10px;
+    margin-bottom: 10px;
+}
+
+#applyCustomRule {
+    width: 100%;
+    padding: 8px;
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+#applyCustomRule:hover {
+    background-color: var(--accent-hover);
+}
+
+/* Tool Buttons */
+.tool-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.tool-btn {
+    padding: 10px;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.tool-btn:hover {
+    background-color: var(--border);
+}
+
+.tool-btn.active {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+/* Pattern Selection */
+.pattern-hint {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    font-style: italic;
+}
+
+/* Simulation Buttons */
+.sim-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.sim-buttons button {
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.primary-btn {
+    background-color: var(--accent);
+    color: white;
+    grid-column: 1 / -1;
+}
+
+.primary-btn:hover {
+    background-color: var(--accent-hover);
+}
+
+.secondary-btn {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+}
+
+.secondary-btn:hover {
+    background-color: var(--border);
+}
+
+.danger-btn {
+    background-color: var(--danger);
+    color: white;
+}
+
+.danger-btn:hover {
+    background-color: var(--danger-hover);
+}
+
+/* Statistics */
+.stats {
+    background-color: var(--bg-tertiary);
+    padding: 15px;
+    border-radius: 6px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.stat-row:last-child {
+    margin-bottom: 0;
+}
+
+.stat-row span:first-child {
+    color: var(--text-secondary);
+}
+
+.stat-row span:last-child {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Population Graph */
+#populationGraph {
+    width: 100%;
+    height: 100px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    display: block;
+}
+
+/* Canvas Container */
+.canvas-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.canvas-wrapper {
+    position: relative;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 500px;
+}
+
+#automataCanvas {
+    background-color: #1a1a1a;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    cursor: crosshair;
+    image-rendering: pixelated;
+}
+
+/* Canvas Overlay */
+.canvas-overlay {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.zoom-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.zoom-controls button {
+    width: 36px;
+    height: 36px;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.zoom-controls button:hover {
+    background-color: var(--border);
+}
+
+.coordinates {
+    background-color: var(--bg-tertiary);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-align: center;
+    border: 1px solid var(--border);
+}
+
+/* Info Panel */
+.info-panel {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.info-panel h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.info-panel h4 {
+    font-size: 1rem;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.info-panel p {
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    line-height: 1.7;
+}
+
+.info-panel a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.info-panel a:hover {
+    text-decoration: underline;
+}
+
+.info-panel ul {
+    margin-left: 20px;
+    color: var(--text-secondary);
+}
+
+.info-panel li {
+    margin-bottom: 6px;
+}
+
+.info-panel strong {
+    color: var(--text-primary);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+    border-top: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+footer a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .main-content {
+        grid-template-columns: 280px 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+
+    .controls {
+        position: static;
+        max-height: none;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+    }
+
+    .canvas-wrapper {
+        padding: 10px;
+        min-height: 300px;
+    }
+
+    .canvas-overlay {
+        top: 10px;
+        right: 10px;
+    }
+
+    .sim-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .primary-btn {
+        grid-column: 1;
+    }
+}
+
+/* Scrollbar Styling */
+.controls::-webkit-scrollbar {
+    width: 8px;
+}
+
+.controls::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+    border-radius: 4px;
+}
+
+.controls::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+.controls::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}

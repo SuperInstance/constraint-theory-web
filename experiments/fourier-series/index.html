@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fourier Series Builder - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fourier Series Builder</h1>
+            <p class="subtitle">Geometric Constraints of Harmonic Decomposition</p>
+        </header>
+
+        <div class="controls-section">
+            <div class="control-group">
+                <label>Waveform Preset:</label>
+                <select id="waveformSelect">
+                    <option value="square">Square Wave</option>
+                    <option value="sawtooth">Sawtooth Wave</option>
+                    <option value="triangle">Triangle Wave</option>
+                    <option value="pulse">Pulse Wave (25%)</option>
+                    <option value="custom">Custom Draw</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Harmonics: <span id="harmonicCount">10</span></label>
+                <input type="range" id="harmonicSlider" min="1" max="50" value="10">
+            </div>
+
+            <div class="control-group">
+                <label>Animation Speed:</label>
+                <input type="range" id="speedSlider" min="0" max="100" value="50">
+            </div>
+
+            <div class="control-group">
+                <button id="resetBtn">Reset View</button>
+                <button id="animateBtn">Animate Build</button>
+            </div>
+
+            <div class="control-group checkboxes">
+                <label><input type="checkbox" id="showOriginal" checked> Original Waveform</label>
+                <label><input type="checkbox" id="showApproximation" checked> Approximation</label>
+                <label><input type="checkbox" id="showHarmonics"> Individual Harmonics</label>
+                <label><input type="checkbox" id="showEpicycles"> Epicycles</label>
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="waveformCanvas"></canvas>
+            <div class="canvas-label">Waveform & Approximation (Click to draw custom)</div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="spectrumCanvas"></canvas>
+            <div class="canvas-label">Frequency Spectrum (Click bars to toggle harmonics)</div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-box">
+                <div class="stat-label">Active Harmonics</div>
+                <div class="stat-value" id="activeHarmonics">10</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">RMS Error</div>
+                <div class="stat-value" id="rmsError">0.000</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Convergence Rate</div>
+                <div class="stat-value" id="convergenceRate">O(1/n)</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Gibbs Overshoot</div>
+                <div class="stat-value" id="gibbsOvershoot">0.0%</div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>Constraint Theory Insights</h3>
+            <ul>
+                <li><strong>Geometric Constraints:</strong> Each harmonic is a geometric constraint (sine/cosine) that bounds the function's shape</li>
+                <li><strong>Harmonic Series:</strong> Fourier coefficients follow 1/n decay - a geometric constraint of periodic functions</li>
+                <li><strong>Gibbs Phenomenon:</strong> Discontinuities create persistent overshoot - a fundamental constraint of series convergence</li>
+                <li><strong>Orthogonal Basis:</strong> Sines/cosines form an orthogonal basis - geometrically independent constraint directions</li>
+                <li><strong>Epicycles:</strong> Rotating circles visualize how each harmonic adds geometric information</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

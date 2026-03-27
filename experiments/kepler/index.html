@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kepler Orbits Simulator - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Kepler Orbits Simulator</h1>
+            <p class="subtitle">Gravitational Constraints in Orbital Mechanics</p>
+        </header>
+
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="orbitCanvas"></canvas>
+                <div class="canvas-overlay">
+                    <div class="orbit-legend">
+                        <div class="legend-item">
+                            <span class="legend-color orbit-primary"></span>
+                            <span>Primary Orbit</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color orbit-compare"></span>
+                            <span>Comparison Orbit</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color velocity"></span>
+                            <span>Velocity Vector</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color acceleration"></span>
+                            <span>Acceleration Vector</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color sweep"></span>
+                            <span>Area Sweep</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="control-section">
+                    <h3>Orbit Parameters</h3>
+
+                    <div class="control-group">
+                        <label>Orbit Type</label>
+                        <select id="orbitType" class="control-input">
+                            <option value="circular">Circular (e=0)</option>
+                            <option value="elliptical" selected>Elliptical (0<e<1)</option>
+                            <option value="parabolic">Parabolic (e=1)</option>
+                            <option value="hyperbolic">Hyperbolic (e>1)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Semi-Major Axis (a): <span id="axisValue">1.0</span> AU</label>
+                        <input type="range" id="semiMajorAxis" class="control-input"
+                               min="0.5" max="3" step="0.1" value="1.0">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Eccentricity (e): <span id="eccentricityValue">0.5</span></label>
+                        <input type="range" id="eccentricity" class="control-input"
+                               min="0" max="1.5" step="0.01" value="0.5">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Central Body Mass: <span id="massValue">1.0</span> M☉</label>
+                        <input type="range" id="centralMass" class="control-input"
+                               min="0.5" max="3" step="0.1" value="1.0">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Initial True Anomaly: <span id="anomalyValue">0</span>°</label>
+                        <input type="range" id="trueAnomaly" class="control-input"
+                               min="0" max="360" step="1" value="0">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Display Options</h3>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showOrbitPath" checked>
+                            <span>Orbit Path</span>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showVelocity" checked>
+                            <span>Velocity Vector</span>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showAcceleration" checked>
+                            <span>Acceleration Vector</span>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showSweepArea">
+                            <span>Area Sweep (Kepler's 2nd Law)</span>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showCompare">
+                            <span>Comparison Orbit</span>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showGrid">
+                            <span>Grid Lines</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Animation</h3>
+
+                    <div class="animation-controls">
+                        <button id="playPause" class="btn btn-primary">Play</button>
+                        <button id="reset" class="btn btn-secondary">Reset</button>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Speed: <span id="speedValue">1.0</span>x</label>
+                        <input type="range" id="animationSpeed" class="control-input"
+                               min="0.1" max="3" step="0.1" value="1.0">
+                    </div>
+
+                    <div class="control-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="kepler2ndLaw">
+                            <span>Demonstrate Kepler's 2nd Law</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Orbital Statistics</h3>
+
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Orbital Period</div>
+                            <div class="stat-value" id="orbitalPeriod">--</div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-label">Periapsis Distance</div>
+                            <div class="stat-value" id="periapsis">--</div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-label">Apoapsis Distance</div>
+                            <div class="stat-value" id="apoapsis">--</div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-label">Periapsis Velocity</div>
+                            <div class="stat-value" id="periapsisVelocity">--</div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-label">Apoapsis Velocity</div>
+                            <div class="stat-value" id="apoapsisVelocity">--</div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-label">Current Velocity</div>
+                            <div class="stat-value" id="currentVelocity">--</div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-label">Total Energy</div>
+                            <div class="stat-value" id="totalEnergy">--</div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-label">Angular Momentum</div>
+                            <div class="stat-value" id="angularMomentum">--</div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-label">Escape Velocity</div>
+                            <div class="stat-value" id="escapeVelocity">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-content">
+                <div class="kepler-laws">
+                    <h4>Kepler's Laws of Planetary Motion</h4>
+                    <div class="law">
+                        <strong>1st Law:</strong> Orbits are ellipses with the central body at one focus
+                    </div>
+                    <div class="law">
+                        <strong>2nd Law:</strong> Equal areas are swept in equal times
+                    </div>
+                    <div class="law">
+                        <strong>3rd Law:</strong> T² ∝ a³ (period squared is proportional to semi-major axis cubed)
+                    </div>
+                </div>
+                <div class="constraint-info">
+                    <h4>Constraint Theory Perspective</h4>
+                    <p>Kepler orbits emerge from the geometric constraint that gravitational force always points toward the focus, creating a deterministic relationship between position, velocity, and acceleration.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platonic Solid Explorer | Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Platonic Solid Explorer</h1>
+            <p class="subtitle">Explore the 5 Regular Convex Polyhedra & Their Geometric Properties</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Left Panel: Controls -->
+            <div class="control-panel">
+                <div class="panel-section">
+                    <h3>Select Solid</h3>
+                    <div class="solid-selector">
+                        <button class="solid-btn active" data-solid="tetrahedron" title="Tetrahedron (4 faces)">
+                            <svg viewBox="0 0 100 100" class="solid-icon">
+                                <polygon points="50,10 90,80 10,80" fill="none" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                            <span>Tetrahedron</span>
+                        </button>
+                        <button class="solid-btn" data-solid="cube" title="Cube (6 faces)">
+                            <svg viewBox="0 0 100 100" class="solid-icon">
+                                <rect x="20" y="20" width="60" height="60" fill="none" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                            <span>Cube</span>
+                        </button>
+                        <button class="solid-btn" data-solid="octahedron" title="Octahedron (8 faces)">
+                            <svg viewBox="0 0 100 100" class="solid-icon">
+                                <polygon points="50,10 90,50 50,90 10,50" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <line x1="50" y1="10" x2="50" y2="90" stroke="currentColor" stroke-width="2"/>
+                                <line x1="10" y1="50" x2="90" y2="50" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                            <span>Octahedron</span>
+                        </button>
+                        <button class="solid-btn" data-solid="dodecahedron" title="Dodecahedron (12 faces)">
+                            <svg viewBox="0 0 100 100" class="solid-icon">
+                                <polygon points="50,10 70,30 90,25 85,50 70,70 50,90 30,70 15,50 10,25 30,30" fill="none" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                            <span>Dodecahedron</span>
+                        </button>
+                        <button class="solid-btn" data-solid="icosahedron" title="Icosahedron (20 faces)">
+                            <svg viewBox="0 0 100 100" class="solid-icon">
+                                <polygon points="50,15 75,35 70,65 30,65 25,35" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <circle cx="50" cy="50" r="5" fill="currentColor"/>
+                            </svg>
+                            <span>Icosahedron</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Display Mode</h3>
+                    <div class="mode-selector">
+                        <button class="mode-btn active" data-mode="solid">Solid</button>
+                        <button class="mode-btn" data-mode="wireframe">Wireframe</button>
+                        <button class="mode-btn" data-mode="vertices">Vertices</button>
+                        <button class="mode-btn" data-mode="faces">Faces</button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Animations</h3>
+                    <div class="animation-controls">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="autoRotate" checked>
+                            Auto-Rotate
+                        </label>
+                        <label class="toggle-label">
+                            <input type="checkbox" id="explode">
+                            Explode View
+                        </label>
+                        <label class="toggle-label">
+                            <input type="checkbox" id="showSymmetry">
+                            Symmetry Axes
+                        </label>
+                        <label class="toggle-label">
+                            <input type="checkbox" id="showDual">
+                            Show Dual
+                        </label>
+                        <label class="toggle-label">
+                            <input type="checkbox" id="unfold">
+                            Unfold Net
+                        </label>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Rotation Speed</h3>
+                    <input type="range" id="rotationSpeed" min="0" max="100" value="30">
+                </div>
+            </div>
+
+            <!-- Center: 3D Canvas -->
+            <div class="canvas-container">
+                <canvas id="canvas"></canvas>
+                <div class="canvas-overlay">
+                    <div class="solid-name" id="solidName">Tetrahedron</div>
+                    <div class="solid-formula" id="solidFormula">{3,3}</div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Properties -->
+            <div class="properties-panel">
+                <div class="panel-section">
+                    <h3>Geometric Properties</h3>
+                    <div class="properties-grid">
+                        <div class="property-item">
+                            <span class="property-label">Vertices (V)</span>
+                            <span class="property-value" id="vertices">4</span>
+                        </div>
+                        <div class="property-item">
+                            <span class="property-label">Edges (E)</span>
+                            <span class="property-value" id="edges">6</span>
+                        </div>
+                        <div class="property-item">
+                            <span class="property-label">Faces (F)</span>
+                            <span class="property-value" id="faces">4</span>
+                        </div>
+                        <div class="property-item">
+                            <span class="property-label">Euler Characteristic</span>
+                            <span class="property-value" id="euler">2</span>
+                        </div>
+                        <div class="property-item">
+                            <span class="property-label">Face Type</span>
+                            <span class="property-value" id="faceType">Triangle</span>
+                        </div>
+                        <div class="property-item">
+                            <span class="property-label">Faces per Vertex</span>
+                            <span class="property-value" id="facesPerVertex">3</span>
+                        </div>
+                        <div class="property-item">
+                            <span class="property-label">Dihedral Angle</span>
+                            <span class="property-value" id="dihedral">70.53°</span>
+                        </div>
+                        <div class="property-item">
+                            <span class="property-label">Schläfli Symbol</span>
+                            <span class="property-value" id="schläfli">{3,3}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Symmetry Group</h3>
+                    <div class="symmetry-info">
+                        <div class="symmetry-name" id="symmetryGroup">Tetrahedral Group</div>
+                        <div class="symmetry-order" id="symmetryOrder">Order: 12</div>
+                        <div class="symmetry-axes" id="symmetryAxes">
+                            <span class="axis-item">4 three-fold axes</span>
+                            <span class="axis-item">3 two-fold axes</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Dual Solid</h3>
+                    <div class="dual-info">
+                        <div class="dual-name" id="dualSolid">Tetrahedron</div>
+                        <div class="dual-description" id="dualDesc">Self-dual: vertices ↔ faces</div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Volume Formula</h3>
+                    <div class="formula-display" id="volumeFormula">
+                        V = a³/(6√2)
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Surface Area</h3>
+                    <div class="formula-display" id="areaFormula">
+                        A = √3 a²
+                    </div>
+                </div>
+
+                <div class="panel-section golden-ratio" id="goldenSection" style="display: none;">
+                    <h3>Golden Ratio φ</h3>
+                    <div class="golden-info">
+                        <div class="golden-value">φ = (1 + √5) / 2 ≈ 1.618</div>
+                        <div class="golden-desc" id="goldenDesc">Appears in vertex coordinates</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Part of the <strong>Constraint Theory</strong> Research Project | Exploring Geometric Foundations of Cellular Computation</p>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
