@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dodecet Encoding | Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav style="position: fixed; top: 0; left: 0; right: 0; background: rgba(10,10,20,0.9); padding: 10px 20px; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <a href="/" style="color: #00d9ff; text-decoration: none; font-size: 0.9rem;">← Back to Home</a>
+    </nav>
+    
+    <div class="container">
+        <header>
+            <h1>Dodecet Encoding</h1>
+            <p class="subtitle">12 Discrete Orientations for Exact Direction Encoding</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="dodecetCanvas"></canvas>
+                <div class="info-overlay">
+                    <div class="info-item">
+                        <span class="label">Encoding:</span>
+                        <span id="encodingValue" class="value">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Angle:</span>
+                        <span id="angleValue" class="value">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Error:</span>
+                        <span id="errorValue" class="value">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="control-section">
+                    <h3>Dodecet Vectors</h3>
+                    <p class="help-text">The dodecet provides 12 discrete directions from Pythagorean triples. Each direction is exact, requiring no floating-point arithmetic.</p>
+                    <div id="vectorList" class="vector-list"></div>
+                </div>
+                
+                <div class="control-section">
+                    <h3>Encoding Mode</h3>
+                    <div class="button-group">
+                        <button class="btn active" data-mode="nearest">Nearest</button>
+                        <button class="btn" data-mode="interpolate">Interpolate</button>
+                        <button class="btn" data-mode="all">Show All</button>
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <h3>Visualization</h3>
+                    <div class="control">
+                        <label>
+                            <input type="checkbox" id="showAxes" checked>
+                            Show Axes
+                        </label>
+                    </div>
+                    <div class="control">
+                        <label>
+                            <input type="checkbox" id="showLabels" checked>
+                            Show Labels
+                        </label>
+                    </div>
+                    <div class="control">
+                        <label>
+                            <input type="checkbox" id="showError">
+                            Show Error Regions
+                        </label>
+                    </div>
+                    <div class="control">
+                        <label>
+                            <input type="checkbox" id="animate">
+                            Animate
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <h3>About Dodecet Encoding</h3>
+                    <div class="info-box">
+                        <p>The dodecet encodes any 2D direction using one of 12 exact Pythagorean vectors:</p>
+                        <ul>
+                            <li>4 cardinal directions: (±1, 0), (0, ±1)</li>
+                            <li>4 diagonal directions: (±1, ±1)</li>
+                            <li>4 knight directions: (±2, ±1), (±1, ±2)</li>
+                        </ul>
+                        <p>Maximum angular error: ~15.5°</p>
+                        <p>No floating-point drift - directions are stored as integer pairs!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
