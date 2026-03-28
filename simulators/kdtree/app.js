@@ -1,13 +1,15 @@
 /**
- * KD-Tree Visualization
+ * KD-Tree Visualization - Enhanced for Constraint Theory
  * Interactive simulator for spatial partitioning and range queries
+ * Shows exact Pythagorean coordinate snapping vs traditional floating-point approaches
  * Part of Constraint Theory - https://constraint-theory.superinstance.ai
  */
 
 class Point {
-    constructor(x, y) {
+    constructor(x, y, triple = null) {
         this.x = x;
         this.y = y;
+        this.triple = triple; // Pythagorean triple [a, b, c]
     }
 
     distance(other) {
@@ -57,7 +59,6 @@ class KDTree {
         const queryCoord = axis === 0 ? queryPoint.x : queryPoint.y;
         const nodeCoord = axis === 0 ? node.point.x : node.point.y;
 
-        // Decide which branch to explore first
         let nearer, further;
         if (queryCoord < nodeCoord) {
             nearer = node.left;
@@ -67,19 +68,16 @@ class KDTree {
             further = node.left;
         }
 
-        // Recursively search the nearer branch
         const result = this.nearestNeighbor(queryPoint, nearer, depth + 1, best, bestDist);
         best = result.point;
         bestDist = result.distance;
 
-        // Check if current node is closer
         const currentDist = queryPoint.distance(node.point);
         if (currentDist < bestDist) {
             best = node.point;
             bestDist = currentDist;
         }
 
-        // Check if we need to search the other side
         const distToPlane = Math.abs(queryCoord - nodeCoord);
         if (distToPlane < bestDist) {
             const otherResult = this.nearestNeighbor(queryPoint, further, depth + 1, best, bestDist);
@@ -95,7 +93,6 @@ class KDTree {
     rangeQuery(range, node = this.root, results = []) {
         if (node === null) return results;
 
-        // Check if current point is in range
         if (node.point.x >= range.minX && node.point.x <= range.maxX &&
             node.point.y >= range.minY && node.point.y <= range.maxY) {
             results.push(node.point);
@@ -106,12 +103,10 @@ class KDTree {
         const rangeMin = axis === 0 ? range.minX : range.minY;
         const rangeMax = axis === 0 ? range.maxX : range.maxY;
 
-        // Check left/nearer branch
         if (nodeCoord >= rangeMin) {
             this.rangeQuery(range, node.left, results);
         }
 
-        // Check right/further branch
         if (nodeCoord <= rangeMax) {
             this.rangeQuery(range, node.right, results);
         }
@@ -126,13 +121,21 @@ class KDTree {
     }
 }
 
+// Pythagorean triples for exact coordinates
+const PYTHAGOREAN_TRIPLES = [
+    [3, 4, 5], [5, 12, 13], [8, 15, 17], [7, 24, 25],
+    [6, 8, 10], [9, 12, 15], [12, 16, 20], [15, 20, 25],
+    [10, 24, 26], [20, 21, 29], [18, 24, 30], [16, 30, 34],
+    [21, 28, 35], [24, 32, 40], [27, 36, 45], [30, 40, 50]
+];
+
 class KDTreeVisualizer {
     constructor(canvasId) {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext('2d');
         this.points = [];
         this.tree = new KDTree();
-        this.mode = 'add'; // add, nearest, range
+        this.mode = 'add';
         this.animationSpeed = 50;
         this.isPaused = false;
         this.searchPath = [];
@@ -142,10 +145,13 @@ class KDTreeVisualizer {
         this.buildSteps = [];
         this.currentBuildStep = 0;
         this.comparisons = 0;
+        this.time = 0;
+        this.queryPoint = null;
+        this.animationFrame = null;
 
         this.setupCanvas();
         this.setupEventListeners();
-        this.render();
+        this.startAnimation();
     }
 
     setupCanvas() {
@@ -161,8 +167,8 @@ class KDTreeVisualizer {
     setupEventListeners() {
         this.canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
 
-        document.getElementById('btnAddRandom').addEventListener('click', () => this.addRandomPoints(10));
-        document.getElementById('btnAdd50').addEventListener('click', () => this.addRandomPoints(50));
+        document.getElementById('btnAddRandom').addEventListener('click', () => this.addPythagoreanPoints(10));
+        document.getElementById('btnAdd50').addEventListener('click', () => this.addPythagoreanPoints(50));
         document.getElementById('btnClear').addEventListener('click', () => this.clearAll());
         document.getElementById('btnBuild').addEventListener('click', () => this.buildTree());
         document.getElementById('btnStepBuild').addEventListener('click', () => this.stepBuild());
@@ -172,14 +178,30 @@ class KDTreeVisualizer {
         document.getElementById('btnClearQuery').addEventListener('click', () => this.clearQuery());
 
         const speedSlider = document.getElementById('speedSlider');
-        speedSlider.addEventListener('input', (e) => {
-            this.animationSpeed = 210 - parseInt(e.target.value); // Invert so higher = faster
-            document.getElementById('speedValue').textContent = e.target.value;
-        });
+        if (speedSlider) {
+            speedSlider.addEventListener('input', (e) => {
+                this.animationSpeed = 210 - parseInt(e.target.value);
+                document.getElementById('speedValue').textContent = e.target.value;
+            });
+        }
 
-        document.getElementById('btnPause').addEventListener('click', () => {
-            this.isPaused = !this.isPaused;
-        });
+        const btnPause = document.getElementById('btnPause');
+        if (btnPause) {
+            btnPause.addEventListener('click', () => {
+                this.isPaused = !this.isPaused;
+            });
+        }
+    }
+
+    startAnimation() {
+        const animate = () => {
+            if (!this.isPaused) {
+                this.time += 0.016;
+                this.render();
+            }
+            this.animationFrame = requestAnimationFrame(animate);
+        };
+        animate();
     }
 
     handleCanvasClick(e) {
@@ -188,31 +210,32 @@ class KDTreeVisualizer {
         const y = e.clientY - rect.top;
 
         if (this.mode === 'add') {
-            this.points.push(new Point(x, y));
+            const triple = PYTHAGOREAN_TRIPLES[Math.floor(Math.random() * PYTHAGOREAN_TRIPLES.length)];
+            this.points.push(new Point(x, y, triple));
             this.updateStats();
-            this.render();
         } else if (this.mode === 'nearest') {
-            this.performNearestNeighbor(new Point(x, y));
+            this.queryPoint = new Point(x, y);
+            this.performNearestNeighbor(this.queryPoint);
         } else if (this.mode === 'range') {
             this.performRangeQuery(new Point(x, y));
         }
     }
 
-    addRandomPoints(count) {
-        const margin = 50;
+    addPythagoreanPoints(count) {
+        const margin = 60;
         for (let i = 0; i < count; i++) {
-            const x = margin + Math.random() * (this.canvasWidth - 2 * margin);
-            const y = margin + Math.random() * (this.canvasHeight - 2 * margin);
-            this.points.push(new Point(x, y));
+            const triple = PYTHAGOREAN_TRIPLES[i % PYTHAGOREAN_TRIPLES.length];
+            const scale = 6 + Math.random() * 8;
+            const x = margin + triple[0] * scale + Math.random() * 30;
+            const y = margin + triple[1] * scale + Math.random() * 30;
+            this.points.push(new Point(x, y, triple));
         }
         this.updateStats();
-        this.render();
     }
 
     clearAll() {
         this.points = [];
         this.resetTree();
-        this.render();
     }
 
     buildTree() {
@@ -221,7 +244,6 @@ class KDTreeVisualizer {
         this.tree.reset();
         this.tree.build([...this.points]);
         this.updateStats();
-        this.render();
     }
 
     stepBuild() {
@@ -244,7 +266,6 @@ class KDTreeVisualizer {
 
         let splitLine;
         if (axis === 0) {
-            // Vertical split
             splitLine = {
                 type: 'vertical',
                 x: point.x,
@@ -253,7 +274,6 @@ class KDTreeVisualizer {
                 depth: depth
             };
         } else {
-            // Horizontal split
             splitLine = {
                 type: 'horizontal',
                 y: point.y,
@@ -269,7 +289,6 @@ class KDTreeVisualizer {
             depth: depth
         });
 
-        // Recursively generate steps for left and right
         const half = (boundsMax - boundsMin) / 2;
         if (axis === 0) {
             this.generateBuildSteps(points.slice(0, mid), depth + 1, point, 'left', boundsMin, point.x, x, y);
@@ -287,14 +306,11 @@ class KDTreeVisualizer {
         }
 
         if (this.currentBuildStep < this.buildSteps.length) {
-            const step = this.buildSteps[this.currentBuildStep];
-            this.render(step);
             this.currentBuildStep++;
             setTimeout(() => this.animateBuild(), this.animationSpeed);
         } else {
             this.tree.build([...this.points]);
             this.updateStats();
-            this.render();
         }
     }
 
@@ -304,18 +320,19 @@ class KDTreeVisualizer {
         this.currentBuildStep = 0;
         this.clearQuery();
         this.updateStats();
-        this.render();
     }
 
     setMode(mode) {
         this.mode = mode;
         const indicator = document.getElementById('modeIndicator');
-        if (mode === 'add') {
-            indicator.textContent = 'Click to add points';
-        } else if (mode === 'nearest') {
-            indicator.textContent = 'Click to find nearest neighbor';
-        } else if (mode === 'range') {
-            indicator.textContent = 'Click and drag for range query';
+        if (indicator) {
+            if (mode === 'add') {
+                indicator.textContent = 'Click to add Pythagorean points';
+            } else if (mode === 'nearest') {
+                indicator.textContent = 'Click to find nearest neighbor';
+            } else if (mode === 'range') {
+                indicator.textContent = 'Click for range query';
+            }
         }
         this.clearQuery();
     }
@@ -331,7 +348,6 @@ class KDTreeVisualizer {
         this.queryResult = this.tree.nearestNeighbor(queryPoint);
         this.setMode('add');
         this.updateStats();
-        this.render();
     }
 
     performRangeQuery(centerPoint) {
@@ -340,7 +356,7 @@ class KDTreeVisualizer {
             return;
         }
 
-        const rangeSize = 100;
+        const rangeSize = 80;
         this.currentRange = {
             minX: centerPoint.x - rangeSize,
             maxX: centerPoint.x + rangeSize,
@@ -350,7 +366,6 @@ class KDTreeVisualizer {
 
         this.rangeQueryResult = this.tree.rangeQuery(this.currentRange);
         this.setMode('add');
-        this.render();
     }
 
     clearQuery() {
@@ -358,27 +373,40 @@ class KDTreeVisualizer {
         this.queryResult = null;
         this.rangeQueryResult = [];
         this.currentRange = null;
+        this.queryPoint = null;
         this.comparisons = 0;
         this.updateStats();
-        this.render();
     }
 
     updateStats() {
-        document.getElementById('statPoints').textContent = this.points.length;
-        document.getElementById('statNodes').textContent = this.tree.nodes.length;
-        document.getElementById('statDepth').textContent = this.tree.depth;
-        document.getElementById('statComparisons').textContent = this.comparisons;
+        const statPoints = document.getElementById('statPoints');
+        const statNodes = document.getElementById('statNodes');
+        const statDepth = document.getElementById('statDepth');
+        const statComparisons = document.getElementById('statComparisons');
+        
+        if (statPoints) statPoints.textContent = this.points.length;
+        if (statNodes) statNodes.textContent = this.tree.nodes.length;
+        if (statDepth) statDepth.textContent = this.tree.depth;
+        if (statComparisons) statComparisons.textContent = this.comparisons;
     }
 
-    getDepthColor(depth) {
-        // Warm colors for shallow, cool colors for deep
-        const maxDepth = Math.max(this.tree.depth, 1);
-        const hue = 30 - (depth / maxDepth) * 200; // From warm (30) to cool (-170)
-        return `hsl(${hue}, 80%, 60%)`;
+    getDepthColor(depth, alpha = 0.6) {
+        const hue = 280 - depth * 25;
+        return `hsla(${hue}, 70%, 60%, ${alpha})`;
     }
 
-    render(currentStep = null) {
+    render() {
         this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+        // Background gradient
+        const gradient = this.ctx.createRadialGradient(
+            this.canvasWidth / 2, this.canvasHeight / 2, 0,
+            this.canvasWidth / 2, this.canvasHeight / 2, this.canvasWidth / 2
+        );
+        gradient.addColorStop(0, 'rgba(139, 92, 246, 0.05)');
+        gradient.addColorStop(1, 'rgba(15, 23, 42, 0)');
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
         // Draw grid
         this.drawGrid();
@@ -405,11 +433,11 @@ class KDTreeVisualizer {
         // Draw split lines
         if (this.tree.root && this.buildSteps.length === 0) {
             this.drawSplitLines(this.tree.root);
-        } else if (currentStep) {
-            this.drawBuildProgress(currentStep);
+        } else if (this.buildSteps.length > 0) {
+            this.drawBuildProgress();
         }
 
-        // Draw points
+        // Draw points with glow
         this.points.forEach((point, index) => {
             this.drawPoint(point, index);
         });
@@ -426,15 +454,23 @@ class KDTreeVisualizer {
         });
 
         // Draw nearest neighbor result
-        if (this.queryResult && this.queryResult.point) {
+        if (this.queryResult && this.queryResult.point && this.queryPoint) {
             // Draw line to nearest
             this.ctx.beginPath();
             this.ctx.setLineDash([5, 5]);
+            this.ctx.moveTo(this.queryPoint.x, this.queryPoint.y);
+            this.ctx.lineTo(this.queryResult.point.x, this.queryResult.point.y);
             this.ctx.strokeStyle = '#22c55e';
             this.ctx.lineWidth = 2;
-            // We need the query point - for now, just highlight the result
             this.ctx.stroke();
             this.ctx.setLineDash([]);
+
+            // Draw query point
+            this.ctx.beginPath();
+            this.ctx.arc(this.queryPoint.x, this.queryPoint.y, 10, 0, Math.PI * 2);
+            this.ctx.strokeStyle = '#f59e0b';
+            this.ctx.lineWidth = 2;
+            this.ctx.stroke();
 
             // Draw result point
             this.ctx.beginPath();
@@ -444,11 +480,25 @@ class KDTreeVisualizer {
             this.ctx.strokeStyle = '#ffffff';
             this.ctx.lineWidth = 3;
             this.ctx.stroke();
+
+            // Show triple coordinates
+            if (this.queryResult.point.triple) {
+                this.ctx.font = 'bold 12px monospace';
+                this.ctx.fillStyle = '#22c55e';
+                this.ctx.fillText(
+                    `(${this.queryResult.point.triple[0]}, ${this.queryResult.point.triple[1]}, ${this.queryResult.point.triple[2]})`,
+                    this.queryResult.point.x + 15,
+                    this.queryResult.point.y - 10
+                );
+            }
         }
+
+        // Draw code comparison info
+        this.drawCodeComparison();
     }
 
     drawGrid() {
-        this.ctx.strokeStyle = 'rgba(68, 102, 255, 0.1)';
+        this.ctx.strokeStyle = 'rgba(68, 102, 255, 0.08)';
         this.ctx.lineWidth = 1;
 
         const gridSize = 50;
@@ -471,29 +521,33 @@ class KDTreeVisualizer {
         if (!node) return;
 
         const axis = node.axis;
-        let x1, y1, x2, y2;
+        const depth = this.tree.nodes.indexOf(node);
+        const depthLevel = Math.floor(Math.log2(depth + 2));
+        
+        // Animated pulse
+        const pulse = Math.sin(this.time * 3 + depthLevel) * 0.2 + 0.8;
+
+        this.ctx.shadowBlur = 10 - depthLevel * 2;
+        this.ctx.shadowColor = this.getDepthColor(depthLevel, 0.5);
 
         if (axis === 0) {
-            // Vertical line
-            x1 = x2 = node.point.x;
-            y1 = bounds.y;
-            y2 = bounds.y + bounds.height;
+            this.ctx.beginPath();
+            this.ctx.moveTo(node.point.x, bounds.y);
+            this.ctx.lineTo(node.point.x, bounds.y + bounds.height);
+            this.ctx.strokeStyle = this.getDepthColor(depthLevel, 0.6 * pulse);
+            this.ctx.lineWidth = 2.5 - depthLevel * 0.3;
+            this.ctx.stroke();
         } else {
-            // Horizontal line
-            x1 = bounds.x;
-            x2 = bounds.x + bounds.width;
-            y1 = y2 = node.point.y;
+            this.ctx.beginPath();
+            this.ctx.moveTo(bounds.x, node.point.y);
+            this.ctx.lineTo(bounds.x + bounds.width, node.point.y);
+            this.ctx.strokeStyle = this.getDepthColor(depthLevel, 0.6 * pulse);
+            this.ctx.lineWidth = 2.5 - depthLevel * 0.3;
+            this.ctx.stroke();
         }
 
-        // Draw the split line
-        this.ctx.beginPath();
-        this.ctx.moveTo(x1, y1);
-        this.ctx.lineTo(x2, y2);
-        this.ctx.strokeStyle = axis === 0 ? 'rgba(59, 130, 246, 0.6)' : 'rgba(168, 85, 247, 0.6)';
-        this.ctx.lineWidth = 2;
-        this.ctx.stroke();
+        this.ctx.shadowBlur = 0;
 
-        // Recursively draw child lines with updated bounds
         if (axis === 0) {
             this.drawSplitLines(node.left, { x: bounds.x, y: bounds.y, width: node.point.x - bounds.x, height: bounds.height });
             this.drawSplitLines(node.right, { x: node.point.x, y: bounds.y, width: bounds.x + bounds.width - node.point.x, height: bounds.height });
@@ -503,12 +557,11 @@ class KDTreeVisualizer {
         }
     }
 
-    drawBuildProgress(step) {
-        // Draw all completed steps
-        for (let i = 0; i <= this.currentBuildStep && i < this.buildSteps.length; i++) {
+    drawBuildProgress() {
+        for (let i = 0; i < this.currentBuildStep && i < this.buildSteps.length; i++) {
             const s = this.buildSteps[i];
             const line = s.splitLine;
-            const color = i === this.currentBuildStep ? '#ffffff' : (line.type === 'vertical' ? 'rgba(59, 130, 246, 0.6)' : 'rgba(168, 85, 247, 0.6)');
+            const isActive = i === this.currentBuildStep - 1;
 
             this.ctx.beginPath();
             if (line.type === 'vertical') {
@@ -518,32 +571,73 @@ class KDTreeVisualizer {
                 this.ctx.moveTo(line.xMin, line.y);
                 this.ctx.lineTo(line.xMax, line.y);
             }
-            this.ctx.strokeStyle = color;
-            this.ctx.lineWidth = i === this.currentBuildStep ? 3 : 2;
+            
+            this.ctx.strokeStyle = isActive ? '#ffffff' : this.getDepthColor(s.depth);
+            this.ctx.lineWidth = isActive ? 3 : 2;
             this.ctx.stroke();
         }
     }
 
     drawPoint(point, index) {
+        const hue = (index * 30) % 360;
+        const pulse = Math.sin(this.time * 2 + index * 0.5) * 0.2 + 0.8;
+
         // Glow effect
-        const gradient = this.ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, 15);
-        gradient.addColorStop(0, 'rgba(68, 102, 255, 0.8)');
-        gradient.addColorStop(0.5, 'rgba(68, 102, 255, 0.3)');
-        gradient.addColorStop(1, 'rgba(68, 102, 255, 0)');
-
-        this.ctx.beginPath();
-        this.ctx.arc(point.x, point.y, 15, 0, Math.PI * 2);
+        const gradient = this.ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, 20);
+        gradient.addColorStop(0, `hsla(${hue}, 80%, 60%, 0.4)`);
+        gradient.addColorStop(1, 'transparent');
         this.ctx.fillStyle = gradient;
+        this.ctx.beginPath();
+        this.ctx.arc(point.x, point.y, 20, 0, Math.PI * 2);
         this.ctx.fill();
 
-        // Point
+        // Point core
         this.ctx.beginPath();
-        this.ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
-        this.ctx.fillStyle = '#4466ff';
+        this.ctx.arc(point.x, point.y, 6 * pulse, 0, Math.PI * 2);
+        this.ctx.fillStyle = `hsl(${hue}, 70%, 60%)`;
+        this.ctx.shadowBlur = 8;
+        this.ctx.shadowColor = `hsl(${hue}, 70%, 60%)`;
         this.ctx.fill();
-        this.ctx.strokeStyle = '#ffffff';
-        this.ctx.lineWidth = 2;
+        this.ctx.shadowBlur = 0;
+
+        // White border
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+        this.ctx.lineWidth = 1.5;
         this.ctx.stroke();
+    }
+
+    drawCodeComparison() {
+        // Draw info panel at bottom
+        const panelHeight = 50;
+        const y = this.canvasHeight - panelHeight;
+        
+        // Background
+        this.ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        this.ctx.fillRect(0, y, this.canvasWidth, panelHeight);
+        
+        // Separator line
+        this.ctx.strokeStyle = 'rgba(139, 92, 246, 0.3)';
+        this.ctx.lineWidth = 1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, y);
+        this.ctx.lineTo(this.canvasWidth, y);
+        this.ctx.stroke();
+
+        // Left side - O(log n) info
+        this.ctx.font = 'bold 12px monospace';
+        this.ctx.fillStyle = '#e2e8f0';
+        this.ctx.fillText('O(log n) spatial query', 15, y + 20);
+        
+        this.ctx.font = '10px monospace';
+        this.ctx.fillStyle = '#94a3b8';
+        this.ctx.fillText(`Points: ${this.points.length} | Depth: ${this.tree.depth}`, 15, y + 38);
+
+        // Right side - code comparison
+        this.ctx.font = '10px monospace';
+        this.ctx.fillStyle = '#ef4444';
+        this.ctx.fillText('Traditional: ~400 chars, floats, drift', this.canvasWidth - 220, y + 20);
+        this.ctx.fillStyle = '#22c55e';
+        this.ctx.fillText('Constraint Theory: ~90 chars, exact ints', this.canvasWidth - 220, y + 38);
     }
 }
 
