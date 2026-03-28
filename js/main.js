@@ -5,6 +5,130 @@
  */
 
 // ============================================
+// ERROR HANDLING UTILITIES
+// ============================================
+
+/**
+ * Custom error class for constraint theory operations
+ */
+class ConstraintTheoryError extends Error {
+  constructor(message, code = 'UNKNOWN_ERROR', details = {}) {
+    super(message);
+    this.name = 'ConstraintTheoryError';
+    this.code = code;
+    this.details = details;
+    this.timestamp = new Date().toISOString();
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      code: this.code,
+      message: this.message,
+      details: this.details,
+      timestamp: this.timestamp,
+      stack: this.stack
+    };
+  }
+}
+
+/**
+ * Input validation error
+ */
+class InputValidationError extends ConstraintTheoryError {
+  constructor(message, details = {}) {
+    super(message, 'INPUT_VALIDATION_ERROR', details);
+    this.name = 'InputValidationError';
+  }
+}
+
+/**
+ * Canvas operation error
+ */
+class CanvasError extends ConstraintTheoryError {
+  constructor(message, details = {}) {
+    super(message, 'CANVAS_ERROR', details);
+    this.name = 'CanvasError';
+  }
+}
+
+/**
+ * Safe execution wrapper with error logging
+ */
+function safeExecute(fn, fallback = null, context = 'operation') {
+  try {
+    return fn();
+  } catch (error) {
+    console.error(`[${context}] Error:`, error);
+    if (error instanceof ConstraintTheoryError) {
+      console.error('Error details:', error.toJSON());
+    }
+    return fallback;
+  }
+}
+
+/**
+ * Async safe execution wrapper
+ */
+async function safeExecuteAsync(fn, fallback = null, context = 'async operation') {
+  try {
+    return await fn();
+  } catch (error) {
+    console.error(`[${context}] Error:`, error);
+    if (error instanceof ConstraintTheoryError) {
+      console.error('Error details:', error.toJSON());
+    }
+    return fallback;
+  }
+}
+
+/**
+ * Validate numeric input
+ */
+function validateNumber(value, name = 'value', options = {}) {
+  const { min = -Infinity, max = Infinity, allowNaN = false, allowInfinity = false } = options;
+  
+  if (typeof value !== 'number') {
+    throw new InputValidationError(
+      `${name} must be a number, got ${typeof value}`,
+      { value, expected: 'number' }
+    );
+  }
+  
+  if (!allowNaN && Number.isNaN(value)) {
+    throw new InputValidationError(
+      `${name} cannot be NaN`,
+      { value, name }
+    );
+  }
+  
+  if (!allowInfinity && !Number.isFinite(value)) {
+    throw new InputValidationError(
+      `${name} must be finite, got ${value}`,
+      { value, name }
+    );
+  }
+  
+  if (value < min || value > max) {
+    throw new InputValidationError(
+      `${name} must be between ${min} and ${max}, got ${value}`,
+      { value, min, max, name }
+    );
+  }
+  
+  return true;
+}
+
+/**
+ * Validate 2D vector
+ */
+function validateVector2D(x, y, name = 'vector') {
+  validateNumber(x, `${name}.x`);
+  validateNumber(y, `${name}.y`);
+  return true;
+}
+
+// ============================================
 // UTILITY FUNCTIONS
 // ============================================
 
@@ -129,8 +253,13 @@ class AgentSimulation {
   }
 
   init() {
+    // Store bound handlers for cleanup
+    this._boundResize = debounce(() => this.resize(), 100);
+    this._boundHandleClick = (e) => this.handleClick(e);
+    this._boundHandleRightClick = (e) => this.handleRightClick(e);
+    
     this.resize();
-    window.addEventListener('resize', debounce(() => this.resize(), 100));
+    window.addEventListener('resize', this._boundResize);
 
     // Add initial agents
     for (let i = 0; i < 50; i++) {
@@ -138,11 +267,34 @@ class AgentSimulation {
     }
 
     // Event listeners
-    this.canvas.addEventListener('click', (e) => this.handleClick(e));
-    this.canvas.addEventListener('contextmenu', (e) => this.handleRightClick(e));
+    this.canvas.addEventListener('click', this._boundHandleClick);
+    this.canvas.addEventListener('contextmenu', this._boundHandleRightClick);
 
     // Start animation loop
+    this._animationId = null;
     this.animate();
+  }
+  
+  /**
+   * Clean up resources and event listeners to prevent memory leaks
+   * Call this when removing the simulation from the DOM
+   */
+  destroy() {
+    // Cancel animation frame
+    if (this._animationId) {
+      cancelAnimationFrame(this._animationId);
+      this._animationId = null;
+    }
+    
+    // Remove event listeners
+    window.removeEventListener('resize', this._boundResize);
+    this.canvas.removeEventListener('click', this._boundHandleClick);
+    this.canvas.removeEventListener('contextmenu', this._boundHandleRightClick);
+    
+    // Clear agent data
+    this.agents = [];
+    this.queryResults = [];
+    this.selectedAgent = null;
   }
 
   resize() {
@@ -423,8 +575,8 @@ class AgentSimulation {
   }
 
   animate() {
+    this._animationId = requestAnimationFrame(() => this.animate());
     this.draw();
-    requestAnimationFrame(() => this.animate());
   }
 
   reset() {
@@ -638,6 +790,18 @@ document.head.appendChild(style);
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
+    // Error classes
+    ConstraintTheoryError,
+    InputValidationError,
+    CanvasError,
+    
+    // Utility functions
+    safeExecute,
+    safeExecuteAsync,
+    validateNumber,
+    validateVector2D,
+    
+    // Classes
     Navigation,
     AgentSimulation,
     ScrollAnimations,

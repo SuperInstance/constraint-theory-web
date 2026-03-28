@@ -562,7 +562,7 @@ class HolonomySimulator {
     }
 
     animate() {
-        requestAnimationFrame(() => this.animate());
+        this._animationId = requestAnimationFrame(() => this.animate());
 
         // Update controls
         this.controls.update();
@@ -601,6 +601,51 @@ class HolonomySimulator {
 
         // Render
         this.renderer.render(this.scene, this.camera);
+    }
+    
+    /**
+     * Clean up resources to prevent memory leaks
+     * Call this when removing the simulator from the DOM
+     */
+    destroy() {
+        // Cancel animation frame
+        if (this._animationId) {
+            cancelAnimationFrame(this._animationId);
+            this._animationId = null;
+        }
+        
+        // Dispose Three.js objects
+        if (this.renderer) {
+            this.renderer.dispose();
+        }
+        
+        if (this.controls) {
+            this.controls.dispose();
+        }
+        
+        // Dispose geometries and materials
+        if (this.solidMesh) {
+            this.solidMesh.geometry?.dispose();
+            this.solidMesh.material?.dispose();
+        }
+        
+        if (this.pathLine) {
+            this.pathLine.geometry?.dispose();
+            this.pathLine.material?.dispose();
+        }
+        
+        if (this.particleSystem) {
+            this.particleSystem.geometry?.dispose();
+            this.particleSystem.material?.dispose();
+        }
+        
+        // Clear scene
+        this.scene.clear();
+        
+        // Clear references
+        this.pathVertices = [];
+        this.transportVector = null;
+        this.holonomyArc = null;
     }
 }
 

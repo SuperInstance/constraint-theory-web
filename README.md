@@ -273,12 +273,15 @@ Want to build your own? Here's a minimal starting point:
 
 ## 🌟 Ecosystem
 
-| Repo | What It Does |
-|------|--------------|
-| **[constraint-theory-core](https://github.com/SuperInstance/constraint-theory-core)** | 🦀 Rust crate (100ns snaps, WASM support) |
-| **[constraint-theory-python](https://github.com/SuperInstance/constraint-theory-python)** | 🐍 Python bindings (NumPy integration) |
-| **[constraint-theory-web](https://github.com/SuperInstance/constraint-theory-web)** | 🌐 This repo — 50 interactive demos |
-| **[constraint-theory-research](https://github.com/SuperInstance/constraint-theory-research)** | 📚 Mathematical foundations & papers |
+| Repo | What It Does | Key Features |
+|------|--------------|--------------|
+| **[constraint-theory-core](https://github.com/SuperInstance/constraint-theory-core)** | 🦀 Rust crate | ~100ns snap, SIMD batch, 82 tests |
+| **[constraint-theory-python](https://github.com/SuperInstance/constraint-theory-python)** | 🐍 Python bindings | NumPy integration, PyTorch compatible |
+| **[constraint-theory-web](https://github.com/SuperInstance/constraint-theory-web)** | 🌐 This repo | 50 visualizations, zero setup |
+| **[constraint-theory-research](https://github.com/SuperInstance/constraint-theory-research)** | 📚 Mathematical foundations | arXiv paper, proofs, open problems |
+| **[constraint-ranch](https://github.com/SuperInstance/constraint-ranch)** | 🎮 Gamified learning | Puzzle games, agent breeding |
+| **[constraint-flow](https://github.com/SuperInstance/constraint-flow)** | 💼 Business automation | Exact financial calculations, workflow orchestration |
+| **[constraint-theory-agent](https://github.com/SuperInstance/constraint-theory-agent)** | 🤖 Implementation agent | Code audit, refactoring, expert explanations |
 
 ### 🔗 WASM Integration
 

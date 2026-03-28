@@ -4,10 +4,21 @@
     box-sizing: border-box;
 }
 
+/* Design System Variables */
+:root {
+    --background: oklch(0.08 0.01 145);
+    --foreground: oklch(0.98 0.005 145);
+    --card: oklch(0.12 0.01 145);
+    --primary: oklch(0.72 0.19 145);
+    --primary-foreground: oklch(0.08 0.01 145);
+    --muted-foreground: oklch(0.65 0.02 145);
+    --border: oklch(0.25 0.02 145);
+}
+
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0f 100%);
-    color: #e0e0e0;
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
     min-height: 100vh;
 }
 
@@ -24,14 +35,20 @@ header {
 
 h1 {
     font-size: 2rem;
-    background: linear-gradient(90deg, #00ff88, #00d9ff);
+    font-weight: 700;
+    background: linear-gradient(135deg,
+        oklch(0.72 0.19 145) 0%,
+        oklch(0.80 0.15 160) 50%,
+        oklch(0.85 0.12 175) 100%
+    );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin-bottom: 0.25rem;
 }
 
 .subtitle {
-    color: #888;
+    color: var(--muted-foreground);
     font-size: 1rem;
 }
 
@@ -56,8 +73,8 @@ canvas {
 }
 
 .controls {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid #333;
+    background: oklch(0.12 0.01 145);
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: 1rem;
 }
@@ -67,11 +84,12 @@ canvas {
 }
 
 .control-group h3 {
-    color: #00ff88;
+    color: var(--primary);
     font-size: 0.9rem;
+    font-weight: 600;
     margin-bottom: 0.75rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--border);
 }
 
 .matrix-grid {
@@ -100,16 +118,23 @@ canvas {
 .btn-secondary {
     width: 100%;
     padding: 0.5rem;
-    background: rgba(0,255,136,0.1);
-    border: 1px solid #00ff88;
-    color: #00ff88;
+    background: oklch(0.72 0.19 145 / 0.1);
+    border: 1px solid oklch(0.72 0.19 145 / 0.5);
+    color: var(--primary);
     border-radius: 4px;
     cursor: pointer;
+    font-weight: 500;
     transition: all 0.2s;
 }
 
 .btn-secondary:hover {
-    background: rgba(0,255,136,0.2);
+    background: oklch(0.72 0.19 145 / 0.2);
+    border-color: var(--primary);
+}
+
+.btn-secondary:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
 
 .control-item {
@@ -167,22 +192,28 @@ canvas {
 
 .preset-btn {
     padding: 0.4rem 0.6rem;
-    background: rgba(0,255,136,0.1);
-    border: 1px solid #00ff88;
-    color: #00ff88;
+    background: oklch(0.72 0.19 145 / 0.1);
+    border: 1px solid oklch(0.72 0.19 145 / 0.5);
+    color: var(--primary);
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.75rem;
+    font-weight: 500;
     transition: all 0.2s;
 }
 
 .preset-btn:hover {
-    background: rgba(0,255,136,0.2);
+    background: oklch(0.72 0.19 145 / 0.2);
 }
 
 .preset-btn.active {
-    background: #00ff88;
-    color: #0a0a0f;
+    background: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.preset-btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
 
 .actions {
@@ -228,15 +259,25 @@ canvas {
 }
 
 .stat-item span:last-child {
-    color: #00ffaa;
-    font-family: monospace;
+    color: var(--primary);
+    font-family: 'Geist Mono', monospace;
 }
 
 footer {
     text-align: center;
     margin-top: 1.5rem;
     padding-top: 1rem;
-    border-top: 1px solid #333;
-    color: #666;
+    border-top: 1px solid var(--border);
+    color: var(--muted-foreground);
     font-size: 0.85rem;
+}
+
+footer a {
+    color: var(--primary);
+}
+
+footer a:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 2px;
 }
