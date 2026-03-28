@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holonomy Explorer - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav style="position: fixed; top: 0; left: 0; right: 0; background: rgba(10,10,20,0.95); padding: 12px 20px; z-index: 1000; border-bottom: 1px solid rgba(0,217,255,0.2);">
+        <a href="../../index.html" style="color: #00d9ff; text-decoration: none; font-size: 0.9rem;">← Back to Gallery</a>
+    </nav>
+    
+    <div class="container">
+        <header>
+            <h1>Holonomy Explorer</h1>
+            <p class="subtitle">Discover Constraint Inconsistencies Through Cycle Analysis</p>
+        </header>
+
+        <main>
+            <div class="theory-panel">
+                <h2>Holonomy Consistency Principle</h2>
+                <div class="formula-box">
+                    <div class="formula">Hol(γ) = I ⟺ Global Consistency</div>
+                    <p class="formula-explanation">
+                        A constraint system is globally consistent if and only if <strong>holonomy around every cycle is identity</strong>.
+                        Non-identity holonomy reveals hidden inconsistencies.
+                    </p>
+                </div>
+                
+                <div class="insight-box warning">
+                    <h3>⚠️ The Holonomy Test</h3>
+                    <p>
+                        Build a cycle of constraints. If you don't return to where you started,
+                        the constraint system is inconsistent. This is the <strong>fundamental test</strong> for solvability.
+                    </p>
+                </div>
+            </div>
+
+            <div class="main-visualization">
+                <div class="rotation-space">
+                    <h3>3D Rotation Space (SO(3))</h3>
+                    <canvas id="rotationCanvas" width="500" height="450" role="img" aria-label="3D rotation space visualization"></canvas>
+                    <div class="canvas-controls">
+                        <button id="rotateLeft" class="btn small">←</button>
+                        <button id="rotateRight" class="btn small">→</button>
+                        <button id="rotateUp" class="btn small">↑</button>
+                        <button id="rotateDown" class="btn small">↓</button>
+                        <button id="resetView" class="btn small">Reset View</button>
+                    </div>
+                </div>
+                
+                <div class="cycle-panel">
+                    <h3>Cycle Construction</h3>
+                    <div id="cycleList" class="cycle-list">
+                        <p class="empty-state">Click on the 3D space to add rotation nodes</p>
+                    </div>
+                    <div class="cycle-controls">
+                        <button id="addNodeBtn" class="btn">Add Node</button>
+                        <button id="closeCycleBtn" class="btn primary">Close Cycle</button>
+                        <button id="clearCycleBtn" class="btn">Clear</button>
+                    </div>
+                    <div class="holonomy-result" id="holonomyResult">
+                        <span class="label">Holonomy:</span>
+                        <span class="value">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="control-row">
+                    <div class="control-group">
+                        <label for="rotationType">Rotation Type:</label>
+                        <select id="rotationType">
+                            <option value="x">Rotation around X-axis</option>
+                            <option value="y">Rotation around Y-axis</option>
+                            <option value="z" selected>Rotation around Z-axis</option>
+                            <option value="arbitrary">Arbitrary Axis</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="angleSlider">Rotation Angle:</label>
+                        <input type="range" id="angleSlider" min="0" max="360" value="90">
+                        <span id="angleValue">90°</span>
+                    </div>
+                </div>
+                
+                <div class="control-row">
+                    <div class="control-group">
+                        <label for="toleranceSlider">Tolerance:</label>
+                        <input type="range" id="toleranceSlider" min="-6" max="-1" value="-3" step="0.5">
+                        <span id="toleranceValue">10⁻³</span>
+                    </div>
+                    
+                    <div class="control-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="showAxes" checked>
+                            Show Coordinate Axes
+                        </label>
+                    </div>
+                    
+                    <div class="control-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="showPath" checked>
+                            Show Cycle Path
+                        </label>
+                    </div>
+                    
+                    <div class="control-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="animateRotation">
+                            Animate Rotations
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="presets-section">
+                <h3>Example Cycles</h3>
+                <div class="presets-grid">
+                    <button class="preset-btn" data-preset="consistent">
+                        <span class="preset-name">✅ Consistent Cycle</span>
+                        <span class="preset-desc">90° X → 90° Y → -90° X → -90° Y = Identity</span>
+                    </button>
+                    <button class="preset-btn" data-preset="inconsistent">
+                        <span class="preset-name">❌ Inconsistent Cycle</span>
+                        <span class="preset-desc">90° X → 90° Y → 90° Z ≠ Identity</span>
+                    </button>
+                    <button class="preset-btn" data-preset="spherical">
+                        <span class="preset-name">🔵 Spherical Triangle</span>
+                        <span class="preset-desc">Triangle on sphere: holonomy = excess angle</span>
+                    </button>
+                    <button class="preset-btn" data-preset="parallel">
+                        <span class="preset-name">➡️ Parallel Transport</span>
+                        <span class="preset-desc">Vector transport around loop</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="metrics-panel">
+                <h3>Cycle Metrics</h3>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <span class="metric-label">Cycle Length</span>
+                        <span id="cycleLength" class="metric-value">0</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Holonomy Norm</span>
+                        <span id="holonomyNorm" class="metric-value">-</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Consistency</span>
+                        <span id="consistency" class="metric-value">-</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Information Content</span>
+                        <span id="infoContent" class="metric-value">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="matrix-display">
+                <h3>Holonomy Matrix</h3>
+                <div class="matrix-container">
+                    <div id="holonomyMatrix" class="matrix">
+                        <div class="matrix-row">
+                            <span>1.000</span><span>0.000</span><span>0.000</span>
+                        </div>
+                        <div class="matrix-row">
+                            <span>0.000</span><span>1.000</span><span>0.000</span>
+                        </div>
+                        <div class="matrix-row">
+                            <span>0.000</span><span>0.000</span><span>1.000</span>
+                        </div>
+                    </div>
+                    <div class="matrix-explanation">
+                        <p>I = Identity matrix (consistent)</p>
+                        <p>≠ I = Inconsistency detected</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="explanation-panel">
+                <h3>Understanding Holonomy</h3>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Build a Cycle</h4>
+                            <p>Compose rotations that return to the starting point geometrically.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Compute Holonomy</h4>
+                            <p>Multiply all rotation matrices. The result is the holonomy around the cycle.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Interpret Result</h4>
+                            <p>Identity = consistent. Non-identity = hidden inconsistency in constraints.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Fix or Accept</h4>
+                            <p>Either fix the constraint system or accept the inherent inconsistency (like Berry phase).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="applications-section">
+                <h3>Applications</h3>
+                <div class="applications-grid">
+                    <div class="app-card">
+                        <h4>🤖 Robotics</h4>
+                        <p>Detect if joint angle constraints can all be satisfied simultaneously.</p>
+                    </div>
+                    <div class="app-card">
+                        <h4>🧬 Molecular Dynamics</h4>
+                        <p>Verify protein folding constraints are consistent.</p>
+                    </div>
+                    <div class="app-card">
+                        <h4>🎮 Game Physics</h4>
+                        <p>Check if ragdoll constraints can be solved without jitter.</p>
+                    </div>
+                    <div class="app-card">
+                        <h4>📐 CAD Systems</h4>
+                        <p>Validate geometric constraint systems before solving.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Constraint Theory Research | Holonomy Explorer</p>
+            <p>Zero holonomy = globally consistent constraints</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

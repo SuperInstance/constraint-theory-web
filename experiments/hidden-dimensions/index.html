@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hidden Dimensions Encoding - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav style="position: fixed; top: 0; left: 0; right: 0; background: rgba(10,10,20,0.95); padding: 12px 20px; z-index: 1000; border-bottom: 1px solid rgba(0,217,255,0.2);">
+        <a href="../../index.html" style="color: #00d9ff; text-decoration: none; font-size: 0.9rem;">← Back to Gallery</a>
+    </nav>
+    
+    <div class="container">
+        <header>
+            <h1>Hidden Dimensions Encoding</h1>
+            <p class="subtitle">Precision Through Invisible Dimensions: k = ⌈log₂(1/ε)⌉</p>
+        </header>
+
+        <main>
+            <div class="theory-panel">
+                <h2>The Hidden Dimension Formula</h2>
+                <div class="formula-box">
+                    <div class="formula">k = ⌈log₂(1/ε)⌉</div>
+                    <p class="formula-explanation">
+                        For precision ε, you need <strong>k hidden dimensions</strong> to achieve exact constraint satisfaction.
+                        This is the core insight of Grand Unified Constraint Theory.
+                    </p>
+                </div>
+                
+                <div class="insight-box">
+                    <h3>🎯 Key Insight</h3>
+                    <p>
+                        Every constraint manifold can be <em>lifted</em> to higher dimensions where constraints become trivial.
+                        The hidden dimensions encode the precision needed to snap exactly.
+                    </p>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <div class="canvas-wrapper">
+                    <h3>Visible Space (2D)</h3>
+                    <canvas id="visibleCanvas" width="500" height="400" role="img" aria-label="2D visible space visualization"></canvas>
+                    <div class="canvas-label">Points with floating-point errors</div>
+                </div>
+                
+                <div class="arrow-container">
+                    <span class="arrow">⇅</span>
+                    <span class="arrow-label">Lift / Project</span>
+                </div>
+                
+                <div class="canvas-wrapper">
+                    <h3>Lifted Space (2D + k hidden)</h3>
+                    <canvas id="liftedCanvas" width="500" height="400" role="img" aria-label="Lifted space with hidden dimensions"></canvas>
+                    <div class="canvas-label">Exact in higher dimensions</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label for="epsilonSlider">Precision (ε): <span id="epsilonValue">0.001</span></label>
+                    <input type="range" id="epsilonSlider" min="-10" max="-1" value="-3" step="0.5">
+                    <div class="epsilon-scale">
+                        <span>10⁻¹</span>
+                        <span>10⁻⁵</span>
+                        <span>10⁻¹⁰</span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="pointCount">Number of Points:</label>
+                    <input type="range" id="pointCount" min="10" max="200" value="50">
+                    <span id="pointCountValue">50</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="animationMode">Animation Mode:</label>
+                    <select id="animationMode">
+                        <option value="lift">Lifting Animation</option>
+                        <option value="snap">Snapping Process</option>
+                        <option value="both" selected>Both</option>
+                    </select>
+                </div>
+                
+                <div class="control-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="showLattice" checked>
+                        Show Constraint Lattice
+                    </label>
+                </div>
+                
+                <div class="control-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="showPrecisionRing">
+                        Show Precision Rings
+                    </label>
+                </div>
+                
+                <div class="control-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="showHiddenAxes" checked>
+                        Show Hidden Dimension Axes
+                    </label>
+                </div>
+                
+                <div class="button-group">
+                    <button id="resetBtn" class="btn">Reset</button>
+                    <button id="snapBtn" class="btn primary">Snap All Points</button>
+                    <button id="animateBtn" class="btn active">Animate</button>
+                </div>
+            </div>
+
+            <div class="stats-panel">
+                <div class="stat">
+                    <span class="stat-label">Hidden Dimensions (k):</span>
+                    <span id="hiddenDims" class="stat-value">10</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Points Snapped:</span>
+                    <span id="snappedCount" class="stat-value">0 / 50</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Avg Error Before:</span>
+                    <span id="avgErrorBefore" class="stat-value">-</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Avg Error After:</span>
+                    <span id="avgErrorAfter" class="stat-value">-</span>
+                </div>
+            </div>
+
+            <div class="reference-table">
+                <h3>📐 Hidden Dimension Reference</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Precision (ε)</th>
+                            <th>Hidden Dims (k)</th>
+                            <th>Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>10⁻³ (0.001)</td><td>10</td><td>Visual precision</td></tr>
+                        <tr><td>10⁻⁶ (0.000001)</td><td>20</td><td>Scientific computing</td></tr>
+                        <tr><td>10⁻⁹</td><td>30</td><td>GPS coordinates</td></tr>
+                        <tr><td>10⁻¹⁰</td><td>34</td><td>High-precision physics</td></tr>
+                        <tr><td>10⁻¹⁵</td><td>50</td><td>Financial calculations</td></tr>
+                        <tr><td>10⁻¹⁶ (machine ε)</td><td>54</td><td>Double precision limit</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="explanation-panel">
+                <h3>How It Works</h3>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Generate Noisy Points</h4>
+                            <p>Start with points that have floating-point errors. They lie near but not exactly on constraint manifolds.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Lift to Hidden Dimensions</h4>
+                            <p>Add k hidden dimensions: point → (x, y, h₁, h₂, ..., hₖ). The extra coordinates encode precision information.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Snap to Lattice</h4>
+                            <p>In the lifted space, snap to the constraint lattice. The hidden dimensions allow exact positioning.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Project Back</h4>
+                            <p>Project back to visible dimensions. The result satisfies constraints exactly within precision ε.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Constraint Theory Research | Hidden Dimension Encoding</p>
+            <p>Formula: k = ⌈log₂(1/ε)⌉ enables exact constraint satisfaction</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

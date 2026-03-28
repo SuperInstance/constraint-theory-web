@@ -1,0 +1,35 @@
+{
+  "name": "constraint-theory-wasm",
+  "version": "0.2.0",
+  "description": "WASM bindings for constraint-theory-core",
+  "main": "index.js",
+  "module": "index.js",
+  "type": "module",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "types": "./index.d.ts"
+    }
+  },
+  "keywords": [
+    "constraint-theory",
+    "pythagorean",
+    "geometry",
+    "wasm",
+    "exact-arithmetic"
+  ],
+  "author": "Constraint Theory Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SuperInstance/constraint-theory-web"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "README.md"
+  ],
+  "optionalDependencies": {},
+  "peerDependencies": {}
+}

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holographic Encoding Accuracy - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav style="position: fixed; top: 0; left: 0; right: 0; background: rgba(10,10,20,0.95); padding: 12px 20px; z-index: 1000; border-bottom: 1px solid rgba(255,107,107,0.2);">
+        <a href="../../index.html" style="color: #00d9ff; text-decoration: none; font-size: 0.9rem;">← Back to Gallery</a>
+    </nav>
+    
+    <div class="container">
+        <header>
+            <h1>Holographic Encoding Accuracy</h1>
+            <p class="subtitle">Each shard contains complete information: accuracy(k,n) = k/n + O(1/log n)</p>
+        </header>
+
+        <main>
+            <div class="theory-panel">
+                <h2>The Holographic Principle in Constraint Theory</h2>
+                <div class="formula-box">
+                    <div class="formula">accuracy(k,n) = k/n + O(1/log n)</div>
+                    <p class="formula-explanation">
+                        With <strong>k hidden dimensions</strong> in an <strong>n-dimensional system</strong>, 
+                        each "shard" (projection) retains <strong>k/n</strong> accuracy plus a small error term.
+                    </p>
+                </div>
+                
+                <div class="insight-box">
+                    <h3>🔬 Axiom CM5: Holographic Redundancy</h3>
+                    <p>
+                        Each shard of a constraint manifold contains <em>complete information</em> at degraded resolution.
+                        Like a hologram, breaking it into pieces doesn't lose information—it just reduces precision.
+                    </p>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <div class="canvas-wrapper main">
+                    <h3>Holographic Reconstruction</h3>
+                    <canvas id="mainCanvas" width="600" height="450" role="img" aria-label="Holographic reconstruction visualization"></canvas>
+                    <div class="canvas-label">Original → Shards → Reconstructed</div>
+                </div>
+            </div>
+
+            <div class="shards-display">
+                <h3>Shard Projections</h3>
+                <div id="shardsContainer" class="shards-grid">
+                    <!-- Generated dynamically -->
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label for="hiddenDimsSlider">Hidden Dimensions (k): <span id="hiddenDimsValue">5</span></label>
+                    <input type="range" id="hiddenDimsSlider" min="1" max="20" value="5">
+                </div>
+                
+                <div class="control-group">
+                    <label for="visibleDimsSlider">Visible Dimensions (n): <span id="visibleDimsValue">10</span></label>
+                    <input type="range" id="visibleDimsSlider" min="2" max="20" value="10">
+                </div>
+                
+                <div class="control-group">
+                    <label for="shardCountSlider">Number of Shards: <span id="shardCountValue">4</span></label>
+                    <input type="range" id="shardCountSlider" min="2" max="8" value="4">
+                </div>
+                
+                <div class="control-group">
+                    <label for="patternSelect">Source Pattern:</label>
+                    <select id="patternSelect">
+                        <option value="grid">Grid</option>
+                        <option value="spiral">Spiral</option>
+                        <option value="circle">Circle</option>
+                        <option value="star">Star Pattern</option>
+                        <option value="pythagorean">Pythagorean Lattice</option>
+                    </select>
+                </div>
+                
+                <div class="control-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="showAccuracyOverlay" checked>
+                        Show Accuracy Overlay
+                    </label>
+                </div>
+                
+                <div class="control-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="animateReconstruction" checked>
+                        Animate Reconstruction
+                    </label>
+                </div>
+                
+                <div class="button-group">
+                    <button id="resetBtn" class="btn">Reset</button>
+                    <button id="shatterBtn" class="btn primary">Shatter into Shards</button>
+                    <button id="reconstructBtn" class="btn">Reconstruct</button>
+                </div>
+            </div>
+
+            <div class="accuracy-panel">
+                <h3>📊 Accuracy Analysis</h3>
+                <div class="accuracy-formula">
+                    <div class="term">
+                        <span class="label">Theoretical:</span>
+                        <span class="value" id="theoreticalAccuracy">50.0%</span>
+                        <span class="formula-small">k/n = <span id="knRatio">5/10</span></span>
+                    </div>
+                    <div class="term">
+                        <span class="label">Error Term:</span>
+                        <span class="value" id="errorTerm">~14.7%</span>
+                        <span class="formula-small">O(1/log n) = <span id="lognTerm">O(1/log 10)</span></span>
+                    </div>
+                    <div class="term">
+                        <span class="label">Measured:</span>
+                        <span class="value" id="measuredAccuracy">-</span>
+                        <span class="formula-small">from reconstruction</span>
+                    </div>
+                </div>
+                
+                <div class="accuracy-chart">
+                    <canvas id="accuracyChart" width="500" height="150"></canvas>
+                </div>
+            </div>
+
+            <div class="explanation-panel">
+                <h3>Understanding Holographic Encoding</h3>
+                <div class="concept-grid">
+                    <div class="concept">
+                        <div class="concept-icon">🎨</div>
+                        <h4>Complete Information</h4>
+                        <p>Each shard carries all constraints, but at lower resolution. Like a broken hologram, you can still see the whole image in each piece.</p>
+                    </div>
+                    <div class="concept">
+                        <div class="concept-icon">📐</div>
+                        <h4>Accuracy Ratio</h4>
+                        <p>The ratio k/n determines how much precision each shard preserves. More hidden dimensions = higher fidelity.</p>
+                    </div>
+                    <div class="concept">
+                        <div class="concept-icon">🔄</div>
+                        <h4>Graceful Degradation</h4>
+                        <p>Unlike traditional encoding, losing shards doesn't lose data—it just reduces accuracy. This makes the system robust.</p>
+                    </div>
+                    <div class="concept">
+                        <div class="concept-icon">⚡</div>
+                        <h4>Distributed Computing</h4>
+                        <p>Each shard can be processed independently. Parallel computation becomes natural when information is holographically distributed.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reference-section">
+                <h3>🔗 Related Concepts</h3>
+                <ul>
+                    <li><strong>Hidden Dimensions:</strong> The k hidden dimensions encode precision logarithmically</li>
+                    <li><strong>Plane Decomposition:</strong> n-dimensional constraints decompose into C(n,2) 2D planes</li>
+                    <li><strong>Holonomy Consistency:</strong> Global convergence requires zero holonomy around all cycles</li>
+                    <li><strong>Lattice Structure:</strong> Valid states form discrete "snap manifolds"</li>
+                </ul>
+            </div>
+        </main>
+
+        <footer>
+            <p>Constraint Theory Research | Axiom CM5: Holographic Redundancy</p>
+            <p>Breaking information into shards preserves completeness at degraded resolution</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

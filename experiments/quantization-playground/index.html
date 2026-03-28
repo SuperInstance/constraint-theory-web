@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantization Playground - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav style="position: fixed; top: 0; left: 0; right: 0; background: rgba(10,10,20,0.95); padding: 12px 20px; z-index: 1000; border-bottom: 1px solid rgba(0,217,255,0.2);">
+        <a href="../../index.html" style="color: #00d9ff; text-decoration: none; font-size: 0.9rem;">← Back to Gallery</a>
+    </nav>
+    
+    <div class="container">
+        <header>
+            <h1>Quantization Playground</h1>
+            <p class="subtitle">Pythagorean Quantizer: TERNARY | POLAR | TURBO | HYBRID</p>
+        </header>
+
+        <main>
+            <div class="theory-panel">
+                <h2>Unified Quantization System</h2>
+                <div class="formula-box">
+                    <div class="formula">PythagoreanQuantizer: D(b,d) ≤ 1.15 × D*(b,d)</div>
+                    <p class="formula-explanation">
+                        Near-optimal distortion with <strong>zero constraint violation</strong>.
+                        Integrates TurboQuant, BitNet (ternary), and PolarQuant technologies.
+                    </p>
+                </div>
+                
+                <div class="modes-overview">
+                    <div class="mode-card" data-mode="ternary">
+                        <h4>TERNARY (BitNet)</h4>
+                        <p>{-1, 0, +1} weights</p>
+                        <span class="use-case">LLM inference, 10x memory reduction</span>
+                    </div>
+                    <div class="mode-card" data-mode="polar">
+                        <h4>POLAR (PolarQuant)</h4>
+                        <p>Exact unit norm</p>
+                        <span class="use-case">Embeddings, vector databases</span>
+                    </div>
+                    <div class="mode-card" data-mode="turbo">
+                        <h4>TURBO (TurboQuant)</h4>
+                        <p>Near-optimal MSE</p>
+                        <span class="use-case">General purpose, online</span>
+                    </div>
+                    <div class="mode-card" data-mode="hybrid">
+                        <h4>HYBRID</h4>
+                        <p>Auto-select mode</p>
+                        <span class="use-case">Mixed workloads</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="canvas-section">
+                <div class="canvas-wrapper">
+                    <h3>Original Vectors (Float32)</h3>
+                    <canvas id="originalCanvas" width="400" height="400" role="img" aria-label="Original vectors visualization"></canvas>
+                    <div class="canvas-label">Full precision vectors</div>
+                </div>
+                
+                <div class="comparison-arrows">
+                    <button id="quantizeBtn" class="btn primary">Quantize →</button>
+                    <div class="mode-selector">
+                        <label for="quantMode">Mode:</label>
+                        <select id="quantMode">
+                            <option value="ternary">TERNARY</option>
+                            <option value="polar" selected>POLAR</option>
+                            <option value="turbo">TURBO</option>
+                            <option value="hybrid">HYBRID</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="canvas-wrapper">
+                    <h3>Quantized Vectors</h3>
+                    <canvas id="quantizedCanvas" width="400" height="400" role="img" aria-label="Quantized vectors visualization"></canvas>
+                    <div class="canvas-label">Constraint-preserved quantization</div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label for="vectorCount">Number of Vectors:</label>
+                    <input type="range" id="vectorCount" min="10" max="200" value="50">
+                    <span id="vectorCountValue">50</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="bitsSlider">Quantization Bits:</label>
+                    <input type="range" id="bitsSlider" min="1" max="8" value="4">
+                    <span id="bitsValue">4 bits</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="dimensionSelect">Vector Dimension:</label>
+                    <select id="dimensionSelect">
+                        <option value="2">2D</option>
+                        <option value="3">3D</option>
+                        <option value="128" selected>128D (embeddings)</option>
+                        <option value="768">768D (BERT)</option>
+                    </select>
+                </div>
+                
+                <div class="control-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="preserveNorm" checked>
+                        Preserve Unit Norm Constraint
+                    </label>
+                </div>
+                
+                <div class="control-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="showDistortion">
+                        Show Distortion Vectors
+                    </label>
+                </div>
+                
+                <div class="control-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="animateQuantize" checked>
+                        Animate Quantization
+                    </label>
+                </div>
+                
+                <div class="button-group">
+                    <button id="resetBtn" class="btn">Reset</button>
+                    <button id="compareBtn" class="btn">Compare All Modes</button>
+                    <button id="exportBtn" class="btn">Export Results</button>
+                </div>
+            </div>
+
+            <div class="metrics-panel">
+                <h3>Distortion Metrics</h3>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <span class="metric-label">MSE (Mean Squared Error)</span>
+                        <span id="mseValue" class="metric-value">-</span>
+                        <span class="metric-theory">Theoretical min: <span id="mseTheory">-</span></span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Norm Preservation</span>
+                        <span id="normValue" class="metric-value">-</span>
+                        <span class="metric-theory">Target: 1.0 ± ε</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Inner Product Error</span>
+                        <span id="innerProductValue" class="metric-value">-</span>
+                        <span class="metric-theory">Constraint: exact</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Compression Ratio</span>
+                        <span id="compressionValue" class="metric-value">-</span>
+                        <span class="metric-theory">32-bit → <span id="bitsTarget">4</span>-bit</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-table">
+                <h3>Mode Comparison</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mode</th>
+                            <th>MSE</th>
+                            <th>Norm Error</th>
+                            <th>Inner Product</th>
+                            <th>Best For</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparisonBody">
+                        <tr><td colspan="5">Click "Compare All Modes" to see results</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="explanation-panel">
+                <h3>How Pythagorean Quantization Works</h3>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Analyze Input Characteristics</h4>
+                            <p>Auto-detect if vectors are unit norm (embeddings), sparse (weights), or general purpose.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Select Optimal Mode</h4>
+                            <p>POLAR for unit norm, TERNARY for LLM weights, TURBO for general purpose, HYBRID for mixed.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Apply Pythagorean Snapping</h4>
+                            <p>Snap quantization levels to Pythagorean ratios (a/c, b/c) for exact constraint satisfaction.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Verify Constraints</h4>
+                            <p>Holonomy verification ensures zero constraint violation after quantization.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-example">
+                <h3>Code Example</h3>
+                <pre><code>// Python
+from constraint_theory import PythagoreanQuantizer, QuantizationMode
+
+quantizer = PythagoreanQuantizer(
+    mode=QuantizationMode.POLAR,
+    bits=4,
+    constraints=['unit_norm']
+)
+
+result = quantizer.quantize(embeddings)
+print(f"MSE: {result.mse:.6f}")
+print(f"Norm error: {result.norm_error:.2e}")  # ~0
+
+// JavaScript (WASM)
+import { PythagoreanQuantizer } from './wasm/index.js';
+
+const quantizer = new PythagoreanQuantizer({
+    mode: 'polar',
+    bits: 4
+});
+
+const result = quantizer.quantize(vectors);</code></pre>
+            </div>
+        </main>
+
+        <footer>
+            <p>Constraint Theory Research | Pythagorean Quantization</p>
+            <p>Near-optimal distortion with zero constraint violation</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

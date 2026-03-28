@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Constraint Layers - Constraint Theory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav style="position: fixed; top: 0; left: 0; right: 0; background: rgba(10,10,20,0.95); padding: 12px 20px; z-index: 1000; border-bottom: 1px solid rgba(0,217,255,0.2);">
+        <a href="../../index.html" style="color: #00d9ff; text-decoration: none; font-size: 0.9rem;">← Back to Gallery</a>
+    </nav>
+    
+    <div class="container">
+        <header>
+            <h1>ML Constraint Layers</h1>
+            <p class="subtitle">Neural Networks with Exact Constraint Enforcement</p>
+        </header>
+
+        <main>
+            <div class="theory-panel">
+                <h2>Constraint-Enforced Neural Networks</h2>
+                <div class="formula-box">
+                    <div class="formula">Hidden Dimension Encoding: k = ⌈log₂(1/ε)⌉</div>
+                    <p class="formula-explanation">
+                        Train neural networks with <strong>exact constraint satisfaction</strong> at every layer.
+                        No drift, no approximation—just exact geometry.
+                    </p>
+                </div>
+                
+                <div class="insight-box">
+                    <h3>🎯 Key Insight</h3>
+                    <p>
+                        Standard neural networks accumulate floating-point errors through layers.
+                        Constraint-enforced layers snap weights to exact Pythagorean lattices,
+                        guaranteeing constraints are satisfied to precision ε forever.
+                    </p>
+                </div>
+            </div>
+
+            <div class="network-section">
+                <div class="network-visualization">
+                    <h3>Neural Network Architecture</h3>
+                    <canvas id="networkCanvas" width="800" height="500" role="img" aria-label="Neural network visualization"></canvas>
+                    <div class="canvas-label">
+                        <span class="legend-item"><span class="dot normal"></span> Standard Layer</span>
+                        <span class="legend-item"><span class="dot constraint"></span> Constraint Layer</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="control-row">
+                    <div class="control-group">
+                        <label for="networkDepth">Network Depth:</label>
+                        <input type="range" id="networkDepth" min="2" max="8" value="4">
+                        <span id="depthValue">4 layers</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="hiddenWidth">Hidden Width:</label>
+                        <input type="range" id="hiddenWidth" min="16" max="256" value="64" step="16">
+                        <span id="widthValue">64 units</span>
+                    </div>
+                </div>
+                
+                <div class="control-row">
+                    <div class="control-group">
+                        <label for="constraintType">Constraint Type:</label>
+                        <select id="constraintType">
+                            <option value="unit_norm" selected>Unit Norm (Orthogonal)</option>
+                            <option value="bounded">Bounded Weights [-1, 1]</option>
+                            <option value="sparse">Sparse (L0 Constraint)</option>
+                            <option value="positive">Positive Definite</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="precisionSlider">Precision (ε):</label>
+                        <input type="range" id="precisionSlider" min="-10" max="-3" value="-6" step="0.5">
+                        <span id="precisionValue">10⁻⁶</span>
+                    </div>
+                </div>
+                
+                <div class="control-row checkbox-row">
+                    <div class="control-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="snapGradients" checked>
+                            Snap Gradients
+                        </label>
+                    </div>
+                    
+                    <div class="control-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="showHiddenDims" checked>
+                            Show Hidden Dimensions
+                        </label>
+                    </div>
+                    
+                    <div class="control-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="animateTraining" checked>
+                            Animate Training
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button id="trainBtn" class="btn primary">Start Training</button>
+                    <button id="stepBtn" class="btn">Step Once</button>
+                    <button id="resetBtn" class="btn">Reset Network</button>
+                </div>
+            </div>
+
+            <div class="visualization-row">
+                <div class="panel">
+                    <h3>Weight Distribution</h3>
+                    <canvas id="weightCanvas" width="350" height="250" role="img" aria-label="Weight distribution histogram"></canvas>
+                </div>
+                
+                <div class="panel">
+                    <h3>Gradient Flow</h3>
+                    <canvas id="gradientCanvas" width="350" height="250" role="img" aria-label="Gradient flow visualization"></canvas>
+                </div>
+                
+                <div class="panel">
+                    <h3>Constraint Satisfaction</h3>
+                    <canvas id="constraintCanvas" width="350" height="250" role="img" aria-label="Constraint satisfaction plot"></canvas>
+                </div>
+            </div>
+
+            <div class="metrics-panel">
+                <h3>Training Metrics</h3>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <span class="metric-label">Training Step</span>
+                        <span id="stepMetric" class="metric-value">0</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Constraint Error</span>
+                        <span id="constraintMetric" class="metric-value">-</span>
+                        <span class="metric-target">Target: &lt; 10⁻⁶</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Hidden Dims (k)</span>
+                        <span id="hiddenMetric" class="metric-value">20</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Snaps Applied</span>
+                        <span id="snapsMetric" class="metric-value">0</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Drift Prevented</span>
+                        <span id="driftMetric" class="metric-value">0.00</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Precision Achieved</span>
+                        <span id="precisionMetric" class="metric-value">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-section">
+                <h3>Standard vs Constraint-Enforced</h3>
+                <div class="comparison-grid">
+                    <div class="comparison-card standard">
+                        <h4>Standard Training</h4>
+                        <ul>
+                            <li>❌ Floating-point drift accumulates</li>
+                            <li>❌ Constraints satisfied approximately</li>
+                            <li>❌ Error grows with depth</li>
+                            <li>❌ Reproducibility issues</li>
+                            <li>❌ Different results on GPU vs CPU</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card constraint">
+                        <h4>Constraint-Enforced</h4>
+                        <ul>
+                            <li>✅ Zero drift—exact forever</li>
+                            <li>✅ Constraints satisfied to ε</li>
+                            <li>✅ Error bounded at all depths</li>
+                            <li>✅ Fully reproducible</li>
+                            <li>✅ Same results everywhere</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-example">
+                <h3>Code Example</h3>
+                <pre><code>// Python - PyTorch Integration
+from constraint_theory import ConstraintEnforcedLayer, GradientSnapper
+import torch
+
+# Create constraint-enforced layer
+layer = ConstraintEnforcedLayer(
+    in_features=768,
+    out_features=256,
+    constraint='unit_norm',  # Options: unit_norm, orthogonal, bounded
+    epsilon=1e-6
+)
+
+# Training with gradient snapping
+snapper = GradientSnapper(preserve_magnitude=True)
+
+for batch in dataloader:
+    loss = model(batch)
+    loss.backward()
+    
+    # Snap gradients to exact before optimizer step
+    snapper.snap_(model.parameters())
+    
+    optimizer.step()
+
+# JavaScript - Custom Layer
+import { HiddenDimensionNetwork } from './wasm/index.js';
+
+const net = new HiddenDimensionNetwork({
+    layers: [768, 256, 128, 10],
+    epsilon: 1e-6,
+    constraint: 'unit_norm'
+});
+
+// Forward pass with constraint enforcement
+const output = net.forward(input);
+// Constraints are guaranteed satisfied!</code></pre>
+            </div>
+        </main>
+
+        <footer>
+            <p>Constraint Theory Research | ML Constraint Layers</p>
+            <p>Exact constraint satisfaction in neural networks</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
