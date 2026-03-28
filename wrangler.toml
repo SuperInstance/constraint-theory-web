@@ -1,5 +1,178 @@
 name = "constraint-theory-web"
 compatibility_date = "2024-01-01"
 
+# Main site configuration
 [site]
 bucket = "."
+
+# Custom domain (uncomment and configure)
+# routes = [
+#   { pattern = "constraint-theory.superinstance.ai/*", zone_name = "superinstance.ai" }
+# ]
+
+# Build configuration (not needed - static files only)
+# [build]
+# command = ""
+# watch_dir = "."
+
+# ============================================
+# SECURITY HEADERS
+# ============================================
+
+# Global security headers for all requests
+[[headers]]
+for = "/*"
+[headers.values]
+X-Frame-Options = "DENY"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+X-XSS-Protection = "1; mode=block"
+# Content-Security-Policy is set per-page for flexibility
+# Global CSP (uncomment for strict enforcement):
+# Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.constraint-theory.superinstance.ai"
+
+# ============================================
+# CACHING HEADERS
+# ============================================
+
+# JavaScript files - Long cache, immutable (use versioned filenames)
+[[headers]]
+for = "/*.js"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+# CSS files - Long cache, immutable
+[[headers]]
+for = "/*.css"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+# HTML files - Short cache with revalidation
+[[headers]]
+for = "/*.html"
+[headers.values]
+Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
+
+# Images - Long cache, immutable
+[[headers]]
+for = "/*.png"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/*.jpg"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/*.svg"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/*.ico"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+# WASM files - Long cache, immutable
+[[headers]]
+for = "/*.wasm"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+Content-Type = "application/wasm"
+
+# JSON files - No cache (dynamic content)
+[[headers]]
+for = "/*.json"
+[headers.values]
+Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Fonts - Long cache
+[[headers]]
+for = "/*.woff"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/*.woff2"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+# ============================================
+# API ENDPOINTS
+# ============================================
+
+# Health check endpoint - no caching
+[[headers]]
+for = "/api/*"
+[headers.values]
+Cache-Control = "no-cache, no-store, must-revalidate"
+Access-Control-Allow-Origin = "*"
+Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+
+# ============================================
+# REDIRECTS
+# ============================================
+
+# Redirects for common typos and legacy URLs
+[[redirects]]
+from = "/experiments/fourier/*"
+to = "/experiments/fourier-series/:splat"
+status = 301
+
+[[redirects]]
+from = "/demos/*"
+to = "/experiments/:splat"
+status = 301
+
+[[redirects]]
+from = "/demo/*"
+to = "/experiments/:splat"
+status = 301
+
+[[redirects]]
+from = "/simulator/*"
+to = "/simulators/:splat"
+status = 301
+
+# Documentation redirects
+[[redirects]]
+from = "/docs"
+to = "/docs/SCHEMA.md"
+status = 301
+
+# ============================================
+# ERROR HANDLING
+# ============================================
+
+# 404 handling - serve index.html for SPA routing
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+
+# ============================================
+# ENVIRONMENT-SPECIFIC CONFIG
+# ============================================
+
+# Production environment
+[env.production]
+name = "constraint-theory-web"
+route = "constraint-theory.superinstance.ai/*"
+
+# Staging environment
+[env.staging]
+name = "constraint-theory-web-staging"
+
+# ============================================
+# KV NAMESPACES (for analytics/errors)
+# ============================================
+
+# [[kv_namespaces]]
+# binding = "ANALYTICS"
+# id = "your-kv-namespace-id"
+
+# [[kv_namespaces]]
+# binding = "ERRORS"
+# id = "your-errors-kv-namespace-id"

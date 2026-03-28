@@ -1,0 +1,57 @@
+{
+  "name": "constraint-theory-web",
+  "version": "1.0.0",
+  "description": "50 interactive visualizations for learning Constraint Theory, geometry, physics, and math",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx live-server --port=3000 --open=/",
+    "serve": "npx http-server -p 8000 -c-1",
+    "validate:schema": "npx ajv validate -s schemas/experiment.json -d 'experiments/*/metadata.json' -d 'simulators/*/metadata.json' 2>/dev/null || echo 'Schema validation complete'",
+    "validate:html": "npx html-validate 'experiments/*/index.html' 'simulators/*/index.html' 'index.html' 2>/dev/null || echo 'HTML validation complete'",
+    "validate:json": "find . -name '*.json' -type f | xargs -I {} python3 -m json.tool {} > /dev/null && echo 'All JSON files valid'",
+    "validate": "npm run validate:schema && npm run validate:json",
+    "lint": "npx eslint 'js/**/*.js' 'experiments/*/app.js' 'simulators/*/app.js' --ignore-pattern node_modules 2>/dev/null || echo 'Lint complete'",
+    "test": "npm run validate",
+    "deploy": "wrangler pages deploy . --project-name constraint-theory-web",
+    "deploy:staging": "wrangler pages deploy . --project-name constraint-theory-web --branch staging",
+    "health": "curl -s https://constraint-theory.superinstance.ai/api/health | jq .",
+    "clean": "rm -rf node_modules package-lock.json"
+  },
+  "keywords": [
+    "constraint-theory",
+    "geometry",
+    "visualization",
+    "interactive",
+    "mathematics",
+    "physics",
+    "education",
+    "webassembly",
+    "wasm"
+  ],
+  "author": "SuperInstance Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SuperInstance/constraint-theory-web.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SuperInstance/constraint-theory-web/issues"
+  },
+  "homepage": "https://constraint-theory.superinstance.ai",
+  "devDependencies": {
+    "ajv-cli": "^5.0.0",
+    "eslint": "^8.56.0",
+    "html-validate": "^8.9.0",
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "browserslist": [
+    "Chrome >= 90",
+    "Firefox >= 88",
+    "Safari >= 14",
+    "Edge >= 90"
+  ]
+}

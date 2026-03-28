@@ -1,0 +1,49 @@
+{
+  "$schema": "https://constraint-theory.superinstance.ai/schemas/experiment.json",
+  "id": "neural-network",
+  "name": "Neural Network Topology",
+  "version": "1.0.0",
+  "category": "ai",
+  "difficulty": "intermediate",
+  "tags": ["neural-network", "constraint-theory", "machine-learning", "visualization"],
+  "description": {
+    "short": "Compare traditional NNs with constraint-based geometric networks",
+    "long": "This interactive simulator demonstrates the fundamental differences between Traditional Neural Networks and Constraint Theory Geometric Networks. Explore how Pythagorean snapping replaces activation functions, geometric constraints replace weight matrices, and constraint satisfaction replaces gradient optimization."
+  },
+  "author": {
+    "name": "Constraint Theory Team",
+    "url": "https://github.com/SuperInstance"
+  },
+  "requiresWasm": false,
+  "wasmFeatures": [],
+  "accessibility": {
+    "keyboardNavigable": true,
+    "screenReaderSupport": true,
+    "pauseControl": true
+  },
+  "performance": {
+    "estimatedLoadTime": "<1s",
+    "recommendedDevices": ["desktop", "tablet"]
+  },
+  "educational": {
+    "concepts": [
+      "Neural network architectures",
+      "Geometric constraints",
+      "Pythagorean snapping",
+      "Constraint satisfaction"
+    ],
+    "prerequisites": [
+      "Basic understanding of neural networks"
+    ],
+    "learningObjectives": [
+      "Understand how geometric constraints can replace weights",
+      "Compare learning dynamics between approaches",
+      "Visualize constraint satisfaction vs gradient flow"
+    ]
+  },
+  "links": {
+    "source": "https://github.com/SuperInstance/constraint-theory-web/tree/main/experiments/neural-network",
+    "demo": "https://constraint-theory.superinstance.ai/experiments/neural-network/",
+    "documentation": "https://github.com/SuperInstance/constraint-theory-research"
+  }
+}

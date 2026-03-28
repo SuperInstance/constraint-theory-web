@@ -1,0 +1,49 @@
+{
+  "$schema": "https://constraint-theory.superinstance.ai/schemas/experiment.json",
+  "id": "kdtree-visualization",
+  "name": "KD-Tree Visualization",
+  "version": "1.0.0",
+  "category": "algorithms",
+  "difficulty": "intermediate",
+  "tags": ["kd-tree", "spatial-indexing", "algorithms", "data-structures", "spatial-query"],
+  "description": {
+    "short": "Interactive KD-tree construction and spatial query visualization",
+    "long": "Visualize how KD-trees partition space for efficient O(log n) nearest neighbor and range queries. Build trees step-by-step, perform spatial queries, and understand the geometric constraints that make spatial indexing efficient."
+  },
+  "author": {
+    "name": "Constraint Theory Team",
+    "url": "https://github.com/SuperInstance"
+  },
+  "requiresWasm": false,
+  "wasmFeatures": [],
+  "accessibility": {
+    "keyboardNavigable": true,
+    "screenReaderSupport": true,
+    "pauseControl": true
+  },
+  "performance": {
+    "estimatedLoadTime": "<1s",
+    "recommendedDevices": ["desktop", "tablet"]
+  },
+  "educational": {
+    "concepts": [
+      "Binary space partitioning",
+      "Spatial indexing",
+      "Nearest neighbor search",
+      "Range queries",
+      "O(log n) complexity"
+    ],
+    "prerequisites": [
+      "Basic understanding of binary trees"
+    ],
+    "learningObjectives": [
+      "Understand how KD-trees partition space",
+      "Visualize O(log n) query performance",
+      "Explore spatial constraints in algorithms"
+    ]
+  },
+  "links": {
+    "source": "https://github.com/SuperInstance/constraint-theory-web/tree/main/simulators/kdtree",
+    "demo": "https://constraint-theory.superinstance.ai/simulators/kdtree/"
+  }
+}

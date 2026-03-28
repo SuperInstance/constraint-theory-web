@@ -1,0 +1,46 @@
+{
+  "$schema": "https://constraint-theory.superinstance.ai/schemas/experiment.json",
+  "id": "stereographic-projection",
+  "name": "Stereographic Projection",
+  "version": "1.0.0",
+  "category": "geometry",
+  "difficulty": "intermediate",
+  "tags": ["projection", "sphere", "conformal", "complex-analysis", "geometry"],
+  "description": {
+    "short": "Interactive sphere-to-plane conformal mapping visualization",
+    "long": "Explore stereographic projection from spheres to planes, demonstrating conformal mappings and geometric constraints. Click on either canvas to see the corresponding point on the other view, watch how circles on the sphere map to circles on the plane."
+  },
+  "author": {
+    "name": "Constraint Theory Team",
+    "url": "https://github.com/SuperInstance"
+  },
+  "requiresWasm": false,
+  "wasmFeatures": [],
+  "accessibility": {
+    "keyboardNavigable": true,
+    "screenReaderSupport": true,
+    "pauseControl": true
+  },
+  "performance": {
+    "estimatedLoadTime": "<1s",
+    "recommendedDevices": ["desktop", "tablet", "mobile"]
+  },
+  "educational": {
+    "concepts": [
+      "Stereographic projection",
+      "Conformal mapping",
+      "Geometric constraints",
+      "Complex analysis"
+    ],
+    "prerequisites": [],
+    "learningObjectives": [
+      "Understand conformal mappings preserve angles",
+      "Visualize sphere-to-plane projection",
+      "Explore constraint preservation in transformations"
+    ]
+  },
+  "links": {
+    "source": "https://github.com/SuperInstance/constraint-theory-web/tree/main/experiments/stereographic",
+    "demo": "https://constraint-theory.superinstance.ai/experiments/stereographic/"
+  }
+}

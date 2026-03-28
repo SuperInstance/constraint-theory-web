@@ -2,7 +2,7 @@
 
 > **Click once. Understand forever.**
 >
-> 49 interactive simulations that make math *click* — no math degree required.
+> **50** interactive simulations that make math *click* — no math degree required.
 
 <div align="center">
 
@@ -21,7 +21,7 @@
 
 ## 🎯 What Is This?
 
-**49 interactive HTML simulations** for learning Constraint Theory, geometry, physics, and math. Built for students, teachers, and the perpetually curious.
+**50 interactive HTML simulations** (41 experiments + 9 simulators) for learning Constraint Theory, geometry, physics, and math. Built for students, teachers, and the perpetually curious.
 
 <div align="center">
 
@@ -50,7 +50,7 @@
 | **See geometry snap** | [Pythagorean Demo →](https://constraint-theory.superinstance.ai/simulators/pythagorean/) |
 | **Watch algorithms work** | [KD-Tree Demo →](https://constraint-theory.superinstance.ai/simulators/kdtree/) |
 | **Play with physics** | [Swarm Demo →](https://constraint-theory.superinstance.ai/simulators/swarm/) |
-| **Browse all 49** | [Full Gallery →](https://constraint-theory.superinstance.ai) |
+| **Browse all 50** | [Full Gallery →](https://constraint-theory.superinstance.ai) |
 
 <details>
 <summary><b>💻 Prefer local? Clone it (optional)</b></summary>
@@ -100,12 +100,12 @@ Click anywhere on the canvas. Watch your cursor snap to the nearest exact coordi
 | Demo | What You'll See | Quick Link |
 |------|-----------------|------------|
 | Mandelbrot Set | Fractal zoom with color cycling | [▶](https://constraint-theory.superinstance.ai/experiments/mandelbrot/) |
-| Fourier Series | Circles drawing waves | [▶](https://constraint-theory.superinstance.ai/experiments/fourier/) |
-| Geometric Algebra | Clifford algebra made visual | — |
-| Holonomy Transport | Parallel transport on manifolds | — |
-| Quaternion | 4D rotations projected | — |
-| Complex Plane | Möbius transforms | — |
-| Cellular Automata | Conway's Life & more | — |
+| Fourier Series | Circles drawing waves | [▶](https://constraint-theory.superinstance.ai/experiments/fourier-series/) |
+| Geometric Algebra | Clifford algebra made visual | [▶](https://constraint-theory.superinstance.ai/experiments/geometric-algebra/) |
+| Holonomy Transport | Parallel transport on manifolds | [▶](https://constraint-theory.superinstance.ai/experiments/holonomy/) |
+| Quaternion | 4D rotations projected | [▶](https://constraint-theory.superinstance.ai/experiments/quaternion/) |
+| Complex Plane | Möbius transforms | [▶](https://constraint-theory.superinstance.ai/experiments/complex-plane/) |
+| Cellular Automata | Conway's Life & more | [▶](https://constraint-theory.superinstance.ai/experiments/cellular-automata/) |
 
 ### ⚡ Physics Simulations (15+)
 
@@ -125,7 +125,7 @@ Click anywhere on the canvas. Watch your cursor snap to the nearest exact coordi
 | Tree of Thoughts | AI reasoning visualization |
 | Constraint Network | Agent coordination |
 
-**[→ Browse all 49 simulations](https://constraint-theory.superinstance.ai)**
+**[→ Browse all 50 simulations](https://constraint-theory.superinstance.ai)**
 
 ---
 
@@ -254,8 +254,20 @@ Want to build your own? Here's a minimal starting point:
 
 - **Zero dependencies** — Vanilla JavaScript
 - **Canvas 2D / WebGL** — Hardware-accelerated rendering
-- **Responsive** — Desktop and mobile
+- **Responsive** — Desktop and mobile friendly
 - **Self-contained** — Single HTML file per demo
+- **Accessible** — ARIA attributes, keyboard navigation, screen reader support
+
+### 🌐 Browser Compatibility
+
+| Browser | Version | Status |
+|---------|---------|--------|
+| Chrome | 90+ | ✅ Full support |
+| Firefox | 88+ | ✅ Full support |
+| Safari | 14+ | ✅ Full support |
+| Edge | 90+ | ✅ Full support |
+| Mobile Safari | 14+ | ✅ Touch optimized |
+| Chrome Mobile | 90+ | ✅ Touch optimized |
 
 ---
 
@@ -263,10 +275,51 @@ Want to build your own? Here's a minimal starting point:
 
 | Repo | What It Does |
 |------|--------------|
-| **[constraint-theory-core](https://github.com/SuperInstance/constraint-theory-core)** | Rust crate |
-| **[constraint-theory-python](https://github.com/SuperInstance/constraint-theory-python)** | Python bindings |
-| **[constraint-theory-web](https://github.com/SuperInstance/constraint-theory-web)** | This repo — Interactive demos |
-| **[constraint-theory-research](https://github.com/SuperInstance/constraint-theory-research)** | Mathematical foundations |
+| **[constraint-theory-core](https://github.com/SuperInstance/constraint-theory-core)** | 🦀 Rust crate (100ns snaps, WASM support) |
+| **[constraint-theory-python](https://github.com/SuperInstance/constraint-theory-python)** | 🐍 Python bindings (NumPy integration) |
+| **[constraint-theory-web](https://github.com/SuperInstance/constraint-theory-web)** | 🌐 This repo — 50 interactive demos |
+| **[constraint-theory-research](https://github.com/SuperInstance/constraint-theory-research)** | 📚 Mathematical foundations & papers |
+
+### 🔗 WASM Integration
+
+Use Constraint Theory in the browser with WebAssembly:
+
+```javascript
+// Install from npm (when published)
+// npm install constraint-theory-wasm
+
+// Or build from source
+git clone https://github.com/SuperInstance/constraint-theory-core
+cd constraint-theory-core
+wasm-pack build --target web --out-dir ../constraint-theory-web/wasm
+
+// Use in JavaScript
+import init, { PythagoreanManifold } from './wasm/constraint_theory_core.js';
+
+await init();
+const manifold = new PythagoreanManifold(200);
+const [exact, noise] = manifold.snap([0.577, 0.816]);
+// exact = [0.6, 0.8] — forever exact!
+```
+
+### 📄 Research Papers
+
+Cite our work in your papers:
+
+```bibtex
+@article{constraint_theory_2025,
+  title={Constraint Theory: Deterministic Manifold Snapping via Pythagorean Geometry},
+  author={SuperInstance},
+  journal={arXiv preprint arXiv:2503.15847},
+  year={2025},
+  url={https://github.com/SuperInstance/constraint-theory-research}
+}
+```
+
+**Key papers:**
+- [Mathematical Foundations](https://github.com/SuperInstance/constraint-theory-research/blob/main/MATHEMATICAL_FOUNDATIONS_DEEP_DIVE.md) — 45-page deep dive
+- [Theoretical Guarantees](https://github.com/SuperInstance/constraint-theory-research/blob/main/guides/THEORETICAL_GUARANTEES.md) — Zero-hallucination proofs
+- [arXiv:2503.15847](https://arxiv.org/abs/2503.15847) — Publication-ready PDF
 
 ---
 

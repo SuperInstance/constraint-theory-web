@@ -1,0 +1,168 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://constraint-theory.superinstance.ai/schemas/experiment.json",
+  "title": "Experiment Metadata",
+  "description": "Schema for constraint-theory-web experiment metadata files",
+  "type": "object",
+  "required": ["id", "name", "version", "category", "difficulty", "description"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri",
+      "description": "JSON Schema reference"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Unique identifier for the experiment (kebab-case)"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Human-readable name of the experiment"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of the experiment"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["geometry", "physics", "algorithms", "ai", "math", "art"],
+      "description": "Primary category of the experiment"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": ["beginner", "intermediate", "advanced"],
+      "description": "Learning difficulty level"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9-]+$"
+      },
+      "minItems": 1,
+      "maxItems": 10,
+      "description": "Tags for search and categorization"
+    },
+    "description": {
+      "type": "object",
+      "required": ["short", "long"],
+      "properties": {
+        "short": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "One-line description for cards and listings"
+        },
+        "long": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Detailed description for experiment page"
+        }
+      }
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Author name"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Author URL"
+        }
+      }
+    },
+    "requiresWasm": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the experiment requires WASM"
+    },
+    "wasmFeatures": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["simd", "threads", "bulk-memory"]
+      },
+      "description": "Required WASM features"
+    },
+    "accessibility": {
+      "type": "object",
+      "properties": {
+        "keyboardNavigable": {
+          "type": "boolean",
+          "default": true
+        },
+        "screenReaderSupport": {
+          "type": "boolean",
+          "default": true
+        },
+        "pauseControl": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "properties": {
+        "estimatedLoadTime": {
+          "type": "string",
+          "description": "Expected load time"
+        },
+        "recommendedDevices": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["desktop", "tablet", "mobile"]
+          }
+        }
+      }
+    },
+    "educational": {
+      "type": "object",
+      "properties": {
+        "concepts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "learningObjectives": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "links": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "format": "uri"
+        },
+        "demo": {
+          "type": "string",
+          "format": "uri"
+        },
+        "documentation": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    }
+  }
+}
