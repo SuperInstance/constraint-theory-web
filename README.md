@@ -353,19 +353,6 @@ We welcome:
 
 ---
 
-## 💬 What People Are Saying
-
-> "I spent 20 minutes with the Pythagorean demo and finally understood what snapping means. Better than 2 hours of reading."
-> — *CS Student, computational geometry*
-
-> "The Mandelbrot demo is my new favorite procrastination tool. Beautiful and educational."
-> — *Mathematician, chaos theory*
-
-> "I link these demos in my papers. Reviewers love being able to click and see the math."
-> — *Professor, numerical analysis*
-
----
-
 ## 📜 License
 
 MIT — see [LICENSE](LICENSE).
