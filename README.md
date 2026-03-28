@@ -1,19 +1,29 @@
 # Constraint Theory Web
 
-> **See the math click. 49 interactive simulations that make geometry intuitive.**
+> **Click once. Understand forever.**
+>
+> 49 interactive simulations that make math *click* — no math degree required.
 
-🌐 **Live Demo:** [constraint-theory.superinstance.ai](https://constraint-theory.superinstance.ai)
+<div align="center">
+
+**[🎮 TRY A DEMO NOW →](https://constraint-theory.superinstance.ai/simulators/pythagorean/)**
+
+*Click the canvas. Watch geometry snap. Get it in 5 seconds.*
 
 [![GitHub stars](https://img.shields.io/github/stars/SuperInstance/constraint-theory-web?style=social)](https://github.com/SuperInstance/constraint-theory-web)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Deploy](https://github.com/SuperInstance/constraint-theory-web/actions/workflows/deploy.yml/badge.svg)](https://github.com/SuperInstance/constraint-theory-web/actions/workflows/deploy.yml)
 [![Cloudflare Pages](https://img.shields.io/badge/Deployed-Cloudflare%20Pages-orange)](https://pages.cloudflare.com/)
 
+</div>
+
 ---
 
 ## 🎯 What Is This?
 
-**49 interactive HTML simulations** demonstrating Constraint Theory, geometry, physics, and mathematical concepts. Each demo is a **single HTML file** — no build step, no dependencies, just open and learn.
+**49 interactive HTML simulations** for learning Constraint Theory, geometry, physics, and math. Built for students, teachers, and the perpetually curious.
+
+<div align="center">
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -27,25 +37,37 @@
 └─────────────────────────────────────────────────────────────┘
 ```
 
+**⚡ Zero setup. Zero build. Zero friction.**
+
+</div>
+
 ---
 
-## 🚀 Quick Start (10 Seconds)
+## 🚀 Try It Now (Pick One)
 
-**Prerequisites:** A web browser
+| I want to... | Click here |
+|--------------|------------|
+| **See geometry snap** | [Pythagorean Demo →](https://constraint-theory.superinstance.ai/simulators/pythagorean/) |
+| **Watch algorithms work** | [KD-Tree Demo →](https://constraint-theory.superinstance.ai/simulators/kdtree/) |
+| **Play with physics** | [Swarm Demo →](https://constraint-theory.superinstance.ai/simulators/swarm/) |
+| **Browse all 49** | [Full Gallery →](https://constraint-theory.superinstance.ai) |
+
+<details>
+<summary><b>💻 Prefer local? Clone it (optional)</b></summary>
 
 ```bash
 git clone https://github.com/SuperInstance/constraint-theory-web.git
 cd constraint-theory-web
-
-# Open any demo — no build, no install
-open simulators/pythagorean/index.html
+open simulators/pythagorean/index.html   # That's it. No npm install.
 ```
 
-**Or try online:** [constraint-theory.superinstance.ai](https://constraint-theory.superinstance.ai)
+</details>
 
 ---
 
 ## ✨ The Ah-Ha Moment
+
+<div align="center">
 
 **Reading about Pythagorean snapping:**
 
@@ -55,40 +77,44 @@ open simulators/pythagorean/index.html
 
 **Opening our demo:**
 
-Click anywhere on the canvas. Watch your cursor snap to the nearest exact coordinate. See the noise. **Understand instantly.**
+Click anywhere on the canvas. Watch your cursor snap to the nearest exact coordinate. **See the noise. Understand instantly.**
+
+**[Try the Pythagorean demo →](https://constraint-theory.superinstance.ai/simulators/pythagorean/)**
+
+</div>
 
 ---
 
-## 📊 Demo Overview
+## 📊 Demo Showcase
 
-### 🧮 Core Simulations (7)
+### 🧮 Start Here: Core Simulations
 
-| Demo | What You'll Learn | Try It |
-|------|-------------------|--------|
-| **Pythagorean Snapping** | Click to snap — see noise in real-time | [Live](https://constraint-theory.superinstance.ai/simulators/pythagorean/) |
-| **KD-Tree Visualization** | Watch O(log n) in action | [Live](https://constraint-theory.superinstance.ai/simulators/kdtree/) |
-| **Swarm Behavior** | Boids with deterministic physics | [Live](https://constraint-theory.superinstance.ai/simulators/swarm/) |
+| Demo | What You'll Learn | Seconds to Try |
+|------|-------------------|----------------|
+| **Pythagorean Snapping** | Click to snap — see noise in real-time | [▶ Play](https://constraint-theory.superinstance.ai/simulators/pythagorean/) |
+| **KD-Tree Visualization** | Watch O(log n) in action | [▶ Play](https://constraint-theory.superinstance.ai/simulators/kdtree/) |
+| **Swarm Behavior** | Boids with deterministic physics | [▶ Play](https://constraint-theory.superinstance.ai/simulators/swarm/) |
 
 ### 🔬 Mathematical Visualizations (20+)
 
-| Demo | What You'll See |
-|------|-----------------|
-| Mandelbrot Set | Fractal zoom with color cycling |
-| Fourier Series | Circles drawing waves |
-| Geometric Algebra | Clifford algebra made visual |
-| Holonomy Transport | Parallel transport on manifolds |
-| Quaternion | 4D rotations projected |
-| Complex Plane | Möbius transforms |
-| Cellular Automata | Conway's Life & more |
+| Demo | What You'll See | Quick Link |
+|------|-----------------|------------|
+| Mandelbrot Set | Fractal zoom with color cycling | [▶](https://constraint-theory.superinstance.ai/experiments/mandelbrot/) |
+| Fourier Series | Circles drawing waves | [▶](https://constraint-theory.superinstance.ai/experiments/fourier/) |
+| Geometric Algebra | Clifford algebra made visual | — |
+| Holonomy Transport | Parallel transport on manifolds | — |
+| Quaternion | 4D rotations projected | — |
+| Complex Plane | Möbius transforms | — |
+| Cellular Automata | Conway's Life & more | — |
 
 ### ⚡ Physics Simulations (15+)
 
 | Demo | What You'll Experience |
 |------|------------------------|
-| N-Body | Gravitational chaos |
-| Fluid Dynamics | Navier-Stokes visualization |
-| Soft Body | XPBD constraint solver |
-| Wave Interference | Constructive & destructive |
+| N-Body | Gravitational chaos — watch planets orbit |
+| Fluid Dynamics | Navier-Stokes in your browser |
+| Soft Body | XPBD constraint solver — squishy physics |
+| Wave Interference | Constructive & destructive patterns |
 | Voxel XPBD | 3D physics engine |
 
 ### 🧠 AI/ML Demonstrations (7+)
@@ -99,11 +125,16 @@ Click anywhere on the canvas. Watch your cursor snap to the nearest exact coordi
 | Tree of Thoughts | AI reasoning visualization |
 | Constraint Network | Agent coordination |
 
-**49 total simulations. Each is a self-contained HTML file.**
+**[→ Browse all 49 simulations](https://constraint-theory.superinstance.ai)**
 
 ---
 
-## 🛠️ Create Your Own Demo (60 Seconds)
+## 🛠️ Create Your Own Demo (Optional)
+
+Want to build your own? Here's a minimal starting point:
+
+<details>
+<summary><b>📝 Show me the code</b></summary>
 
 ```html
 <!DOCTYPE html>
@@ -124,7 +155,6 @@ Click anywhere on the canvas. Watch your cursor snap to the nearest exact coordi
     const ctx = canvas.getContext('2d');
     const info = document.getElementById('info');
     
-    // Simple Pythagorean triple lookup
     const triples = [
       [3/5, 4/5], [4/5, 3/5], [5/13, 12/13], [8/17, 15/17], [7/25, 24/25]
     ];
@@ -134,15 +164,12 @@ Click anywhere on the canvas. Watch your cursor snap to the nearest exact coordi
       const x = (e.clientX - rect.left) / 200 - 1;
       const y = (e.clientY - rect.top) / 200 - 1;
       
-      // Find nearest triple
-      let best = triples[0];
-      let minDist = Infinity;
+      let best = triples[0], minDist = Infinity;
       for (const [tx, ty] of triples) {
         const dist = Math.hypot(x - tx, y - ty);
         if (dist < minDist) { minDist = dist; best = [tx, ty]; }
       }
       
-      // Draw
       ctx.clearRect(0, 0, 400, 400);
       ctx.beginPath();
       ctx.arc(200 + x * 200, 200 + y * 200, 5, 0, Math.PI * 2);
@@ -163,15 +190,19 @@ Click anywhere on the canvas. Watch your cursor snap to the nearest exact coordi
 
 **Copy-paste into a `.html` file, open in browser, and click!**
 
+</details>
+
+**[→ See contributing guide for more](CONTRIBUTING.md)**
+
 ---
 
-## 🎓 Use Cases
+## 🎓 Who Is This For?
 
-### 🧭 Decision Tree: Is This For You?
+### 🧭 Quick Check
 
 ```
                     ┌─────────────────────────────────┐
-                    │   Need to explain math visually?│
+                    │   Want to SEE math, not read it?│
                     └─────────────┬───────────────────┘
                                   │
          ┌────────────────────────┼────────────────────────┐
@@ -187,38 +218,35 @@ Click anywhere on the canvas. Watch your cursor snap to the nearest exact coordi
     └─────────┘             └──────────┘            └──────────┘
 ```
 
-### Education — Teaching Geometry
+**If any of these sound like you, you're in the right place.**
 
-```javascript
-// Open: simulators/pythagorean/index.html
-// Students click around the unit circle
-// They see which points snap to exact values
-// Patterns emerge: (3,4,5), (5,12,13), (8,15,17)...
-```
+### 📚 For Teachers
 
 **Kinesthetic learning beats lecture. Students remember what they discover.**
 
-### Outreach — Hacker News Launch
-
 ```javascript
-// Open: experiments/mandelbrot/index.html
-// Zoom into fractal with smooth animations
-// Share screenshot: "Look what I found"
-// HN comment: "The interactive demo sold me"
+// In class: Open Pythagorean demo
+// Students click around the unit circle
+// They see which points snap to exact values
+// Patterns emerge: (3,4,5), (5,12,13), (8,15,17)...
+// No lecture needed — they get it.
 ```
 
-**A great demo is worth 1000 words. And 1000 stars.**
+### 🎓 For Students
 
-### Debugging — Validate Your Implementation
+**Struggling with a concept? Stop reading. Start clicking.**
 
-```javascript
-// Open: simulators/kdtree/index.html
-// See the KD-tree partitions
-// Watch how queries traverse the tree
-// Verify your code matches the reference
-```
+- Fourier Series → Watch circles draw waves
+- Mandelbrot → Zoom into infinity
+- Swarm → See emergence in action
+
+### 💻 For Developers
 
 **Visual debugging catches what unit tests miss.**
+
+- KD-Tree → Watch queries traverse partitions
+- N-Body → Validate your physics engine
+- Constraint Network → Debug agent coordination
 
 ---
 
@@ -293,8 +321,12 @@ MIT — see [LICENSE](LICENSE).
 
 <div align="center">
 
-**If you've ever struggled to explain a mathematical concept, an interactive demo does the teaching for you.**
+## 🚀 Ready to Learn?
 
-**[Star this repo](https://github.com/SuperInstance/constraint-theory-web)** · **[Try the demos](https://constraint-theory.superinstance.ai)**
+**[🎮 Try a Demo Now](https://constraint-theory.superinstance.ai/simulators/pythagorean/)** · **[⭐ Star This Repo](https://github.com/SuperInstance/constraint-theory-web)** · **[📥 Clone Locally](#-try-it-now-pick-one)**
+
+---
+
+*Click once. Understand forever.*
 
 </div>
