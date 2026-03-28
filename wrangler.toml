@@ -1,44 +1,6 @@
 # Cloudflare Pages configuration for constraint-theory-web
-# This is a static site, use: wrangler pages deploy . --project-name=constraint-theory-web
+# Deploy with: wrangler pages deploy . --project-name constraint-theory-web
 
 name = "constraint-theory-web"
 compatibility_date = "2024-01-01"
-
-# Required for Pages deployment
 pages_build_output_dir = "."
-
-# Headers for all pages
-[[headers]]
-for = "/*"
-[headers.values]
-X-Content-Type-Options = "nosniff"
-X-Frame-Options = "DENY"
-X-XSS-Protection = "1; mode=block"
-Referrer-Policy = "strict-origin-when-cross-origin"
-
-# Cache static assets
-[[headers]]
-for = "/css/*"
-[headers.values]
-Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-for = "/js/*"
-[headers.values]
-Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-for = "/experiments/*/app.js"
-[headers.values]
-Cache-Control = "public, max-age=86400"
-
-# Redirects
-[[redirects]]
-from = "/home"
-to = "/index.html"
-status = 301
-
-[[redirects]]
-from = "/demo"
-to = "/simulators/pythagorean/index.html"
-status = 302

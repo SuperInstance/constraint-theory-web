@@ -6,7 +6,7 @@
 
 <div align="center">
 
-**[🎮 TRY A DEMO NOW →](https://constraint-theory.superinstance.ai/simulators/pythagorean/)**
+**[🎮 TRY A DEMO NOW →](https://constraint-theory-web.pages.dev/simulators/pythagorean/)**
 
 *Click the canvas. Watch geometry snap. Get it in 5 seconds.*
 
@@ -47,10 +47,10 @@
 
 | I want to... | Click here |
 |--------------|------------|
-| **See geometry snap** | [Pythagorean Demo →](https://constraint-theory.superinstance.ai/simulators/pythagorean/) |
-| **Watch algorithms work** | [KD-Tree Demo →](https://constraint-theory.superinstance.ai/simulators/kdtree/) |
-| **Play with physics** | [Swarm Demo →](https://constraint-theory.superinstance.ai/simulators/swarm/) |
-| **Browse all 50** | [Full Gallery →](https://constraint-theory.superinstance.ai) |
+| **See geometry snap** | [Pythagorean Demo →](https://constraint-theory-web.pages.dev/simulators/pythagorean/) |
+| **Watch algorithms work** | [KD-Tree Demo →](https://constraint-theory-web.pages.dev/simulators/kdtree/) |
+| **Play with physics** | [Swarm Demo →](https://constraint-theory-web.pages.dev/simulators/swarm/) |
+| **Browse all 50** | [Full Gallery →](https://constraint-theory-web.pages.dev) |
 
 <details>
 <summary><b>💻 Prefer local? Clone it (optional)</b></summary>
@@ -79,7 +79,7 @@ open simulators/pythagorean/index.html   # That's it. No npm install.
 
 Click anywhere on the canvas. Watch your cursor snap to the nearest exact coordinate. **See the noise. Understand instantly.**
 
-**[Try the Pythagorean demo →](https://constraint-theory.superinstance.ai/simulators/pythagorean/)**
+**[Try the Pythagorean demo →](https://constraint-theory-web.pages.dev/simulators/pythagorean/)**
 
 </div>
 
@@ -91,21 +91,21 @@ Click anywhere on the canvas. Watch your cursor snap to the nearest exact coordi
 
 | Demo | What You'll Learn | Seconds to Try |
 |------|-------------------|----------------|
-| **Pythagorean Snapping** | Click to snap — see noise in real-time | [▶ Play](https://constraint-theory.superinstance.ai/simulators/pythagorean/) |
-| **KD-Tree Visualization** | Watch O(log n) in action | [▶ Play](https://constraint-theory.superinstance.ai/simulators/kdtree/) |
-| **Swarm Behavior** | Boids with deterministic physics | [▶ Play](https://constraint-theory.superinstance.ai/simulators/swarm/) |
+| **Pythagorean Snapping** | Click to snap — see noise in real-time | [▶ Play](https://constraint-theory-web.pages.dev/simulators/pythagorean/) |
+| **KD-Tree Visualization** | Watch O(log n) in action | [▶ Play](https://constraint-theory-web.pages.dev/simulators/kdtree/) |
+| **Swarm Behavior** | Boids with deterministic physics | [▶ Play](https://constraint-theory-web.pages.dev/simulators/swarm/) |
 
 ### 🔬 Mathematical Visualizations (20+)
 
 | Demo | What You'll See | Quick Link |
 |------|-----------------|------------|
-| Mandelbrot Set | Fractal zoom with color cycling | [▶](https://constraint-theory.superinstance.ai/experiments/mandelbrot/) |
-| Fourier Series | Circles drawing waves | [▶](https://constraint-theory.superinstance.ai/experiments/fourier-series/) |
-| Geometric Algebra | Clifford algebra made visual | [▶](https://constraint-theory.superinstance.ai/experiments/geometric-algebra/) |
-| Holonomy Transport | Parallel transport on manifolds | [▶](https://constraint-theory.superinstance.ai/experiments/holonomy/) |
-| Quaternion | 4D rotations projected | [▶](https://constraint-theory.superinstance.ai/experiments/quaternion/) |
-| Complex Plane | Möbius transforms | [▶](https://constraint-theory.superinstance.ai/experiments/complex-plane/) |
-| Cellular Automata | Conway's Life & more | [▶](https://constraint-theory.superinstance.ai/experiments/cellular-automata/) |
+| Mandelbrot Set | Fractal zoom with color cycling | [▶](https://constraint-theory-web.pages.dev/experiments/mandelbrot/) |
+| Fourier Series | Circles drawing waves | [▶](https://constraint-theory-web.pages.dev/experiments/fourier-series/) |
+| Geometric Algebra | Clifford algebra made visual | [▶](https://constraint-theory-web.pages.dev/experiments/geometric-algebra/) |
+| Holonomy Transport | Parallel transport on manifolds | [▶](https://constraint-theory-web.pages.dev/experiments/holonomy/) |
+| Quaternion | 4D rotations projected | [▶](https://constraint-theory-web.pages.dev/experiments/quaternion/) |
+| Complex Plane | Möbius transforms | [▶](https://constraint-theory-web.pages.dev/experiments/complex-plane/) |
+| Cellular Automata | Conway's Life & more | [▶](https://constraint-theory-web.pages.dev/experiments/cellular-automata/) |
 
 ### ⚡ Physics Simulations (15+)
 
@@ -125,7 +125,7 @@ Click anywhere on the canvas. Watch your cursor snap to the nearest exact coordi
 | Tree of Thoughts | AI reasoning visualization |
 | Constraint Network | Agent coordination |
 
-**[→ Browse all 50 simulations](https://constraint-theory.superinstance.ai)**
+**[→ Browse all 50 simulations](https://constraint-theory-web.pages.dev)**
 
 ---
 
@@ -363,7 +363,7 @@ MIT — see [LICENSE](LICENSE).
 
 ## 🚀 Ready to Learn?
 
-**[🎮 Try a Demo Now](https://constraint-theory.superinstance.ai/simulators/pythagorean/)** · **[⭐ Star This Repo](https://github.com/SuperInstance/constraint-theory-web)** · **[📥 Clone Locally](#-try-it-now-pick-one)**
+**[🎮 Try a Demo Now](https://constraint-theory-web.pages.dev/simulators/pythagorean/)** · **[⭐ Star This Repo](https://github.com/SuperInstance/constraint-theory-web)** · **[📥 Clone Locally](#-try-it-now-pick-one)**
 
 ---
 
