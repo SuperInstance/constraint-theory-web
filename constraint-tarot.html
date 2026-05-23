@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Constraint Tarot</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Raleway:wght@300;400;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --card-bg: #12121c;
+    --card-border: #2a2a3e;
+    --gold: #c9a84c;
+    --gold-dim: #8a7234;
+    --text: #e0ddd5;
+    --text-dim: #7a7888;
+    --lattice: #5b8def;
+    --funnel: #e85d75;
+    --consensus: #5de8a0;
+    --laman: #e8a85d;
+    --tempo: #b35de8;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Raleway', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Starfield background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, #1a1a2e 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, #1e1a2e 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, #1a1e2e 0%, transparent 50%);
+    z-index: -1;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.4rem;
+    color: var(--gold);
+    letter-spacing: 4px;
+    margin-bottom: 6px;
+    text-shadow: 0 0 30px rgba(201,168,76,0.3);
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+  }
+
+  .spread {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+    perspective: 1200px;
+  }
+
+  .card-slot {
+    width: 170px;
+    height: 260px;
+    perspective: 1000px;
+    cursor: pointer;
+  }
+
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-slot.flipped .card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .card-front, .card-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    border: 1.5px solid var(--card-border);
+    overflow: hidden;
+  }
+
+  .card-back {
+    background: linear-gradient(135deg, #1a1a2e, #0f0f1a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .card-back-pattern {
+    width: 120px;
+    height: 120px;
+    position: relative;
+  }
+
+  /* Mandala pattern on card back */
+  .card-back-pattern::before,
+  .card-back-pattern::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--gold-dim);
+    border-radius: 50%;
+  }
+  .card-back-pattern::after {
+    inset: 15px;
+    transform: rotate(45deg);
+    border-radius: 50%;
+  }
+
+  .card-back .symbol {
+    font-size: 1.5rem;
+    color: var(--gold-dim);
+    margin-top: 12px;
+    font-family: 'Cinzel', serif;
+  }
+
+  .card-front {
+    background: var(--card-bg);
+    transform: rotateY(180deg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 10px 10px;
+  }
+
+  .card-icon {
+    width: 100%;
+    height: 100px;
+    position: relative;
+    margin-bottom: 8px;
+  }
+
+  .card-type-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .card-reading {
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--text);
+    padding: 0 4px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .card-position {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-top: auto;
+  }
+
+  /* Geometric art for each constraint type */
+  .geo-lattice {
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 9px, var(--lattice) 9px, var(--lattice) 10px),
+      repeating-linear-gradient(90deg, transparent, transparent 9px, var(--lattice) 9px, var(--lattice) 10px),
+      repeating-linear-gradient(45deg, transparent, transparent 12px, rgba(91,141,239,0.15) 12px, rgba(91,141,239,0.15) 13px);
+    animation: latticeShift 6s ease-in-out infinite;
+  }
+  @keyframes latticeShift {
+    0%, 100% { background-position: 0 0, 0 0, 0 0; }
+    50% { background-position: 5px 5px, 5px 5px, 3px 3px; }
+  }
+
+  .geo-funnel {
+    background:
+      radial-gradient(ellipse at 50% 80%, var(--funnel) 0%, transparent 50%),
+      conic-gradient(from 180deg at 50% 80%, transparent 0deg, rgba(232,93,117,0.3) 60deg, transparent 120deg, rgba(232,93,117,0.2) 180deg, transparent 240deg, rgba(232,93,117,0.3) 300deg, transparent 360deg);
+    animation: funnelPulse 4s ease-in-out infinite;
+  }
+  @keyframes funnelPulse {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.05); opacity: 1; }
+  }
+
+  .geo-consensus {
+    background:
+      radial-gradient(circle at 25% 35%, var(--consensus) 2px, transparent 3px),
+      radial-gradient(circle at 75% 35%, var(--consensus) 2px, transparent 3px),
+      radial-gradient(circle at 50% 75%, var(--consensus) 2px, transparent 3px),
+      radial-gradient(circle at 50% 50%, transparent 20px, rgba(93,232,160,0.12) 21px, transparent 22px),
+      radial-gradient(circle at 50% 50%, transparent 35px, rgba(93,232,160,0.08) 36px, transparent 37px),
+      linear-gradient(25% 35%, rgba(93,232,160,0.2) 0%, transparent 100%);
+    animation: consensusRotate 8s linear infinite;
+  }
+  @keyframes consensusRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .geo-laman {
+    background:
+      linear-gradient(0deg, transparent 49%, var(--laman) 49%, var(--laman) 51%, transparent 51%),
+      linear-gradient(60deg, transparent 49%, var(--laman) 49%, var(--laman) 51%, transparent 51%),
+      linear-gradient(120deg, transparent 49%, var(--laman) 49%, var(--laman) 51%, transparent 51%),
+      linear-gradient(180deg, transparent 49%, rgba(232,168,93,0.3) 49%, rgba(232,168,93,0.3) 51%, transparent 51%),
+      linear-gradient(240deg, transparent 49%, rgba(232,168,93,0.3) 49%, rgba(232,168,93,0.3) 51%, transparent 51%),
+      linear-gradient(300deg, transparent 49%, rgba(232,168,93,0.3) 49%, rgba(232,168,93,0.3) 51%, transparent 51%);
+    animation: lamanShimmer 5s ease-in-out infinite;
+  }
+  @keyframes lamanShimmer {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.3); }
+  }
+
+  .geo-tempo {
+    background:
+      repeating-radial-gradient(circle at 50% 50%, transparent 0px, transparent 8px, rgba(179,93,232,0.15) 8px, rgba(179,93,232,0.15) 9px),
+      radial-gradient(circle at 50% 50%, var(--tempo) 3px, transparent 4px),
+      conic-gradient(from 0deg, transparent 0%, rgba(179,93,232,0.2) 10%, transparent 20%, transparent 30%, rgba(179,93,232,0.15) 40%, transparent 50%);
+    animation: tempoPulse 2s ease-in-out infinite;
+  }
+  @keyframes tempoPulse {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(0.97); }
+    50% { transform: scale(1.03); }
+    75% { transform: scale(0.99); }
+  }
+
+  /* Synthesis section */
+  .synthesis {
+    max-width: 700px;
+    margin: 0 auto 30px;
+    padding: 24px 28px;
+    background: linear-gradient(135deg, rgba(30,30,50,0.8), rgba(20,20,35,0.9));
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .synthesis.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .synthesis h2 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+
+  .synthesis p {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  /* Buttons */
+  .controls {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  button {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    padding: 12px 32px;
+    border: 1.5px solid var(--gold-dim);
+    background: transparent;
+    color: var(--gold);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  button:hover {
+    background: rgba(201,168,76,0.1);
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(201,168,76,0.15);
+  }
+  button:active {
+    transform: scale(0.97);
+  }
+  button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Position labels */
+  .position-label {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    font-family: 'Cinzel', serif;
+  }
+
+  /* Toast notification */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--card-bg);
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 50px;
+    color: var(--text-dim);
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+  }
+
+  @media (max-width: 900px) {
+    .card-slot { width: 150px; height: 230px; }
+    h1 { font-size: 1.8rem; }
+    .spread { gap: 10px; }
+  }
+  @media (max-width: 600px) {
+    .card-slot { width: 130px; height: 210px; }
+    .spread { gap: 8px; }
+    h1 { font-size: 1.4rem; }
+    .card-reading { font-size: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>CONSTRAINT TAROT</h1>
+  <p class="subtitle">A 5-Card Compositional Spread</p>
+
+  <div class="spread" id="spread"></div>
+  <div class="synthesis" id="synthesis">
+    <h2>✦ THE READING ✦</h2>
+    <p id="synthesis-text"></p>
+  </div>
+
+  <div class="controls">
+    <button id="drawBtn" onclick="drawCards()">DRAW</button>
+    <button id="shareBtn" onclick="shareReading()" style="display:none;">SHARE</button>
+  </div>
+
+  <p class="footer">Constraint Theory Oracle — draw insight from mathematical structure</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CONSTRAINTS = [
+  { id: 'lattice',    name: 'Lattice',    icon: '🏗️', css: 'geo-lattice',    color: '#5b8def' },
+  { id: 'funnel',     name: 'Funnel',     icon: '🌀', css: 'geo-funnel',     color: '#e85d75' },
+  { id: 'consensus',  name: 'Consensus',   icon: '🤝', css: 'geo-consensus',  color: '#5de8a0' },
+  { id: 'laman',      name: 'Laman',       icon: '🔒', css: 'geo-laman',      color: '#e8a85d' },
+  { id: 'tempo',      name: 'Tempo',       icon: '⏱️', css: 'geo-tempo',      color: '#b35de8' },
+];
+
+const POSITIONS = ['Past', 'Present', 'Hidden', 'Path', 'Outcome'];
+
+const MUSICAL = [
+  'ascending resolution', 'descending cascade', 'stalled crescendo', 'fragmented ostinato',
+  'distant echo', 'converging unison', 'fractured polyphony', 'suspended cadence',
+  'layered counterpoint', 'sparse pedal tone', 'cascading trill', 'diminished spiral',
+  'augmented leap', 'chromatic drift', 'diatonic anchor', 'tonal ambiguity',
+  'clustered dissonance', 'open harmony', 'hocketed rhythm', 'microtonal shimmer'
+];
+
+const EMOTIONAL = [
+  'bittersweet', 'euphoric', 'melancholic', 'serene', 'turbulent', 'yearning',
+  'triumphant', 'haunted', 'playful', 'meditative', 'restless', 'ethereal',
+  'primal', 'tender', 'defiant', 'nostalgic', 'luminous', 'shadowed',
+  'ecstatic', 'grounded'
+];
+
+const READINGS = {
+  lattice: [
+    'Snap every note to a rigid grid — let precision itself become the emotion',
+    'Build a lattice of harmonics, then slowly shift the grid until the tonality warps',
+    'Lock your melody into exact intervals. What feeling escapes through the cracks?',
+    'Layer two lattices at an angle. The interference pattern is your composition',
+    'Compose with only quantized durations. The groove lives in the micro-timings you eliminated',
+    'Construct a harmonic lattice and navigate it like a map. Each node is a chord',
+    'Let the grid be your prison, then find the notes that sit between the bars',
+    'Freeze a phrase into a repeating lattice. Change only the timbre over time',
+    'Write a melody that climbs the lattice rung by rung, each step inevitable',
+    'Create a rhythm so precise it becomes hypnotic. Let one note drift off-grid',
+    'The lattice demands equality — every interval the same. Compose the exception',
+    'Quantize a human performance until it crystallizes. The ghost of swing remains',
+    'Map your composition onto a 2D pitch-time lattice. Read it diagonally',
+    'Let the grid slowly dissolve over 4 minutes. When does freedom feel like loss?',
+    'Compose in just intonation. The lattice is the instrument',
+    'Stack lattice layers until they form a wall. Now find the door',
+    'Snap to grid, then automate the grid size. The structure breathes',
+    'A lattice of trills — every ornament locked in phase. The result is texture',
+    'Write for two instruments sharing one lattice, each hearing it differently',
+    'The lattice is your skeleton. Add flesh that overflows'
+  ],
+  funnel: [
+    'All paths lead to one note. Compose the gravity that pulls everything in',
+    'Create a melodic funnel — wide intervals narrow to a single repeated tone',
+    'Build a harmonic gravity well. Nearby chords get pulled into its orbit',
+    'Start with chaos. One pitch emerges as the attractor. Everything spirals toward it',
+    'The listener can feel the pull. Compose the moment they surrender to it',
+    'Design a funnel where rhythm accelerates as pitch descends into the center',
+    'Layer three independent lines that converge on one moment of unison',
+    'A groove that tightens — the cycle shortens by one beat each repetition',
+    'Compose the space around the attractor. The silence is heavier than the note',
+    'Let a low drone be your gravity. Every melody orbits it, never escaping',
+    'Write a piece where dynamics funnel inward — from ff ensemble to ppp solo',
+    'Harmonic funnel: start with dense clusters that resolve to a perfect fifth',
+    'The funnel is time itself. Compose the sensation of events becoming inevitable',
+    'Create two competing funnels. The tension is which one wins',
+    'A textural funnel: thick noise gradually reveals a single pure tone',
+    'Compose the trajectory, not the destination. The curve is the music',
+    'Let the funnel be rhythmic — complex polyrhythm simplifies to a steady pulse',
+    'The attractor shifts mid-piece. Everything that fell in now has to climb out',
+    'Funnel the frequency spectrum. Wideband becomes sine. Noise becomes tone',
+    'Compose a phrase where every note choice feels like it was the only option'
+  ],
+  consensus: [
+    'Three voices must agree on the next note. Compose their negotiation',
+    'Write for ensemble where no one leads. The music emerges from mutual listening',
+    'Consensus is not unanimity — find the harmony in disagreement',
+    'Each player proposes, the others accept or modify. Document the conversation',
+    'Compose a texture where independent parts discover they share a hidden unity',
+    'The group breathes together without counting. Find that rhythm',
+    'Write a piece where the form is determined by collective impulse',
+    'Two musical ideas must merge. Neither survives unchanged',
+    'Consensus through compromise: each voice gives up something to find the whole',
+    'Compose the moment when scattered fragments suddenly align',
+    'A round that becomes a chorale — consensus emerging from canonic delay',
+    'Write for players who must agree on dynamics by gesture alone',
+    'The tension of almost-agreeing. Hold it as long as possible',
+    'Multiple agents, one tempo. They find it together or not at all',
+    'Compose a texture where each addition shifts the meaning of everything before it',
+    'Let three melodies converge into one. The single line carries triple weight',
+    'Consensus as erosion — each repetition smooths away individuality. Is that peace?',
+    'Write the sound of several people arriving at the same conclusion simultaneously',
+    'A chord that only makes sense when you hear all the voices that built it',
+    'Compose a collective exhale — the release after concentrated agreement'
+  ],
+  laman: [
+    'The structure is rigid. Nothing moves. Compose the beauty of stillness',
+    'A Laman graph has exactly enough edges. Remove one and it collapses. Compose that edge',
+    'Write music that feels structurally inevitable — every note a load-bearing element',
+    'Rigidity is not stiffness. Find the strength in flexible stability',
+    'Compose a piece where every element supports every other. No decoration allowed',
+    'The framework holds. The music can afford to be vulnerable within it',
+    'A rigid harmonic structure. The melody is free because the foundation is not',
+    'Write a canon so tight it forms a structural truss. Each voice a beam',
+    'The terror of removing one note. The whole thing comes down. Compose the scaffolding',
+    'Minimal rigidity: find the fewest elements that make the structure stable',
+    'Compose the sound of something that cannot be deformed. What does permanence feel like?',
+    'A rhythmic structure so interlocked that displacement is impossible. Groove as rigidity',
+    'Write for bass and drums only. They must carry the entire harmonic weight',
+    'Laman rigidity in counterpoint — each voice locks the others into place',
+    'The piece is a triangle. Three elements, three dependencies, perfect stability',
+    'Compose a chord progression that cannot be reordered. Sequence IS structure',
+    'Rigid but breathing: the structure holds, the dynamics oscillate within',
+    'Find the music in a system that has exactly enough constraints and no more',
+    'A fortress of voice-leading. Every motion is determined, every arrival secured',
+    'Compose the moment before rigidity fails. Hold there. The tension is everything'
+  ],
+  tempo: [
+    'The metronome is law. Compose the music that lives inside its tick',
+    'A tempo-funnel: the beat accelerates as pitches converge. Time and pitch are one',
+    'Compose at exactly 72 BPM. Find the universe within that single constraint',
+    'The rhythm is a funnel pulling events toward the downbeat. Everything falls to one',
+    'Layer three tempos that share a common pulse. The polyrhythm IS the composition',
+    'Write a piece where the tempo itself is the melody — it speeds, slows, breathes',
+    'A metronomic funnel: the beat tightens, the harmony intensifies, the end is inevitable',
+    'Compose the space between ticks. The silence is where music lives',
+    'The tempo governs all. Write music that makes the listener hyper-aware of the beat',
+    'A tempo that doubles every 8 bars. Compose the sensation of time compressing',
+    'The metronome is both prison and liberation. Explore the boundary',
+    'Compose a piece where rhythm is the primary structural element, harmony secondary',
+    'Write for click track. Make the mechanical feel human, or the human feel mechanical',
+    'Tempo as gravity: events closer to the downbeat feel heavier. Use this',
+    'A pulse that gradually subdivides. Each beat splits into smaller worlds',
+    'The funnel of time: compose a piece that feels like it accelerates without changing tempo',
+    'Tempo hocket — pass the beat between voices. No one owns time, everyone shares it',
+    'Write music where the tempo is felt but never explicitly stated',
+    'A metronomic cascade: each tick triggers a new event. Compose the chain reaction',
+    'The tempo is the composition. Everything else is decoration on the pulse'
+  ]
+};
+
+const SYNTHESIS_TEMPLATES = [
+  (c) => `Your spread traces an arc from ${c[0].name}'s ${c[0].emotional} grip on the past, through the present ${c[1].name} pulling toward ${c[1].musical}. Beneath the surface, ${c[2].name} whispers of ${c[2].emotional} ${c[2].musical}. Your path forward demands the ${c[3].name} — ${c[3].emotional} and ${c[3].musical}. The outcome crystallizes in ${c[4].name}: a ${c[4].emotional} convergence, where ${c[4].musical} becomes the final statement. Together, these constraints suggest a composition where structure and feeling are inseparable — each constraint a lens focusing the same creative light.`,
+
+  (c) => `The ${c[0].name} in your past left its mark: ${c[0].emotional} and demanding ${c[0].musical}. Now the ${c[1].name} dominates your present, channeling energy toward ${c[1].musical} with ${c[1].emotional} intensity. Hidden within, the ${c[2].name} reveals a need for ${c[2].emotional} ${c[2].musical}. Walk the ${c[3].name} path of ${c[3].musical} — it demands ${c[3].emotional} conviction. What emerges is pure ${c[4].name}: ${c[4].emotional}, ${c[4].musical}, inevitable. This reading suggests a piece where constraint IS the creative act — every limitation a doorway.`,
+
+  (c) => `Five forces converge. ${c[0].name} anchors your history in ${c[0].emotional} ${c[0].musical}. The present ${c[1].name} creates a ${c[1].emotional} pull toward ${c[1].musical}. In shadow, ${c[2].name} stirs with ${c[2].emotional} longing for ${c[2].musical}. Your guide is ${c[3].name} — its ${c[3].emotional} nature insisting on ${c[3].musical}. And at the resolution: ${c[4].name}, ${c[4].emotional}, arriving through ${c[4].musical}. Let this spread be your compositional compass — each constraint a cardinal direction pointing toward the same creative north.`,
+
+  (c) => `Past: ${c[0].name} imposes ${c[0].emotional} order through ${c[0].musical}. Present: ${c[1].name} creates a ${c[1].emotional} gravity well of ${c[1].musical}. Hidden: the ${c[2].name} within seeks ${c[2].emotional} resolution via ${c[2].musical}. Path: ${c[3].name} demands you navigate ${c[3].musical} with ${c[3].emotional} resolve. Outcome: ${c[4].name} delivers ${c[4].emotional} clarity through ${c[4].musical}. The synthesis is clear — your next composition lives at the intersection of all five constraints, each one shaping the others into something no single force could create alone.`,
+
+  (c) => `The constraint oracle speaks: your past is carved by ${c[0].name} — ${c[0].emotional}, insisting on ${c[0].musical}. The moment you inhabit is ${c[1].name}: ${c[1].emotional}, drawing you into ${c[1].musical}. What you haven't yet named is ${c[2].name}, the ${c[2].emotional} undercurrent of ${c[2].musical}. To move forward, channel ${c[3].name} — let its ${c[3].emotional} nature drive ${c[3].musical}. And when you arrive, ${c[4].name} awaits: ${c[4].emotional}, ${c[4].musical}, the final constraint that makes the piece complete. Trust the structure. The music is already there, waiting between the constraints.`
+];
+
+let currentReading = null;
+let flippedCount = 0;
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function generateReading() {
+  const constraints = shuffle(CONSTRAINTS);
+  const cards = constraints.map((c, i) => {
+    const reading = pick(READINGS[c.id]);
+    const musical = pick(MUSICAL);
+    const emotional = pick(EMOTIONAL);
+    return { ...c, position: POSITIONS[i], reading, musical, emotional };
+  });
+  return cards;
+}
+
+function buildCardHTML(card, index) {
+  return `
+    <div>
+      <div class="card-slot" id="card-${index}" onclick="flipCard(${index})">
+        <div class="card-inner">
+          <div class="card-back">
+            <div class="card-back-pattern"></div>
+            <span class="symbol">✦</span>
+          </div>
+          <div class="card-front" style="border-color: ${card.color}22;">
+            <div class="card-icon ${card.css}"></div>
+            <div class="card-type-label" style="color: ${card.color};">${card.icon} ${card.name}</div>
+            <div class="card-reading">${card.reading}</div>
+            <div class="card-position">${card.position}</div>
+          </div>
+        </div>
+      </div>
+      <div class="position-label">${POSITIONS[index]}</div>
+    </div>
+  `;
+}
+
+function drawCards() {
+  currentReading = generateReading();
+  flippedCount = 0;
+
+  const spread = document.getElementById('spread');
+  spread.innerHTML = currentReading.map((c, i) => buildCardHTML(c, i)).join('');
+
+  document.getElementById('synthesis').classList.remove('visible');
+  document.getElementById('drawBtn').textContent = 'DRAWING...';
+  document.getElementById('drawBtn').disabled = true;
+  document.getElementById('shareBtn').style.display = 'none';
+
+  // Flip cards one by one
+  currentReading.forEach((_, i) => {
+    setTimeout(() => {
+      document.getElementById(`card-${i}`).classList.add('flipped');
+      flippedCount++;
+      if (flippedCount === 5) {
+        setTimeout(showSynthesis, 600);
+      }
+    }, 400 + i * 500);
+  });
+}
+
+function showSynthesis() {
+  const template = pick(SYNTHESIS_TEMPLATES);
+  const text = template(currentReading);
+  document.getElementById('synthesis-text').textContent = text;
+  document.getElementById('synthesis').classList.add('visible');
+  document.getElementById('drawBtn').textContent = 'NEW READING';
+  document.getElementById('drawBtn').disabled = false;
+  document.getElementById('shareBtn').style.display = 'inline-block';
+}
+
+function flipCard(index) {
+  const el = document.getElementById(`card-${index}`);
+  if (el && !el.classList.contains('flipped')) {
+    el.classList.add('flipped');
+    flippedCount++;
+    if (flippedCount === 5) {
+      setTimeout(showSynthesis, 600);
+    }
+  }
+}
+
+function shareReading() {
+  if (!currentReading) return;
+  let text = '🃏 CONSTRAINT TAROT — 5-Card Spread\n\n';
+  currentReading.forEach(c => {
+    text += `${c.icon} ${c.name} (${c.position})\n${c.reading}\n\n`;
+  });
+  text += '✦ SYNTHESIS ✦\n' + document.getElementById('synthesis-text').textContent;
+
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Reading copied to clipboard!');
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Reading copied!');
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// Auto-draw on load
+window.addEventListener('load', () => {
+  setTimeout(drawCards, 300);
+});
+</script>
+</body>
+</html>

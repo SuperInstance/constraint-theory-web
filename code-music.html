@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code-as-Music — Programming Languages × Musical Genres</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0d0d0f;
+  --surface: #16161a;
+  --surface2: #1e1e24;
+  --border: #2a2a32;
+  --text: #e8e6e3;
+  --text-dim: #7f7d7a;
+  --accent: #ff6b35;
+  --accent2: #00d4aa;
+  --accent3: #a855f7;
+  --glow: rgba(255, 107, 53, 0.15);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Ambient background */
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 30% 20%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 80%, rgba(0, 212, 170, 0.05) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 50%, rgba(255, 107, 53, 0.03) 0%, transparent 60%);
+  z-index: -1;
+  animation: bgDrift 20s ease-in-out infinite alternate;
+}
+
+@keyframes bgDrift {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(-2%, -1%) rotate(2deg); }
+}
+
+/* Header */
+.header {
+  text-align: center;
+  padding: 3rem 1rem 1.5rem;
+}
+.header h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent3), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+.header p {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+.btn:hover { border-color: var(--accent); background: var(--surface); }
+.btn.active { border-color: var(--accent); background: rgba(255,107,53,0.1); color: var(--accent); }
+.btn:active { transform: scale(0.97); }
+
+/* Language grid */
+.lang-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.2rem;
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.lang-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  overflow: hidden;
+}
+.lang-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--card-accent, var(--accent));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.lang-card:hover::before, .lang-card.playing::before { opacity: 1; }
+.lang-card:hover {
+  border-color: var(--card-accent, var(--accent));
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+.lang-card.playing {
+  border-color: var(--card-accent, var(--accent));
+  box-shadow: 0 0 30px var(--card-glow, var(--glow));
+  animation: cardPulse 0.5s ease-in-out;
+}
+.lang-card.selected {
+  border-color: var(--accent2);
+  box-shadow: 0 0 20px rgba(0, 212, 170, 0.2);
+}
+
+@keyframes cardPulse {
+  0%, 100% { transform: translateY(-3px); }
+  50% { transform: translateY(-6px); }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+.lang-icon {
+  font-size: 2rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface2);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.card-title {
+  flex: 1;
+}
+.card-title h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.card-title .genre {
+  font-size: 0.8rem;
+  color: var(--card-accent, var(--accent));
+  font-weight: 500;
+}
+
+.card-desc {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.45;
+  margin-bottom: 1rem;
+}
+
+/* Radar chart */
+.radar-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+.radar-container canvas {
+  width: 160px;
+  height: 160px;
+}
+
+/* Tags */
+.tag-row {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.tag {
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--surface2);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+
+/* Play indicator */
+.play-indicator {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 18px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.lang-card.playing .play-indicator { opacity: 1; }
+.play-bar {
+  width: 3px;
+  background: var(--card-accent, var(--accent));
+  border-radius: 2px;
+  animation: playBounce 0.6s ease-in-out infinite alternate;
+}
+.play-bar:nth-child(1) { animation-delay: 0s; height: 6px; }
+.play-bar:nth-child(2) { animation-delay: 0.15s; height: 12px; }
+.play-bar:nth-child(3) { animation-delay: 0.3s; height: 8px; }
+.play-bar:nth-child(4) { animation-delay: 0.45s; height: 14px; }
+
+@keyframes playBounce {
+  0% { transform: scaleY(0.3); }
+  100% { transform: scaleY(1); }
+}
+
+/* Comparison panel */
+.compare-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 1.5rem;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 100;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.compare-panel.open { transform: translateY(0); }
+
+.compare-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.compare-header h2 {
+  font-size: 1.2rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.close-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.close-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.compare-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  max-width: 800px;
+  margin: 0 auto 1.5rem;
+}
+.compare-radar {
+  display: flex;
+  justify-content: center;
+}
+.compare-radar canvas { width: 200px; height: 200px; }
+
+.remix-btn {
+  display: block;
+  margin: 0 auto;
+  padding: 0.8rem 2rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent3));
+  border: none;
+  color: white;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.remix-btn:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(255,107,53,0.3); }
+.remix-btn:active { transform: scale(0.98); }
+
+/* Remix modal */
+.remix-result {
+  text-align: center;
+  padding: 1rem 0;
+}
+.remix-result h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+.remix-result .blended-genre {
+  font-size: 1.3rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .lang-grid { grid-template-columns: 1fr; padding: 1rem; }
+  .compare-content { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🎛 Code as Music</h1>
+  <p>Every programming language has a <em>constraint profile</em> — a musical genre hiding in its type system, memory model, and runtime. Click a card to hear it.</p>
+</div>
+
+<div class="controls">
+  <button class="btn" id="compareToggle" onclick="toggleCompareMode()">⚖️ Compare Mode</button>
+  <button class="btn" id="stopAll" onclick="stopAllAudio()">⏹ Stop All</button>
+</div>
+
+<div class="lang-grid" id="langGrid"></div>
+
+<div class="compare-panel" id="comparePanel">
+  <div class="compare-header">
+    <h2>🔀 Side-by-Side Comparison</h2>
+    <button class="close-btn" onclick="closeCompare()">✕</button>
+  </div>
+  <div class="compare-content" id="compareContent">
+    <div class="compare-radar" id="compareLeft"><p style="color:var(--text-dim)">Select first language</p></div>
+    <div class="compare-radar" id="compareRight"><p style="color:var(--text-dim)">Select second language</p></div>
+  </div>
+  <button class="remix-btn" onclick="remix()">🎛 Remix Languages</button>
+  <div class="remix-result" id="remixResult" style="display:none"></div>
+</div>
+
+<script>
+// ── Language Definitions ──────────────────────────────────────────
+const LANGUAGES = [
+  {
+    id: 'python',
+    name: 'Python',
+    icon: '🐍',
+    genre: 'Lo-fi Indie',
+    color: '#3572A5',
+    desc: 'Relaxed typing, dynamic, interpreted — chill vibes. Snap constraints at medium tightness, like a warm beat you can sink into.',
+    tags: ['dynamic', 'interpreted', 'GIL', 'batteries-included'],
+    profile: { strictness: 2, speed: 3, safety: 4, verbosity: 2, abstraction: 5, chaos: 3 },
+    sound: { type: 'lofi' }
+  },
+  {
+    id: 'rust',
+    name: 'Rust',
+    icon: '🦀',
+    genre: 'Industrial Techno',
+    color: '#DEA584',
+    desc: 'Strict borrow checker, zero-cost abstractions, relentless precision. Laman rigidity at maximum — every allocation accounted for.',
+    tags: ['borrow-checker', 'zero-cost', 'systems', 'fearless'],
+    profile: { strictness: 10, speed: 9, safety: 10, verbosity: 6, abstraction: 7, chaos: 1 },
+    sound: { type: 'techno' }
+  },
+  {
+    id: 'javascript',
+    name: 'JavaScript',
+    icon: '💛',
+    genre: 'Free Jazz Chaos',
+    color: '#F7DF1E',
+    desc: 'Dynamic typing, event loop asynchrony, "undefined is not a function." Tempo constraints with maximum drift — beautiful anarchy.',
+    tags: ['dynamic', 'event-loop', 'callback', 'undefined'],
+    profile: { strictness: 1, speed: 5, safety: 1, verbosity: 2, abstraction: 6, chaos: 10 },
+    sound: { type: 'jazz' }
+  },
+  {
+    id: 'haskell',
+    name: 'Haskell',
+    icon: 'λ',
+    genre: 'Classical Counterpoint',
+    color: '#5D4F85',
+    desc: 'Pure functions, type system as harmony, monads as voice-leading rules. Consensus constraints — every voice must agree.',
+    tags: ['pure', 'monads', 'lazy', 'type-theory'],
+    profile: { strictness: 9, speed: 6, safety: 9, verbosity: 7, abstraction: 10, chaos: 2 },
+    sound: { type: 'classical' }
+  },
+  {
+    id: 'c',
+    name: 'C',
+    icon: '⚡',
+    genre: 'Punk Rock',
+    color: '#555555',
+    desc: 'Raw memory access, no safety net, fast and dangerous. Funnel constraints with narrow target — one wrong pointer and it all blows up.',
+    tags: ['pointers', 'manual-mem', 'unsafe', 'fast'],
+    profile: { strictness: 3, speed: 10, safety: 1, verbosity: 5, abstraction: 2, chaos: 7 },
+    sound: { type: 'punk' }
+  },
+  {
+    id: 'go',
+    name: 'Go',
+    icon: '🔵',
+    genre: 'Minimalist Electronica',
+    color: '#00ADD8',
+    desc: 'Goroutines as repeating patterns, channels as constraints, "less is more." Lattice snap with large grid — everything in its place.',
+    tags: ['goroutines', 'channels', 'simple', 'concurrent'],
+    profile: { strictness: 6, speed: 8, safety: 6, verbosity: 3, abstraction: 3, chaos: 2 },
+    sound: { type: 'minimal' }
+  },
+  {
+    id: 'lisp',
+    name: 'Lisp',
+    icon: '🔮',
+    genre: 'Ambient Drone',
+    color: '#3FB68B',
+    desc: 'Everything is a list, recursion as sustain, parens as layers. Funnel with infinite pull — you descend deeper and deeper.',
+    tags: ['homoiconic', 'macros', 'recursion', 'parens'],
+    profile: { strictness: 4, speed: 3, safety: 5, verbosity: 8, abstraction: 9, chaos: 5 },
+    sound: { type: 'drone' }
+  }
+];
+
+const PROFILE_LABELS = ['Strictness', 'Speed', 'Safety', 'Verbosity', 'Abstraction', 'Chaos'];
+
+let compareMode = false;
+let selectedLangs = [];
+let audioCtx = null;
+let currentNodes = [];
+
+// ── Audio Context ─────────────────────────────────────────────────
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function stopAllAudio() {
+  currentNodes.forEach(n => { try { n.stop(); } catch(e) {} try { n.disconnect(); } catch(e) {} });
+  currentNodes = [];
+  document.querySelectorAll('.lang-card.playing').forEach(c => c.classList.remove('playing'));
+}
+
+// ── Sound Generators ──────────────────────────────────────────────
+function playSound(lang) {
+  stopAllAudio();
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+  const nodes = [];
+
+  function makeOsc(type, freq, gain, start, dur) {
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    g.gain.setValueAtTime(gain, now + start);
+    osc.connect(g).connect(ctx.destination);
+    osc.start(now + start);
+    osc.stop(now + start + dur);
+    nodes.push(osc);
+    return { osc, gain: g };
+  }
+
+  switch (lang.sound.type) {
+    case 'lofi': {
+      // Warm filtered chords with tape wobble
+      const master = ctx.createGain();
+      master.gain.value = 0.15;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 800;
+      filter.Q.value = 1;
+      master.connect(filter).connect(ctx.destination);
+      const chords = [[261.63, 329.63, 392], [293.66, 349.23, 440], [246.94, 311.13, 369.99]];
+      chords.forEach((chord, i) => {
+        chord.forEach(f => {
+          const osc = ctx.createOscillator();
+          osc.type = 'sawtooth';
+          osc.frequency.value = f;
+          // tape wobble
+          const lfo = ctx.createOscillator();
+          lfo.frequency.value = 0.3 + Math.random() * 0.5;
+          const lfoGain = ctx.createGain();
+          lfoGain.gain.value = 2;
+          lfo.connect(lfoGain).connect(osc.frequency);
+          lfo.start(now + i * 2);
+          lfo.stop(now + i * 2 + 2.5);
+          osc.connect(master);
+          osc.start(now + i * 2);
+          osc.stop(now + i * 2 + 2.5);
+          nodes.push(osc, lfo);
+        });
+      });
+      // vinyl crackle
+      const bufferSize = ctx.sampleRate * 6;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() < 0.002 ? (Math.random() - 0.5) * 0.3 : 0;
+      }
+      const crackle = ctx.createBufferSource();
+      crackle.buffer = buffer;
+      const crackleGain = ctx.createGain();
+      crackleGain.gain.value = 0.08;
+      crackle.connect(crackleGain).connect(ctx.destination);
+      crackle.start(now);
+      crackle.stop(now + 6);
+      nodes.push(crackle);
+      break;
+    }
+    case 'techno': {
+      // 4/4 kick + distorted square
+      const compressor = ctx.createDynamicsCompressor();
+      compressor.connect(ctx.destination);
+      for (let i = 0; i < 16; i++) {
+        const kick = ctx.createOscillator();
+        const kickGain = ctx.createGain();
+        kick.type = 'sine';
+        kick.frequency.setValueAtTime(150, now + i * 0.25);
+        kick.frequency.exponentialRampToValueAtTime(30, now + i * 0.25 + 0.1);
+        kickGain.gain.setValueAtTime(0.5, now + i * 0.25);
+        kickGain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.25 + 0.2);
+        kick.connect(kickGain).connect(compressor);
+        kick.start(now + i * 0.25);
+        kick.stop(now + i * 0.25 + 0.25);
+        nodes.push(kick);
+      }
+      // distorted lead
+      const distortion = ctx.createWaveShaper();
+      const curve = new Float32Array(256);
+      for (let i = 0; i < 256; i++) {
+        const x = (i * 2) / 256 - 1;
+        curve[i] = (Math.PI + 10) * x / (Math.PI + 10 * Math.abs(x));
+      }
+      distortion.curve = curve;
+      const leadGain = ctx.createGain();
+      leadGain.gain.value = 0.12;
+      distortion.connect(leadGain).connect(ctx.destination);
+      const notes = [130.81, 146.83, 164.81, 130.81, 196, 164.81, 146.83, 130.81];
+      notes.forEach((f, i) => {
+        const osc = ctx.createOscillator();
+        osc.type = 'square';
+        osc.frequency.value = f;
+        osc.connect(distortion);
+        osc.start(now + i * 0.5);
+        osc.stop(now + i * 0.5 + 0.45);
+        nodes.push(osc);
+      });
+      break;
+    }
+    case 'jazz': {
+      // Random oscillator chaos — free jazz
+      const masterGain = ctx.createGain();
+      masterGain.gain.value = 0.1;
+      masterGain.connect(ctx.destination);
+      for (let i = 0; i < 20; i++) {
+        const osc = ctx.createOscillator();
+        const types = ['sine', 'triangle', 'sawtooth', 'square'];
+        osc.type = types[Math.floor(Math.random() * types.length)];
+        const freq = 100 + Math.random() * 1200;
+        osc.frequency.setValueAtTime(freq, now + i * 0.3);
+        osc.frequency.linearRampToValueAtTime(freq * (0.5 + Math.random() * 2), now + i * 0.3 + 0.3);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.02 + Math.random() * 0.05, now + i * 0.3);
+        g.gain.linearRampToValueAtTime(0, now + i * 0.3 + 0.25);
+        osc.connect(g).connect(masterGain);
+        osc.start(now + i * 0.3);
+        osc.stop(now + i * 0.3 + 0.35);
+        nodes.push(osc);
+      }
+      // walking bass that goes wrong
+      const bass = ctx.createOscillator();
+      bass.type = 'triangle';
+      bass.frequency.value = 80;
+      for (let i = 0; i < 12; i++) {
+        bass.frequency.setValueAtTime(60 + Math.random() * 200, now + i * 0.4);
+      }
+      const bassGain = ctx.createGain();
+      bassGain.gain.value = 0.15;
+      bass.connect(bassGain).connect(ctx.destination);
+      bass.start(now);
+      bass.stop(now + 5);
+      nodes.push(bass);
+      break;
+    }
+    case 'classical': {
+      // Counterpoint — two voices in strict harmony
+      const master = ctx.createGain();
+      master.gain.value = 0.12;
+      const reverb = ctx.createConvolver();
+      const reverbLen = ctx.sampleRate * 2;
+      const reverbBuf = ctx.createBuffer(2, reverbLen, ctx.sampleRate);
+      for (let ch = 0; ch < 2; ch++) {
+        const d = reverbBuf.getChannelData(ch);
+        for (let i = 0; i < reverbLen; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.5));
+      }
+      reverb.buffer = reverbBuf;
+      const wetGain = ctx.createGain();
+      wetGain.gain.value = 0.3;
+      master.connect(reverb).connect(wetGain).connect(ctx.destination);
+      master.connect(ctx.destination);
+      // Voice 1 (soprano)
+      const melody = [523.25, 587.33, 659.25, 698.46, 659.25, 587.33, 523.25, 493.88];
+      // Voice 2 (alto — thirds and fifths below)
+      const harmony = [392, 440, 523.25, 523.25, 493.88, 440, 392, 349.23];
+      melody.forEach((f, i) => {
+        const osc1 = ctx.createOscillator();
+        osc1.type = 'sine';
+        osc1.frequency.value = f;
+        osc1.connect(master);
+        osc1.start(now + i * 0.6);
+        osc1.stop(now + i * 0.6 + 0.55);
+        nodes.push(osc1);
+        const osc2 = ctx.createOscillator();
+        osc2.type = 'sine';
+        osc2.frequency.value = harmony[i];
+        osc2.connect(master);
+        osc2.start(now + i * 0.6);
+        osc2.stop(now + i * 0.6 + 0.55);
+        nodes.push(osc2);
+      });
+      break;
+    }
+    case 'punk': {
+      // Distorted power chords + fast
+      const distortion = ctx.createWaveshaper || ctx.createWaveShaper;
+      const ds = ctx.createWaveShaper();
+      const curve = new Float32Array(256);
+      for (let i = 0; i < 256; i++) {
+        const x = (i * 2) / 256 - 1;
+        curve[i] = Math.sign(x) * Math.min(1, Math.abs(x) * 3);
+      }
+      ds.curve = curve;
+      const master = ctx.createGain();
+      master.gain.value = 0.12;
+      ds.connect(master).connect(ctx.destination);
+      // Fast power chord progression
+      const chords = [[130.81, 196], [146.83, 220], [164.81, 246.94], [130.81, 196]];
+      for (let rep = 0; rep < 3; rep++) {
+        chords.forEach((chord, ci) => {
+          chord.forEach(f => {
+            const osc = ctx.createOscillator();
+            osc.type = 'sawtooth';
+            osc.frequency.value = f;
+            osc.connect(ds);
+            const start = now + (rep * 4 + ci) * 0.4;
+            osc.start(start);
+            osc.stop(start + 0.35);
+            nodes.push(osc);
+          });
+        });
+      }
+      // noise burst "drums"
+      for (let i = 0; i < 12; i++) {
+        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let j = 0; j < d.length; j++) d[j] = (Math.random() * 2 - 1) * 0.5;
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        const g = ctx.createGain();
+        g.gain.value = 0.08;
+        src.connect(g).connect(ctx.destination);
+        src.start(now + i * 0.4);
+        nodes.push(src);
+      }
+      break;
+    }
+    case 'minimal': {
+      // Repetitive arpeggiated patterns
+      const master = ctx.createGain();
+      master.gain.value = 0.1;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 1200;
+      master.connect(filter).connect(ctx.destination);
+      // Repeating pattern
+      const pattern = [261.63, 329.63, 392, 523.25, 392, 329.63];
+      for (let rep = 0; rep < 6; rep++) {
+        pattern.forEach((f, i) => {
+          const osc = ctx.createOscillator();
+          osc.type = 'triangle';
+          osc.frequency.value = f;
+          const g = ctx.createGain();
+          const start = now + (rep * 6 + i) * 0.2;
+          g.gain.setValueAtTime(0.1, start);
+          g.gain.exponentialRampToValueAtTime(0.001, start + 0.18);
+          osc.connect(g).connect(master);
+          osc.start(start);
+          osc.stop(start + 0.19);
+          nodes.push(osc);
+        });
+      }
+      // Subtle kick every beat
+      for (let i = 0; i < 12; i++) {
+        const kick = ctx.createOscillator();
+        const kg = ctx.createGain();
+        kick.type = 'sine';
+        kick.frequency.setValueAtTime(80, now + i);
+        kick.frequency.exponentialRampToValueAtTime(20, now + i + 0.15);
+        kg.gain.setValueAtTime(0.15, now + i);
+        kg.gain.exponentialRampToValueAtTime(0.001, now + i + 0.2);
+        kick.connect(kg).connect(ctx.destination);
+        kick.start(now + i);
+        kick.stop(now + i + 0.25);
+        nodes.push(kick);
+      }
+      break;
+    }
+    case 'drone': {
+      // Sustained harmonics with slow modulation
+      const master = ctx.createGain();
+      master.gain.value = 0.1;
+      master.connect(ctx.destination);
+      const base = 65.41; // C2
+      [1, 2, 3, 4, 5].forEach((harmonic, i) => {
+        const osc = ctx.createOscillator();
+        osc.type = i % 2 === 0 ? 'sine' : 'triangle';
+        osc.frequency.value = base * harmonic;
+        const g = ctx.createGain();
+        g.gain.value = 0.15 / harmonic;
+        // slow LFO
+        const lfo = ctx.createOscillator();
+        lfo.frequency.value = 0.05 + i * 0.02;
+        const lfoG = ctx.createGain();
+        lfoG.gain.value = 0.05 / harmonic;
+        lfo.connect(lfoG).connect(g.gain);
+        lfo.start(now);
+        lfo.stop(now + 8);
+        // fade in
+        g.gain.setValueAtTime(0, now);
+        g.gain.linearRampToValueAtTime(0.15 / harmonic, now + 2);
+        // fade out
+        g.gain.setValueAtTime(0.15 / harmonic, now + 6);
+        g.gain.linearRampToValueAtTime(0, now + 8);
+        osc.connect(g).connect(master);
+        osc.start(now);
+        osc.stop(now + 8);
+        nodes.push(osc, lfo);
+      });
+      break;
+    }
+  }
+
+  currentNodes = nodes;
+  const card = document.querySelector(`[data-lang="${lang.id}"]`);
+  if (card) {
+    card.classList.add('playing');
+    setTimeout(() => card.classList.remove('playing'), 6000);
+  }
+}
+
+// ── Radar Chart ───────────────────────────────────────────────────
+function drawRadar(canvas, profile, color, size = 160) {
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  canvas.style.width = size + 'px';
+  canvas.style.height = size + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const cx = size / 2, cy = size / 2, r = size * 0.38;
+  const n = PROFILE_LABELS.length;
+
+  // Grid rings
+  for (let ring = 2; ring <= 10; ring += 2) {
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+      const x = cx + Math.cos(angle) * r * (ring / 10);
+      const y = cy + Math.sin(angle) * r * (ring / 10);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.stroke();
+  }
+
+  // Axes
+  for (let i = 0; i < n; i++) {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.stroke();
+  }
+
+  // Profile fill
+  ctx.beginPath();
+  const vals = [profile.strictness, profile.speed, profile.safety, profile.verbosity, profile.abstraction, profile.chaos];
+  vals.forEach((v, i) => {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    const x = cx + Math.cos(angle) * r * (v / 10);
+    const y = cy + Math.sin(angle) * r * (v / 10);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = color + '22';
+  ctx.fill();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Dots
+  vals.forEach((v, i) => {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    const x = cx + Math.cos(angle) * r * (v / 10);
+    const y = cy + Math.sin(angle) * r * (v / 10);
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+  });
+
+  // Labels
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '9px monospace';
+  ctx.textAlign = 'center';
+  vals.forEach((v, i) => {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    const x = cx + Math.cos(angle) * (r + 14);
+    const y = cy + Math.sin(angle) * (r + 14) + 3;
+    ctx.fillText(PROFILE_LABELS[i].slice(0, 4), x, y);
+  });
+}
+
+// ── Build Cards ───────────────────────────────────────────────────
+function buildGrid() {
+  const grid = document.getElementById('langGrid');
+  grid.innerHTML = '';
+  LANGUAGES.forEach(lang => {
+    const card = document.createElement('div');
+    card.className = 'lang-card';
+    card.dataset.lang = lang.id;
+    card.style.setProperty('--card-accent', lang.color);
+    card.style.setProperty('--card-glow', lang.color + '33');
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="lang-icon">${lang.icon}</div>
+        <div class="card-title">
+          <h3>${lang.name}</h3>
+          <div class="genre">${lang.genre}</div>
+        </div>
+      </div>
+      <div class="radar-container"><canvas></canvas></div>
+      <div class="card-desc">${lang.desc}</div>
+      <div class="tag-row">${lang.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+      <div class="play-indicator">
+        <div class="play-bar"></div><div class="play-bar"></div><div class="play-bar"></div><div class="play-bar"></div>
+      </div>
+    `;
+    card.addEventListener('click', () => handleClick(lang));
+    grid.appendChild(card);
+    drawRadar(card.querySelector('canvas'), lang.profile, lang.color);
+  });
+}
+
+function handleClick(lang) {
+  if (compareMode) {
+    toggleSelection(lang);
+  } else {
+    playSound(lang);
+  }
+}
+
+// ── Compare Mode ──────────────────────────────────────────────────
+function toggleCompareMode() {
+  compareMode = !compareMode;
+  document.getElementById('compareToggle').classList.toggle('active', compareMode);
+  if (!compareMode) {
+    selectedLangs = [];
+    document.querySelectorAll('.lang-card.selected').forEach(c => c.classList.remove('selected'));
+    closeCompare();
+  }
+}
+
+function toggleSelection(lang) {
+  const idx = selectedLangs.findIndex(l => l.id === lang.id);
+  const card = document.querySelector(`[data-lang="${lang.id}"]`);
+  if (idx >= 0) {
+    selectedLangs.splice(idx, 1);
+    card.classList.remove('selected');
+  } else {
+    if (selectedLangs.length >= 2) {
+      const old = selectedLangs.shift();
+      document.querySelector(`[data-lang="${old.id}"]`).classList.remove('selected');
+    }
+    selectedLangs.push(lang);
+    card.classList.add('selected');
+  }
+  updateCompare();
+}
+
+function updateCompare() {
+  const panel = document.getElementById('comparePanel');
+  const left = document.getElementById('compareLeft');
+  const right = document.getElementById('compareRight');
+
+  if (selectedLangs.length === 0) {
+    panel.classList.remove('open');
+    return;
+  }
+
+  panel.classList.add('open');
+
+  if (selectedLangs[0]) {
+    left.innerHTML = '<div class="compare-radar"><canvas></canvas></div><p style="text-align:center;margin-top:0.5rem;color:' + selectedLangs[0].color + '">' + selectedLangs[0].name + ' — ' + selectedLangs[0].genre + '</p>';
+    drawRadar(left.querySelector('canvas'), selectedLangs[0].profile, selectedLangs[0].color, 200);
+  } else {
+    left.innerHTML = '<p style="color:var(--text-dim)">Select first language</p>';
+  }
+
+  if (selectedLangs[1]) {
+    right.innerHTML = '<div class="compare-radar"><canvas></canvas></div><p style="text-align:center;margin-top:0.5rem;color:' + selectedLangs[1].color + '">' + selectedLangs[1].name + ' — ' + selectedLangs[1].genre + '</p>';
+    drawRadar(right.querySelector('canvas'), selectedLangs[1].profile, selectedLangs[1].color, 200);
+  } else {
+    right.innerHTML = '<p style="color:var(--text-dim)">Select second language</p>';
+  }
+
+  document.getElementById('remixResult').style.display = 'none';
+}
+
+function closeCompare() {
+  document.getElementById('comparePanel').classList.remove('open');
+  selectedLangs = [];
+  document.querySelectorAll('.lang-card.selected').forEach(c => c.classList.remove('selected'));
+}
+
+// ── Remix ─────────────────────────────────────────────────────────
+function blendProfiles(p1, p2) {
+  const result = {};
+  for (const key of Object.keys(p1)) {
+    // weighted blend with some randomness
+    const mix = 0.4 + Math.random() * 0.2; // slightly unpredictable
+    result[key] = Math.round(p1[key] * mix + p2[key] * (1 - mix) + (Math.random() - 0.5) * 2);
+    result[key] = Math.max(1, Math.min(10, result[key]));
+  }
+  return result;
+}
+
+const REMIX_NAMES = [
+  'Post-Structuralist Vaporwave', 'Cyber-Folk Fusion', 'Neo-Baroque Glitch',
+  'Hyperpop Minimalism', 'Dark Ambient Swing', 'Math Rock Synthwave',
+  'Shoegaze Polyrhythm', 'Electro-Acoustic Noise', 'Dream Pop Breakcore',
+  'Trip-Hop Concerto', 'Dungeon Synth Funk', 'Brutalist Chillwave'
+];
+
+function remix() {
+  if (selectedLangs.length < 2) return;
+
+  const l1 = selectedLangs[0], l2 = selectedLangs[1];
+  const blended = blendProfiles(l1.profile, l2.profile);
+  const remixName = REMIX_NAMES[Math.floor(Math.random() * REMIX_NAMES.length)];
+
+  const result = document.getElementById('remixResult');
+  result.style.display = 'block';
+  result.innerHTML = `
+    <h3>🎶 ${l1.name} × ${l2.name}</h3>
+    <div class="blended-genre">${remixName}</div>
+    <div class="compare-radar"><canvas id="remixCanvas"></canvas></div>
+    <p style="color:var(--text-dim);font-size:0.8rem;margin-top:0.5rem">
+      Strictness ${blended.strictness} · Speed ${blended.speed} · Safety ${blended.safety} · Verbosity ${blended.verbosity} · Abstraction ${blended.abstraction} · Chaos ${blended.chaos}
+    </p>
+  `;
+
+  setTimeout(() => {
+    const canvas = document.getElementById('remixCanvas');
+    if (canvas) {
+      const gradient = '#ff6b35';
+      drawRadar(canvas, blended, gradient, 180);
+    }
+  }, 50);
+
+  // Play remixed sound
+  playRemixAudio(l1, l2, blended);
+}
+
+function playRemixAudio(l1, l2, profile) {
+  stopAllAudio();
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+  const nodes = [];
+
+  const master = ctx.createGain();
+  master.gain.value = 0.08;
+  master.connect(ctx.destination);
+
+  // Chaos-driven generative mix
+  const chaos = profile.chaos / 10;
+  const strict = profile.strictness / 10;
+  const baseNote = 130 + (profile.speed * 30);
+  const scale = [1, 1.125, 1.25, 1.333, 1.5, 1.667, 1.875, 2];
+
+  for (let i = 0; i < 24; i++) {
+    const osc = ctx.createOscillator();
+    const types = ['sine', 'triangle', 'sawtooth', 'square'];
+    osc.type = types[Math.floor(Math.random() * (1 + chaos * 3))];
+    const freqRatio = scale[Math.floor(Math.random() * scale.length)];
+    osc.frequency.value = baseNote * freqRatio;
+
+    if (chaos > 0.5) {
+      osc.frequency.linearRampToValueAtTime(baseNote * scale[Math.floor(Math.random() * scale.length)], now + i * 0.2 + 0.2);
+    }
+
+    const g = ctx.createGain();
+    const gainVal = strict > 0.5 ? 0.05 : 0.02 + Math.random() * 0.06;
+    g.gain.setValueAtTime(gainVal, now + i * 0.2);
+    g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.2 + 0.18);
+
+    osc.connect(g).connect(master);
+    osc.start(now + i * 0.2);
+    osc.stop(now + i * 0.2 + 0.2);
+    nodes.push(osc);
+  }
+
+  currentNodes = nodes;
+}
+
+// ── Init ──────────────────────────────────────────────────────────
+buildGrid();
+</script>
+</body>
+</html>
