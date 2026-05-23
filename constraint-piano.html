@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constraint Piano — Constraint Theory Music</title>
+    <style>
+        :root {
+            --bg: #0a0e0d;
+            --card: #111916;
+            --border: #1e2e27;
+            --text: #e8efe8;
+            --text-muted: #7a9488;
+            --accent: #4ade80;
+            --accent-dim: #22734a;
+            --amber: #f59e0b;
+            --purple: #a78bfa;
+            --cyan: #22d3ee;
+            --rose: #fb7185;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem;
+            line-height: 1.6;
+        }
+        .back-link {
+            position: absolute; top: 1rem; left: 1.5rem;
+            color: var(--text-muted); text-decoration: none; font-size: 0.85rem;
+        }
+        .back-link:hover { color: var(--accent); }
+        h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.25rem; }
+        .subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem; }
+
+        /* Controls */
+        .controls {
+            display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;
+            margin-bottom: 1.5rem; padding: 1rem; background: var(--card);
+            border: 1px solid var(--border); border-radius: 10px;
+        }
+        .controls label { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; }
+        .snap-toggle {
+            position: relative; width: 48px; height: 26px; cursor: pointer;
+        }
+        .snap-toggle input { opacity: 0; width: 0; height: 0; }
+        .snap-toggle .slider {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--border); border-radius: 13px; transition: 0.2s;
+        }
+        .snap-toggle .slider::before {
+            content: ''; position: absolute; width: 20px; height: 20px;
+            left: 3px; bottom: 3px; background: var(--text); border-radius: 50%; transition: 0.2s;
+        }
+        .snap-toggle input:checked + .slider { background: var(--accent-dim); }
+        .snap-toggle input:checked + .slider::before { transform: translateX(22px); background: var(--accent); }
+
+        .snap-indicator {
+            font-size: 0.8rem; padding: 0.2rem 0.6rem; border-radius: 999px;
+            font-weight: 600;
+        }
+        .snap-on { background: rgba(74,222,128,0.15); color: var(--accent); }
+        .snap-off { background: rgba(251,113,133,0.15); color: var(--rose); }
+
+        /* Lattice overlay */
+        .piano-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        #latticeOverlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 5;
+        }
+
+        /* Piano */
+        .piano {
+            display: flex;
+            position: relative;
+            border-radius: 0 0 12px 12px;
+            overflow: hidden;
+            background: #1a1a1a;
+            padding: 0;
+        }
+        .key {
+            position: relative;
+            cursor: pointer;
+            transition: background 0.05s;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .key.white {
+            width: 52px; height: 200px;
+            background: linear-gradient(to bottom, #f8f8f8, #e8e8e8);
+            border: 1px solid #bbb;
+            border-radius: 0 0 5px 5px;
+            z-index: 1;
+        }
+        .key.white:active, .key.white.pressed {
+            background: linear-gradient(to bottom, #ddd, #ccc);
+        }
+        .key.white.snapped {
+            background: linear-gradient(to bottom, #b8f0cc, #90e0aa);
+            border-color: var(--accent);
+        }
+        .key.black {
+            width: 32px; height: 130px;
+            background: linear-gradient(to bottom, #333, #111);
+            border: 1px solid #000;
+            border-radius: 0 0 4px 4px;
+            z-index: 2;
+            margin-left: -16px;
+            margin-right: -16px;
+        }
+        .key.black:active, .key.black.pressed {
+            background: linear-gradient(to bottom, #444, #222);
+        }
+        .key.black.snapped {
+            background: linear-gradient(to bottom, #2a7a4a, #1a5a3a);
+            border-color: var(--accent);
+        }
+
+        .key .label {
+            position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+            font-size: 0.65rem; color: #999; pointer-events: none;
+        }
+        .key.black .label { color: #666; bottom: 5px; }
+        .key.snapped .label { color: var(--accent-dim); font-weight: 700; }
+
+        /* Info panel */
+        .info-panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            width: 100%;
+            max-width: 900px;
+        }
+        .info-panel h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+        .info-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem; margin-top: 0.75rem;
+        }
+        .info-box {
+            background: rgba(0,0,0,0.2); border-radius: 8px; padding: 0.75rem;
+        }
+        .info-box .val { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+        .info-box .lbl { font-size: 0.75rem; color: var(--text-muted); }
+
+        .lattice-legend {
+            display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;
+        }
+        .lattice-legend span {
+            display: flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; color: var(--text-muted);
+        }
+        .legend-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+        }
+
+        @media (max-width: 700px) {
+            .key.white { width: 36px; height: 150px; }
+            .key.black { width: 22px; height: 95px; margin-left: -11px; margin-right: -11px; }
+            h1 { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← Back to Gallery</a>
+    <h1>🎹 Constraint Piano</h1>
+    <p class="subtitle">Play notes and hear them snap to lattice positions. Toggle snap to feel the difference.</p>
+
+    <div class="controls">
+        <label>
+            <span>Lattice Snap:</span>
+            <label class="snap-toggle">
+                <input type="checkbox" id="snapToggle" checked>
+                <span class="slider"></span>
+            </label>
+        </label>
+        <span class="snap-indicator snap-on" id="snapLabel">SNAP ON</span>
+        <label style="margin-left:1rem">
+            <span>Octave:</span>
+            <select id="octaveSelect" style="background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:0.3rem 0.5rem;font-family:inherit;">
+                <option value="3">C3</option>
+                <option value="4" selected>C4</option>
+                <option value="5">C5</option>
+            </select>
+        </label>
+    </div>
+
+    <div class="piano-container">
+        <canvas id="latticeOverlay"></canvas>
+        <div class="piano" id="piano"></div>
+    </div>
+
+    <div class="info-panel">
+        <h3>Lattice Information</h3>
+        <div class="info-grid">
+            <div class="info-box">
+                <div class="val" id="lastNote">—</div>
+                <div class="lbl">Last Note Played</div>
+            </div>
+            <div class="info-box">
+                <div class="val" id="latticePos">—</div>
+                <div class="lbl">A₂ Lattice Position</div>
+            </div>
+            <div class="info-box">
+                <div class="val" id="snapDiff">—</div>
+                <div class="lbl">Snap Adjustment (cents)</div>
+            </div>
+            <div class="info-box">
+                <div class="val" id="constraintCount">0</div>
+                <div class="lbl">Active Constraints</div>
+            </div>
+        </div>
+        <div class="lattice-legend">
+            <span><span class="legend-dot" style="background:var(--accent)"></span> Lattice node (snap target)</span>
+            <span><span class="legend-dot" style="background:var(--amber)"></span> Fifth relation (3:2)</span>
+            <span><span class="legend-dot" style="background:var(--purple)"></span> Third relation (5:4)</span>
+            <span><span class="legend-dot" style="background:var(--cyan)"></span> Octave relation (2:1)</span>
+        </div>
+    </div>
+
+    <script>
+    // ── A₂ Lattice Configuration ──
+    // The A₂ lattice in music: perfect fifths (x-axis) and major thirds (y-axis)
+    // Lattice nodes represent just-intonation ratios
+
+    const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+    const BLACK_INDICES = [1, 3, 6, 8, 10]; // C#, D#, F#, G#, A#
+
+    // Lattice offsets from 12-TET in cents for just intonation through the lattice
+    const LATTICE_CENTS = {
+        'C': 0, 'G': 2, 'D': 4, 'A': 6, 'E': -14, 'B': -12,
+        'F#': -10, 'C#': -8, 'G#': -6, 'D#': -4, 'A#': -2, 'F': -16
+    };
+
+    // Lattice coordinates (fifths, thirds) for each note class
+    const LATTICE_COORDS = {
+        'C': [0,0], 'G': [1,0], 'D': [2,0], 'A': [3,0], 'E': [4,-1],
+        'B': [5,-1], 'F#': [6,-1], 'C#': [7,-2], 'G#': [-3,1],
+        'D#': [-2,1], 'A#': [-1,0], 'F': [-1,1]
+    };
+
+    let audioCtx = null;
+    let snapOn = true;
+    let currentOctave = 4;
+    let lastSnapCents = 0;
+    let constraintCount = 0;
+    let pressedKeys = new Set();
+
+    // ── Build Piano ──
+    function buildPiano() {
+        const piano = document.getElementById('piano');
+        piano.innerHTML = '';
+        const base = currentOctave;
+
+        // 13 white keys: C to C (one octave + 1)
+        const whiteNotes = [0,2,4,5,7,9,11,12,14,16,17,19,21,23];
+        const allKeys = [];
+
+        for (let i = 0; i < 24; i++) { // 2 octaves
+            const semitone = i;
+            const noteIdx = i % 12;
+            const octave = base + Math.floor(i / 12);
+            const name = NOTE_NAMES[noteIdx];
+            const midi = 12 * (base + 1) + i; // MIDI note
+            const isBlack = BLACK_INDICES.includes(noteIdx);
+            allKeys.push({ semitone, noteIdx, octave, name, midi, isBlack });
+        }
+
+        // Build keys
+        allKeys.forEach(k => {
+            const el = document.createElement('div');
+            el.className = 'key ' + (k.isBlack ? 'black' : 'white');
+            el.dataset.midi = k.midi;
+            el.dataset.name = k.name + k.octave;
+            el.dataset.noteClass = k.name;
+
+            const label = document.createElement('span');
+            label.className = 'label';
+            label.textContent = k.name + k.octave;
+            el.appendChild(label);
+
+            if (snapOn && LATTICE_CENTS[k.name] !== undefined) {
+                el.classList.add('snapped');
+            }
+
+            el.addEventListener('mousedown', (e) => { e.preventDefault(); playNote(k, el); });
+            el.addEventListener('mouseup', () => releaseKey(el));
+            el.addEventListener('mouseleave', () => releaseKey(el));
+            el.addEventListener('touchstart', (e) => { e.preventDefault(); playNote(k, el); }, { passive: false });
+            el.addEventListener('touchend', () => releaseKey(el));
+
+            piano.appendChild(el);
+        });
+    }
+
+    function playNote(k, el) {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        const baseFreq = 440 * Math.pow(2, (k.midi - 69) / 12);
+        let freq = baseFreq;
+        lastSnapCents = 0;
+
+        if (snapOn && LATTICE_CENTS[k.name] !== undefined) {
+            lastSnapCents = LATTICE_CENTS[k.name];
+            freq = baseFreq * Math.pow(2, lastSnapCents / 1200);
+            constraintCount++;
+        }
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.35, audioCtx.currentTime + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.15, audioCtx.currentTime + 0.3);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 1.6);
+
+        el.classList.add('pressed');
+
+        // Update info
+        document.getElementById('lastNote').textContent = k.name + k.octave;
+        document.getElementById('latticePos').textContent = LATTICE_COORDS[k.name]
+            ? `(${LATTICE_COORDS[k.name][0]}, ${LATTICE_COORDS[k.name][1]})`
+            : '—';
+        document.getElementById('snapDiff').textContent = (snapOn ? (lastSnapCents >= 0 ? '+' : '') + lastSnapCents : 'OFF');
+        document.getElementById('constraintCount').textContent = constraintCount;
+    }
+
+    function releaseKey(el) {
+        el.classList.remove('pressed');
+    }
+
+    // ── Keyboard support ──
+    const KEY_MAP = {
+        'a': 0, 'w': 1, 's': 2, 'e': 3, 'd': 4, 'f': 5, 't': 6,
+        'g': 7, 'y': 8, 'h': 9, 'u': 10, 'j': 11, 'k': 12,
+        'o': 13, 'l': 14, 'p': 15, ';': 16
+    };
+
+    document.addEventListener('keydown', (e) => {
+        if (e.repeat) return;
+        const midi = KEY_MAP[e.key.toLowerCase()];
+        if (midi === undefined) return;
+        const el = document.querySelector(`[data-midi="${12 * (currentOctave + 1) + midi}"]`);
+        if (el && !pressedKeys.has(midi)) {
+            pressedKeys.add(midi);
+            const noteIdx = midi % 12;
+            const k = {
+                midi: 12 * (currentOctave + 1) + midi,
+                name: NOTE_NAMES[noteIdx],
+                octave: currentOctave + Math.floor(midi / 12)
+            };
+            playNote(k, el);
+        }
+    });
+
+    document.addEventListener('keyup', (e) => {
+        const midi = KEY_MAP[e.key.toLowerCase()];
+        if (midi === undefined) return;
+        pressedKeys.delete(midi);
+        const el = document.querySelector(`[data-midi="${12 * (currentOctave + 1) + midi}"]`);
+        if (el) releaseKey(el);
+    });
+
+    // ── Toggle snap ──
+    document.getElementById('snapToggle').addEventListener('change', function() {
+        snapOn = this.checked;
+        const label = document.getElementById('snapLabel');
+        label.textContent = snapOn ? 'SNAP ON' : 'SNAP OFF';
+        label.className = 'snap-indicator ' + (snapOn ? 'snap-on' : 'snap-off');
+        buildPiano();
+        drawLattice();
+    });
+
+    document.getElementById('octaveSelect').addEventListener('change', function() {
+        currentOctave = parseInt(this.value);
+        buildPiano();
+        setTimeout(drawLattice, 50);
+    });
+
+    // ── Lattice Overlay ──
+    function drawLattice() {
+        const canvas = document.getElementById('latticeOverlay');
+        const piano = document.getElementById('piano');
+        canvas.width = piano.offsetWidth;
+        canvas.height = piano.offsetHeight;
+        const ctx = canvas.getContext('2d');
+
+        if (!snapOn) return;
+
+        // Find snapped key positions
+        const keys = piano.querySelectorAll('.key');
+        const nodes = [];
+
+        keys.forEach(el => {
+            if (el.classList.contains('snapped')) {
+                const rect = el.getBoundingClientRect();
+                const pianoRect = piano.getBoundingClientRect();
+                const cx = rect.left - pianoRect.left + rect.width / 2;
+                const cy = rect.top - pianoRect.top + rect.height * 0.3;
+                const noteClass = el.dataset.noteClass;
+                const coords = LATTICE_COORDS[noteClass];
+                if (coords) {
+                    nodes.push({ x: cx, y: cy, name: noteClass, coords });
+                }
+            }
+        });
+
+        // Draw connections (fifths = amber, thirds = purple)
+        ctx.lineWidth = 1;
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                const dx = nodes[j].coords[0] - nodes[i].coords[0];
+                const dy = nodes[j].coords[1] - nodes[i].coords[1];
+                // Fifth relation: dx=±1, dy=0
+                if (Math.abs(dx) === 1 && dy === 0) {
+                    ctx.strokeStyle = 'rgba(245,158,11,0.25)';
+                    ctx.beginPath();
+                    ctx.moveTo(nodes[i].x, nodes[i].y);
+                    ctx.lineTo(nodes[j].x, nodes[j].y);
+                    ctx.stroke();
+                }
+                // Third relation: dy=±1
+                if (Math.abs(dy) === 1 && dx === 0) {
+                    ctx.strokeStyle = 'rgba(167,139,250,0.25)';
+                    ctx.beginPath();
+                    ctx.moveTo(nodes[i].x, nodes[i].y);
+                    ctx.lineTo(nodes[j].x, nodes[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Draw lattice nodes
+        nodes.forEach(n => {
+            ctx.fillStyle = 'rgba(74,222,128,0.5)';
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+
+    // ── Init ──
+    buildPiano();
+    setTimeout(drawLattice, 100);
+    window.addEventListener('resize', () => setTimeout(drawLattice, 100));
+    </script>
+</body>
+</html>
