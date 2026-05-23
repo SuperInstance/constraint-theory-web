@@ -21,6 +21,8 @@
             --rose: #fb7185;
         }
 
+        /* Focus indicator for all interactive elements */
+        *:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -312,18 +314,21 @@
     </style>
 </head>
 <body>
-    <div class="lattice-bg"><canvas id="latticeCanvas"></canvas></div>
+    <a href="#main-content" class="skip-link" style="position:absolute;top:-100px;left:0;background:var(--accent);color:#000;padding:8px 16px;z-index:9999;font-weight:700;text-decoration:none;transition:top .2s;">Skip to main content</a>
+    <style>.skip-link:focus{top:0;}</style>
+    <div class="lattice-bg" aria-hidden="true"><canvas id="latticeCanvas" role="presentation"></canvas></div>
 
     <div class="container">
-        <header>
+        <header role="banner">
             <h1>Constraint Theory Music</h1>
             <p>Where geometry meets harmony. Explore interactive demos, compose with constraints, and discover the mathematics of musical beauty.</p>
-            <span class="tagline">🎵 Deterministic · Geometric · Beautiful</span>
+            <span class="tagline" role="img" aria-label="Deterministic, Geometric, Beautiful">🎵 Deterministic · Geometric · Beautiful</span>
         </header>
 
+        <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Featured</h2>
         <!-- Featured: Constraint Playground -->
         <a href="constraint-playground.html" class="demo-card featured-card" style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(0,180,255,0.08), rgba(0,255,136,0.08), rgba(255,200,0,0.08), rgba(255,51,102,0.08), rgba(180,74,255,0.08)); border-color: rgba(0,180,255,0.3);">
-            <div class="card-thumb" style="background: linear-gradient(135deg, #0a1628, #0a1a10, #1a1500, #1a0a10, #120a1a); display:flex; align-items:center; justify-content:center; font-size:3rem; min-height:160px;">
+            <div class="card-thumb" role="img" aria-label="Musical notes icon representing the Constraint Playground" style="background: linear-gradient(135deg, #0a1628, #0a1a10, #1a1500, #1a0a10, #120a1a); display:flex; align-items:center; justify-content:center; font-size:3rem; min-height:160px;">
                 🎵
             </div>
             <div class="card-body">
@@ -333,8 +338,11 @@
             </div>
         </a>
 
+        <nav role="navigation" aria-label="Demo categories"></nav>
+        <main id="main-content" role="main">
+        <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Interactive Demos</h2>
         <!-- Row 1: Interactive Demos -->
-        <div class="section-label">✦ Interactive Demos</div>
+        <div class="section-label" aria-hidden="true">✦ Interactive Demos</div>
         <div class="demo-grid">
 
             <!-- Constraint Tarot -->
@@ -375,7 +383,7 @@
             </a>
 
             <!-- AI Jam Session (embedded) -->
-            <div class="demo-card" style="cursor:default">
+            <div class="demo-card" role="region" aria-label="AI Jam Session player" style="cursor:default">
                 <div class="card-thumb thumb-jam" id="jamThumb">
                     <div class="waveform" id="jamWaveform"></div>
                 </div>
@@ -383,15 +391,15 @@
                     <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem">🎵 AI Jam Session</h3>
                     <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:0.75rem">Generate an 8-bar jam using constraint-based algorithms. Pick a preset and hit play.</p>
                     <div class="jam-controls">
-                        <select id="jamPreset">
+                        <select id="jamPreset" aria-label="Jam preset genre">
                             <option value="jazz">Jazz</option>
                             <option value="ambient">Ambient</option>
                             <option value="funk">Funk</option>
                             <option value="classical">Classical</option>
                             <option value="electronic">Electronic</option>
                         </select>
-                        <button id="jamPlay" onclick="playJam()">▶ Play</button>
-                        <button id="jamStop" onclick="stopJam()">■ Stop</button>
+                        <button id="jamPlay" aria-label="Play jam session" onclick="playJam()">▶ Play</button>
+                        <button id="jamStop" aria-label="Stop jam session" onclick="stopJam()">■ Stop</button>
                     </div>
                 </div>
             </div>
@@ -413,8 +421,9 @@
             </a>
         </div>
 
+        <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Composition Tool</h2>
         <!-- Row 2: Composition Tool -->
-        <div class="section-label">✦ Composition Tool</div>
+        <div class="section-label" aria-hidden="true">✦ Composition Tool</div>
         <div class="demo-grid" style="max-width:800px">
 
             <!-- Constraint Composer (full-width feel) -->
@@ -430,14 +439,15 @@
             </a>
         </div>
 
+        <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Research and Education</h2>
         <!-- Row 3: Research & Education -->
-        <div class="section-label">✦ Research & Education</div>
+        <div class="section-label" aria-hidden="true">✦ Research & Education</div>
         <div class="demo-grid">
 
             <!-- Flow Hypothesis Visualization -->
-            <div class="demo-card" style="cursor:default">
+            <div class="demo-card" role="region" aria-label="Flow Hypothesis visualization showing the Goldilocks curve of musical constraint" style="cursor:default">
                 <div class="card-thumb thumb-flow">
-                    <svg viewBox="0 0 240 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg viewBox="0 0 240 120" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow curve showing a sweet spot between under-constrained and over-constrained regions">
                         <path d="M20 100 Q60 100 80 70 Q100 40 120 35 Q140 30 160 50 Q180 70 220 100" stroke="rgba(74,222,128,0.6)" stroke-width="2" fill="none"/>
                         <path d="M20 90 Q60 90 80 80 Q100 70 120 65 Q140 60 160 70 Q180 80 220 95" stroke="rgba(34,211,238,0.4)" stroke-width="1" fill="none" stroke-dasharray="4 2"/>
                         <path d="M20 110 Q60 110 80 100 Q100 90 120 85 Q140 80 160 90 Q180 100 220 115" stroke="rgba(251,113,133,0.4)" stroke-width="1" fill="none" stroke-dasharray="4 2"/>
@@ -490,7 +500,8 @@
             </a>
         </div>
 
-        <footer>
+        </main>
+        <footer role="contentinfo">
             <div class="footer-links">
                 <a href="https://github.com/SuperInstance" target="_blank">GitHub</a>
                 <a href="https://discord.gg/superinstance" target="_blank">Discord</a>

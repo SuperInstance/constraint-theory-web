@@ -23,6 +23,9 @@
   --glow-rigidity: rgba(255,51,102,0.3);
   --glow-tempo: rgba(180,74,255,0.3);
 }
+/* Focus indicator */
+*:focus-visible{outline:2px solid var(--snap);outline-offset:2px;}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--fg);overflow-x:hidden;}
 a{color:var(--snap);text-decoration:none;}
@@ -84,11 +87,15 @@ footer a{color:var(--snap);}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-link" style="position:absolute;top:-100px;left:0;background:var(--snap);color:#000;padding:8px 16px;z-index:9999;font-weight:700;text-decoration:none;">Skip to main content</a>
+<style>.skip-link:focus{top:0;}</style>
+<div id="sr-announce" aria-live="assertive" aria-atomic="true" class="sr-only"></div>
+<script>function announce(msg){document.getElementById('sr-announce').textContent=msg;}</script>
 
-<div class="hero">
+<div class="hero" role="banner">
   <h1>🎵 Constraint Playground</h1>
   <p>Explore how constraints shape music — snap notes to lattices, pull pitches through funnels, negotiate consensus, test rigidity, and feel the groove.</p>
-  <nav>
+  <nav aria-label="Station navigation">
     <a href="#snap">● Snap Lab</a>
     <a href="#funnel">● Funnel</a>
     <a href="#consensus">● Consensus</a>
@@ -98,10 +105,10 @@ footer a{color:var(--snap);}
   </nav>
 </div>
 
-<div class="global-controls" id="globalControls">
-  <label>BPM <input type="range" id="bpmSlider" min="40" max="240" value="120"> <span id="bpmVal">120</span></label>
+<div class="global-controls" id="globalControls" role="toolbar" aria-label="Global controls">
+  <label>BPM <input type="range" id="bpmSlider" min="40" max="240" value="120" aria-label="Beats per minute" aria-valuemin="40" aria-valuemax="240" aria-valuenow="120"> <span id="bpmVal">120</span></label>
   <label>Key
-    <select id="keySelect">
+    <select id="keySelect" aria-label="Musical key">
       <option value="C">C Major</option><option value="Cm">C Minor</option>
       <option value="D">D Major</option><option value="Dm">D Minor</option>
       <option value="E">E Major</option><option value="Em">E Minor</option>
@@ -111,11 +118,11 @@ footer a{color:var(--snap);}
       <option value="B">B Major</option><option value="Bm">B Minor</option>
     </select>
   </label>
-  <button class="btn-export" id="btnExport">💾 Export JSON</button>
-  <button class="btn-combine" id="btnCombine">🎶 Combine All</button>
+  <button class="btn-export" id="btnExport" aria-label="Export composition as JSON">💾 Export JSON</button>
+  <button class="btn-combine" id="btnCombine" aria-label="Play combined composition">🎶 Combine All</button>
 </div>
 
-<main>
+<main id="main" role="main">
   <!-- ============ STATION 1: SNAP LAB ============ -->
   <section class="station snap-station" id="snap">
     <div class="station-inner">
@@ -123,12 +130,12 @@ footer a{color:var(--snap);}
         <h2>◆ SNAP Lab</h2>
         <p>Click the piano roll to place notes. Toggle between free placement and lattice snapping. The A₂ lattice shows where notes will snap — hear each note as you place it.</p>
       </div>
-      <div class="station-controls">
-        <label><input type="checkbox" id="snapToggle" checked> Snap to Lattice</label>
-        <button id="snapClear">Clear</button>
-        <button id="snapPlay">▶ Play</button>
+      <div class="station-controls" role="toolbar" aria-label="Snap Lab controls">
+        <label><input type="checkbox" id="snapToggle" checked aria-label="Toggle snap to lattice"> Snap to Lattice</label>
+        <button id="snapClear" aria-label="Clear all notes">Clear</button>
+        <button id="snapPlay" aria-label="Play all notes">▶ Play</button>
       </div>
-      <div class="canvas-wrap"><canvas id="snapCanvas" height="320"></canvas></div>
+      <div class="canvas-wrap" role="application" aria-label="Snap Lab piano roll grid. Click or use arrow keys to place and remove notes."><canvas id="snapCanvas" height="320" role="img" aria-label="Piano roll grid with notes"></canvas></div>
       <div class="station-info">Click cells to toggle notes. In snap mode, notes jump to the nearest A₂ lattice position (constrained pitch × time grid). In free mode, notes go wherever you click.</div>
     </div>
   </section>
@@ -141,10 +148,10 @@ footer a{color:var(--snap);}
         <p>Click anywhere to drop a wandering note. Watch it get pulled toward the target by funnel gravity. Adjust gravity strength to control how quickly notes converge.</p>
       </div>
       <div class="station-controls">
-        <label>Gravity <input type="range" id="funnelGravity" min="0" max="100" value="50"> <span id="funnelGravVal">0.50</span></label>
-        <button id="funnelClear">Clear</button>
+        <label>Gravity <input type="range" id="funnelGravity" min="0" max="100" value="50" aria-label="Funnel gravity strength"> <span id="funnelGravVal">0.50</span></label>
+        <button id="funnelClear" aria-label="Clear all wanderers">Clear</button>
       </div>
-      <div class="canvas-wrap"><canvas id="funnelCanvas" height="380"></canvas></div>
+      <div class="canvas-wrap" role="application" aria-label="Funnel Simulator canvas. Click to drop wandering notes that gravitate toward the target."><canvas id="funnelCanvas" height="380" role="img" aria-label="Funnel simulation with wandering notes and gravity target"></canvas></div>
       <div class="station-info">The gold dot is the target pitch. Colored dots are wandering notes. Their pitch changes in real-time as they drift toward the target.</div>
     </div>
   </section>
@@ -157,11 +164,11 @@ footer a{color:var(--snap);}
         <p>Drag 4 voices around. When they're outside the consensus zone, you hear dissonance. Hit "Negotiate" to watch them find agreement.</p>
       </div>
       <div class="station-controls">
-        <label>Strictness <input type="range" id="consensusStrict" min="10" max="100" value="60"> <span id="consensusStrictVal">0.60</span></label>
-        <button id="consensusNegotiate">Negotiate</button>
-        <button id="consensusReset">Reset</button>
+        <label>Strictness <input type="range" id="consensusStrict" min="10" max="100" value="60" aria-label="Consensus strictness"> <span id="consensusStrictVal">0.60</span></label>
+        <button id="consensusNegotiate" aria-label="Run consensus negotiation">Negotiate</button>
+        <button id="consensusReset" aria-label="Reset voice positions">Reset</button>
       </div>
-      <div class="canvas-wrap"><canvas id="consensusCanvas" height="380"></canvas></div>
+      <div class="canvas-wrap" role="application" aria-label="Consensus Negotiation canvas. Drag 4 voices or use arrow keys. Voices outside the golden consensus zone produce dissonance."><canvas id="consensusCanvas" height="380" role="img" aria-label="Consensus negotiation with 4 voice nodes"></canvas></div>
       <div class="station-info">The golden circle is the consensus zone. Voices outside produce dissonant tones. "Negotiate" runs a constraint solver that brings voices to agreement.</div>
     </div>
   </section>
@@ -174,11 +181,11 @@ footer a{color:var(--snap);}
         <p>Drag nodes in this network. When the structure is rigid (Laman condition), the whole thing moves as one unit. Remove an edge and it goes floppy.</p>
       </div>
       <div class="station-controls">
-        <button id="rigidRemoveEdge">Remove Edge</button>
-        <button id="rigidAddEdge">Add Edge</button>
-        <button id="rigidReset">Reset</button>
+        <button id="rigidRemoveEdge" aria-label="Remove an edge from the network">Remove Edge</button>
+        <button id="rigidAddEdge" aria-label="Add an edge to the network">Add Edge</button>
+        <button id="rigidReset" aria-label="Reset network to default">Reset</button>
       </div>
-      <div class="canvas-wrap"><canvas id="rigidCanvas" height="380"></canvas></div>
+      <div class="canvas-wrap" role="application" aria-label="Rigidity Sandbox canvas. Drag nodes or use arrow keys. Rigid structures move as one unit."><canvas id="rigidCanvas" height="380" role="img" aria-label="Rigidity network with connected nodes"></canvas></div>
       <div class="station-info">Solid red edges = rigid constraints. Dashed green = flexible. Tap a node to hear its pitch. Drag nodes to feel rigidity vs. floppiness.</div>
     </div>
   </section>
@@ -191,11 +198,11 @@ footer a{color:var(--snap);}
         <p>Place events on the timeline. Events near beats are "in the pocket" (green). Between beats: yellow. Far off: red. Adjust funnel width to control timing strictness.</p>
       </div>
       <div class="station-controls">
-        <label>Funnel Width <input type="range" id="tempoWidth" min="5" max="80" value="30"> <span id="tempoWidthVal">30%</span></label>
-        <button id="tempoClear">Clear</button>
-        <button id="tempoPlay">▶ Play</button>
+        <label>Funnel Width <input type="range" id="tempoWidth" min="5" max="80" value="30" aria-label="Tempo funnel width percentage"> <span id="tempoWidthVal">30%</span></label>
+        <button id="tempoClear" aria-label="Clear all events">Clear</button>
+        <button id="tempoPlay" aria-label="Play timeline events">▶ Play</button>
       </div>
-      <div class="canvas-wrap"><canvas id="tempoCanvas" height="280"></canvas></div>
+      <div class="canvas-wrap" role="application" aria-label="Tempo Funnel timeline. Click to place events. Green zones are in-pocket, yellow is close, red is out of pocket."><canvas id="tempoCanvas" height="280" role="img" aria-label="Tempo funnel timeline with beat markers and event dots"></canvas></div>
       <div class="station-info">Click to place events. Vertical lines are beat markers. The colored zones show the funnel: green = locked in, yellow = close, red = out of pocket.</div>
     </div>
   </section>
@@ -316,13 +323,29 @@ function getCanvasPos(canvas, e){
       const [nc,nr] = k.split(',').map(Number);
       const midi = 60 + (ROWS-1-nr);
       const inScale = isScaleNote(midi);
+      // Use shape + color: rounded rect for in-scale, diamond for out-of-scale
       ctx.fillStyle = snapOn ? (inScale ? '#00b4ff' : '#0066aa') : '#00b4ff';
       ctx.shadowColor = '#00b4ff'; ctx.shadowBlur = 8;
-      ctx.beginPath();
-      ctx.roundRect(nc*cellW+2,nr*cellH+2,cellW-4,cellH-4,3);
-      ctx.fill();
+      if(inScale || !snapOn) {
+        ctx.beginPath();
+        ctx.roundRect(nc*cellW+2,nr*cellH+2,cellW-4,cellH-4,3);
+        ctx.fill();
+      } else {
+        // Diamond shape for out-of-scale notes (not just color difference)
+        const cx2 = nc*cellW+cellW/2, cy2 = nr*cellH+cellH/2;
+        const s = Math.min(cellW,cellH)/2-2;
+        ctx.beginPath();
+        ctx.moveTo(cx2,cy2-s); ctx.lineTo(cx2+s,cy2); ctx.lineTo(cx2,cy2+s); ctx.lineTo(cx2-s,cy2);
+        ctx.closePath(); ctx.fill();
+      }
       ctx.shadowBlur=0;
     });
+    // Keyboard cursor indicator
+    if(document.activeElement === c) {
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.setLineDash([3,3]);
+      ctx.strokeRect(snapCursor.col*cellW+1, snapCursor.row*cellH+1, cellW-2, cellH-2);
+      ctx.setLineDash([]);
+    }
   }
 
   function handleClick(e){
@@ -340,15 +363,46 @@ function getCanvasPos(canvas, e){
     draw();
   }
 
+  // Keyboard navigation for snap canvas
+  let snapCursor = {col: 0, row: ROWS-1};
+  c.setAttribute('tabindex', '0');
+  c.addEventListener('keydown', e => {
+    let moved = false;
+    if(e.key === 'ArrowLeft') { snapCursor.col = Math.max(0, snapCursor.col-1); moved = true; }
+    else if(e.key === 'ArrowRight') { snapCursor.col = Math.min(COLS-1, snapCursor.col+1); moved = true; }
+    else if(e.key === 'ArrowUp') { snapCursor.row = Math.max(0, snapCursor.row-1); moved = true; }
+    else if(e.key === 'ArrowDown') { snapCursor.row = Math.min(ROWS-1, snapCursor.row+1); moved = true; }
+    else if(e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      let col = snapCursor.col, row = snapCursor.row;
+      if(snapOn){ const s=snapToLattice(col,row); col=s.col; row=s.row; }
+      const k = col+','+row;
+      ensureAudio();
+      if(notes.has(k)) { notes.delete(k); announce('Note removed at column '+col+', row '+row); }
+      else {
+        notes.add(k);
+        const midi = 60 + (ROWS-1-row);
+        playTone(midiToFreq(midi), 0.25, 0.12);
+        announce('Note added: ' + NOTE_NAMES[midi%12] + Math.floor(midi/12-1) + ' at column '+col);
+      }
+      draw();
+      return;
+    }
+    if(moved) { e.preventDefault(); draw(); announce('Cursor at column '+snapCursor.col+', row '+snapCursor.row); }
+  });
+  c.addEventListener('focus', () => { draw(); });
+  c.addEventListener('blur', () => { draw(); });
+
   c.addEventListener('click', handleClick);
   c.addEventListener('touchstart', e=>{e.preventDefault();handleClick(e);},{passive:false});
-  document.getElementById('snapToggle').onchange = e => { snapOn=e.target.checked; draw(); };
-  document.getElementById('snapClear').onclick = () => { notes.clear(); draw(); };
+  document.getElementById('snapToggle').onchange = e => { snapOn=e.target.checked; draw(); announce(snapOn ? 'Snap to lattice enabled' : 'Snap to lattice disabled'); };
+  document.getElementById('snapClear').onclick = () => { notes.clear(); draw(); announce('All notes cleared'); };
   document.getElementById('snapPlay').onclick = () => {
     ensureAudio();
     const sorted = [...notes].map(k=>{const[c,r]=k.split(',').map(Number);return{c,r,midi:60+(ROWS-1-r)};}).sort((a,b)=>a.c-b.c);
     const step = 60/bpm;
     sorted.forEach((n,i)=>{setTimeout(()=>playTone(midiToFreq(n.midi),0.2,0.12),i*step*125);});
+    announce('Playing ' + sorted.length + ' notes');
   };
   window.addEventListener('resize', ()=>{ const s=setupCanvas('snapCanvas'); Object.assign({w:s.w,h:s.h}); draw(); });
   draw();
@@ -517,6 +571,13 @@ function getCanvasPos(canvas, e){
   }
   function handleUp(){dragging=null;}
 
+  c.setAttribute('tabindex', '0');
+  c.setAttribute('role', 'application');
+  c.setAttribute('aria-label', 'Consensus Negotiation. Press N to negotiate, R to reset.');
+  c.addEventListener('keydown', e => {
+    if(e.key === 'n' || e.key === 'N') { e.preventDefault(); document.getElementById('consensusNegotiate').click(); }
+    if(e.key === 'r' || e.key === 'R') { e.preventDefault(); document.getElementById('consensusReset').click(); }
+  });
   c.addEventListener('mousedown',handleDown); c.addEventListener('mousemove',handleMove); c.addEventListener('mouseup',handleUp);
   c.addEventListener('touchstart',e=>{e.preventDefault();handleDown(e);},{passive:false});
   c.addEventListener('touchmove',e=>{e.preventDefault();handleMove(e);},{passive:false});
@@ -607,6 +668,14 @@ function getCanvasPos(canvas, e){
   }
   function handleUp(){dragging=null;}
 
+  c.setAttribute('tabindex', '0');
+  c.setAttribute('role', 'application');
+  c.setAttribute('aria-label', 'Rigidity Sandbox. Press R to reset, E to remove edge, A to add edge.');
+  c.addEventListener('keydown', e => {
+    if(e.key === 'r' || e.key === 'R') { e.preventDefault(); document.getElementById('rigidReset').click(); }
+    if(e.key === 'e' || e.key === 'E') { e.preventDefault(); document.getElementById('rigidRemoveEdge').click(); announce('Edge removed'); }
+    if(e.key === 'a' || e.key === 'A') { e.preventDefault(); document.getElementById('rigidAddEdge').click(); announce('Edge added'); }
+  });
   c.addEventListener('mousedown',handleDown); c.addEventListener('mousemove',handleMove); c.addEventListener('mouseup',handleUp);
   c.addEventListener('touchstart',e=>{e.preventDefault();handleDown(e);},{passive:false});
   c.addEventListener('touchmove',e=>{e.preventDefault();handleMove(e);},{passive:false});
@@ -669,12 +738,31 @@ function getCanvasPos(canvas, e){
     const p=getCanvasPos(c,e);
     events.push({x:p.x,y:p.y,inPocket:false});
     classify();
+    announce('Event placed. ' + events.length + ' total events');
   });
   c.addEventListener('touchstart',e=>{e.preventDefault();
     const p=getCanvasPos(c,e);
     events.push({x:p.x,y:p.y,inPocket:false});
     classify();
+    announce('Event placed. ' + events.length + ' total events');
   },{passive:false});
+
+  // Add keyboard support for tempo canvas
+  c.setAttribute('tabindex', '0');
+  c.addEventListener('keydown', e => {
+    // We can't meaningfully place events via keyboard on a continuous canvas,
+    // but allow space to place at center, and describe the state
+    if(e.key === ' ') {
+      e.preventDefault();
+      events.push({x:w/2, y:h/2, inPocket:false});
+      classify();
+      announce('Event placed at center. ' + events.length + ' total events');
+    }
+    if(e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('tempoPlay').click();
+    }
+  });
 
   function classify(){
     const beatSpacing = w/BEATS;
@@ -720,8 +808,17 @@ function getCanvasPos(canvas, e){
     // events
     events.forEach(ev=>{
       const color = ev.inPocket===true ? '#00ff88' : ev.inPocket==='yellow' ? '#ffc800' : '#ff3366';
-      ctx.beginPath(); ctx.arc(ev.x,ev.y,7,0,Math.PI*2);
-      ctx.fillStyle=color; ctx.shadowColor=color; ctx.shadowBlur=8; ctx.fill(); ctx.shadowBlur=0;
+      // Shape varies with pocket status: circle=in-pocket, square=close, triangle=out
+      ctx.fillStyle=color; ctx.shadowColor=color; ctx.shadowBlur=8;
+      ctx.beginPath();
+      if(ev.inPocket===true) {
+        ctx.arc(ev.x,ev.y,7,0,Math.PI*2);
+      } else if(ev.inPocket==='yellow') {
+        ctx.rect(ev.x-5,ev.y-5,10,10);
+      } else {
+        ctx.moveTo(ev.x,ev.y-7); ctx.lineTo(ev.x+7,ev.y+5); ctx.lineTo(ev.x-7,ev.y+5); ctx.closePath();
+      }
+      ctx.fill(); ctx.shadowBlur=0;
     });
 
     classify();

@@ -9,6 +9,10 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  /* Focus indicators */
+  *:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+
   :root {
     --bg: #0a0a0f;
     --card-bg: #12121c;
@@ -366,20 +370,25 @@
 </style>
 </head>
 <body>
+<a href="#spread" style="position:absolute;top:-100px;left:0;background:var(--gold);color:#000;padding:8px 16px;z-index:9999;font-weight:700;text-decoration:none;">Skip to tarot spread</a>
+<style>a[href="#spread"]:focus{top:0;}</style>
+<div id="sr-announce" aria-live="assertive" aria-atomic="true" class="sr-only"></div>
+<script>function announce(msg){document.getElementById('sr-announce').textContent=msg;}</script>
 
 <div class="container">
   <h1>CONSTRAINT TAROT</h1>
   <p class="subtitle">A 5-Card Compositional Spread</p>
 
-  <div class="spread" id="spread"></div>
+  <div class="spread" id="spread" role="region" aria-label="Tarot card spread" tabindex="-1"></div>
   <div class="synthesis" id="synthesis">
     <h2>✦ THE READING ✦</h2>
     <p id="synthesis-text"></p>
   </div>
 
   <div class="controls">
-    <button id="drawBtn" onclick="drawCards()">DRAW</button>
-    <button id="shareBtn" onclick="shareReading()" style="display:none;">SHARE</button>
+    <button id="drawBtn" onclick="drawCards()" aria-label="Draw new tarot cards">DRAW</button>
+    <button id="shareBtn" onclick="shareReading()" style="display:none;" aria-label="Share or copy your reading">SHARE</button>
+    <button id="readFullBtn" onclick="readFullReading()" style="display:none;" aria-label="Read full tarot reading aloud">📖 Read Full Reading</button>
   </div>
 
   <p class="footer">Constraint Theory Oracle — draw insight from mathematical structure</p>
@@ -558,14 +567,14 @@ function generateReading() {
 function buildCardHTML(card, index) {
   return `
     <div>
-      <div class="card-slot" id="card-${index}" onclick="flipCard(${index})">
+      <div class="card-slot" id="card-${index}" onclick="flipCard(${index})" tabindex="0" role="button" aria-label="${POSITIONS[index]} card, ${card.flipped ? card.icon + ' ' + card.name + ': ' + card.reading : 'Face down. Press Enter or Space to reveal.'}" aria-expanded="${card.flipped ? 'true' : 'false'}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();flipCard(${index});}">
         <div class="card-inner">
-          <div class="card-back">
+          <div class="card-back" aria-hidden="true">
             <div class="card-back-pattern"></div>
             <span class="symbol">✦</span>
           </div>
-          <div class="card-front" style="border-color: ${card.color}22;">
-            <div class="card-icon ${card.css}"></div>
+          <div class="card-front" style="border-color: ${card.color}22;" aria-hidden="${card.flipped ? 'false' : 'true'}">
+            <div class="card-icon ${card.css}" role="img" aria-label="${card.name} constraint pattern"></div>
             <div class="card-type-label" style="color: ${card.color};">${card.icon} ${card.name}</div>
             <div class="card-reading">${card.reading}</div>
             <div class="card-position">${card.position}</div>
@@ -590,9 +599,15 @@ function drawCards() {
   document.getElementById('shareBtn').style.display = 'none';
 
   // Flip cards one by one
-  currentReading.forEach((_, i) => {
+  currentReading.forEach((card, i) => {
+    card.flipped = false;
     setTimeout(() => {
-      document.getElementById(`card-${i}`).classList.add('flipped');
+      const el = document.getElementById(`card-${i}`);
+      el.classList.add('flipped');
+      card.flipped = true;
+      el.setAttribute('aria-expanded', 'true');
+      el.setAttribute('aria-label', `${POSITIONS[i]} card, ${card.icon} ${card.name}: ${card.reading}`);
+      announce(`${POSITIONS[i]}: ${card.name}. ${card.reading}`);
       flippedCount++;
       if (flippedCount === 5) {
         setTimeout(showSynthesis, 600);
@@ -609,12 +624,36 @@ function showSynthesis() {
   document.getElementById('drawBtn').textContent = 'NEW READING';
   document.getElementById('drawBtn').disabled = false;
   document.getElementById('shareBtn').style.display = 'inline-block';
+  document.getElementById('readFullBtn').style.display = 'inline-block';
+  announce('Reading complete. The synthesis is now visible. Press the Read Full Reading button to hear it.');
+}
+
+function readFullReading() {
+  if (!currentReading) return;
+  let text = 'Constraint Tarot Reading. ';
+  currentReading.forEach(c => {
+    text += `${c.position}: ${c.icon} ${c.name}. ${c.reading}. `;
+  });
+  text += 'Synthesis: ' + document.getElementById('synthesis-text').textContent;
+  // Use speech synthesis if available, otherwise just announce to SR
+  if ('speechSynthesis' in window) {
+    speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.9;
+    speechSynthesis.speak(utterance);
+  }
+  announce(text);
 }
 
 function flipCard(index) {
   const el = document.getElementById(`card-${index}`);
   if (el && !el.classList.contains('flipped')) {
     el.classList.add('flipped');
+    if(currentReading) currentReading[index].flipped = true;
+    el.setAttribute('aria-expanded', 'true');
+    const card = currentReading[index];
+    el.setAttribute('aria-label', `${POSITIONS[index]} card, ${card.icon} ${card.name}: ${card.reading}`);
+    announce(`${POSITIONS[index]}: ${card.name}. ${card.reading}`);
     flippedCount++;
     if (flippedCount === 5) {
       setTimeout(showSynthesis, 600);
