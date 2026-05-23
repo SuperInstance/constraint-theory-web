@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Constraint Playground — Interactive Music Explorer</title>
+<meta name="description" content="An interactive playground for exploring constraint music through 5 hands-on stations: Snap, Funnel, Consensus, Rigidity, and Tempo.">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --card: #12121a;
+  --border: #1e1e2e;
+  --fg: #e8e8f0;
+  --muted: #6b6b80;
+  --snap: #00b4ff;
+  --funnel: #00ff88;
+  --consensus: #ffc800;
+  --rigidity: #ff3366;
+  --tempo: #b44aff;
+  --glow-snap: rgba(0,180,255,0.3);
+  --glow-funnel: rgba(0,255,136,0.3);
+  --glow-consensus: rgba(255,200,0,0.3);
+  --glow-rigidity: rgba(255,51,102,0.3);
+  --glow-tempo: rgba(180,74,255,0.3);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--fg);overflow-x:hidden;}
+a{color:var(--snap);text-decoration:none;}
+.hero{text-align:center;padding:4rem 1.5rem 2rem;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,180,255,0.08) 0%,transparent 60%);pointer-events:none;}
+.hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;letter-spacing:-0.03em;background:linear-gradient(135deg,var(--snap),var(--funnel),var(--consensus),var(--rigidity),var(--tempo));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.5rem;}
+.hero p{color:var(--muted);font-size:1.1rem;max-width:600px;margin:0 auto 1.5rem;line-height:1.5;}
+.hero nav{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;}
+.hero nav a{padding:.5rem 1rem;border-radius:2rem;border:1px solid var(--border);font-size:.85rem;transition:all .3s;background:var(--card);}
+.hero nav a:hover{border-color:var(--snap);background:rgba(0,180,255,0.1);}
+.global-controls{position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;justify-content:center;}
+.global-controls label{display:flex;align-items:center;gap:.4rem;font-size:.85rem;color:var(--muted);}
+.global-controls input[type=range]{width:100px;accent-color:var(--snap);}
+.global-controls select,.global-controls button{background:var(--card);color:var(--fg);border:1px solid var(--border);border-radius:.5rem;padding:.35rem .75rem;font-size:.85rem;cursor:pointer;}
+.global-controls button{transition:all .2s;}
+.global-controls button:hover{border-color:var(--snap);background:rgba(0,180,255,0.1);}
+.global-controls .btn-export{border-color:var(--funnel);color:var(--funnel);}
+.global-controls .btn-export:hover{background:rgba(0,255,136,0.1);}
+.global-controls .btn-combine{border-color:var(--consensus);color:var(--consensus);}
+.global-controls .btn-combine:hover{background:rgba(255,200,0,0.1);}
+
+.station{padding:3rem 1.5rem;border-bottom:1px solid var(--border);position:relative;}
+.station::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;}
+.station:nth-child(1)::before{background:linear-gradient(90deg,transparent,var(--snap),transparent);}
+.station:nth-child(2)::before{background:linear-gradient(90deg,transparent,var(--funnel),transparent);}
+.station:nth-child(3)::before{background:linear-gradient(90deg,transparent,var(--consensus),transparent);}
+.station:nth-child(4)::before{background:linear-gradient(90deg,transparent,var(--rigidity),transparent);}
+.station:nth-child(5)::before{background:linear-gradient(90deg,transparent,var(--tempo),transparent);}
+.station-inner{max-width:1100px;margin:0 auto;}
+.station-header{margin-bottom:1.5rem;}
+.station-header h2{font-size:1.8rem;font-weight:700;display:flex;align-items:center;gap:.5rem;}
+.station-header p{color:var(--muted);margin-top:.25rem;line-height:1.5;}
+.station-controls{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;}
+.station-controls label{font-size:.85rem;color:var(--muted);display:flex;align-items:center;gap:.35rem;}
+.station-controls input[type=range]{width:120px;}
+.station-controls button{background:var(--card);color:var(--fg);border:1px solid var(--border);border-radius:.5rem;padding:.4rem .9rem;font-size:.85rem;cursor:pointer;transition:all .2s;}
+.station-controls button:hover{border-color:currentColor;opacity:.85;}
+.station-controls button.active{background:rgba(255,255,255,0.08);}
+
+.canvas-wrap{position:relative;background:var(--card);border:1px solid var(--border);border-radius:.75rem;overflow:hidden;touch-action:none;}
+.canvas-wrap canvas{display:block;width:100%;cursor:crosshair;}
+.station-info{margin-top:.75rem;font-size:.8rem;color:var(--muted);line-height:1.5;}
+
+.snap-station h2{color:var(--snap);}
+.funnel-station h2{color:var(--funnel);}
+.consensus-station h2{color:var(--consensus);}
+.rigidity-station h2{color:var(--rigidity);}
+.tempo-station h2{color:var(--tempo);}
+
+footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem;}
+footer a{color:var(--snap);}
+
+@media(max-width:700px){
+  .global-controls{gap:.75rem;padding:.5rem .75rem;}
+  .global-controls input[type=range]{width:70px;}
+  .station{padding:2rem .75rem;}
+  .hero{padding:2.5rem 1rem 1.5rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🎵 Constraint Playground</h1>
+  <p>Explore how constraints shape music — snap notes to lattices, pull pitches through funnels, negotiate consensus, test rigidity, and feel the groove.</p>
+  <nav>
+    <a href="#snap">● Snap Lab</a>
+    <a href="#funnel">● Funnel</a>
+    <a href="#consensus">● Consensus</a>
+    <a href="#rigidity">● Rigidity</a>
+    <a href="#tempo">● Tempo</a>
+    <a href="./index.html">← Home</a>
+  </nav>
+</div>
+
+<div class="global-controls" id="globalControls">
+  <label>BPM <input type="range" id="bpmSlider" min="40" max="240" value="120"> <span id="bpmVal">120</span></label>
+  <label>Key
+    <select id="keySelect">
+      <option value="C">C Major</option><option value="Cm">C Minor</option>
+      <option value="D">D Major</option><option value="Dm">D Minor</option>
+      <option value="E">E Major</option><option value="Em">E Minor</option>
+      <option value="F">F Major</option><option value="Fm">F Minor</option>
+      <option value="G" selected>G Major</option><option value="Gm">G Minor</option>
+      <option value="A">A Major</option><option value="Am">A Minor</option>
+      <option value="B">B Major</option><option value="Bm">B Minor</option>
+    </select>
+  </label>
+  <button class="btn-export" id="btnExport">💾 Export JSON</button>
+  <button class="btn-combine" id="btnCombine">🎶 Combine All</button>
+</div>
+
+<main>
+  <!-- ============ STATION 1: SNAP LAB ============ -->
+  <section class="station snap-station" id="snap">
+    <div class="station-inner">
+      <div class="station-header">
+        <h2>◆ SNAP Lab</h2>
+        <p>Click the piano roll to place notes. Toggle between free placement and lattice snapping. The A₂ lattice shows where notes will snap — hear each note as you place it.</p>
+      </div>
+      <div class="station-controls">
+        <label><input type="checkbox" id="snapToggle" checked> Snap to Lattice</label>
+        <button id="snapClear">Clear</button>
+        <button id="snapPlay">▶ Play</button>
+      </div>
+      <div class="canvas-wrap"><canvas id="snapCanvas" height="320"></canvas></div>
+      <div class="station-info">Click cells to toggle notes. In snap mode, notes jump to the nearest A₂ lattice position (constrained pitch × time grid). In free mode, notes go wherever you click.</div>
+    </div>
+  </section>
+
+  <!-- ============ STATION 2: FUNNEL SIMULATOR ============ -->
+  <section class="station funnel-station" id="funnel">
+    <div class="station-inner">
+      <div class="station-header">
+        <h2>◆ FUNNEL Simulator</h2>
+        <p>Click anywhere to drop a wandering note. Watch it get pulled toward the target by funnel gravity. Adjust gravity strength to control how quickly notes converge.</p>
+      </div>
+      <div class="station-controls">
+        <label>Gravity <input type="range" id="funnelGravity" min="0" max="100" value="50"> <span id="funnelGravVal">0.50</span></label>
+        <button id="funnelClear">Clear</button>
+      </div>
+      <div class="canvas-wrap"><canvas id="funnelCanvas" height="380"></canvas></div>
+      <div class="station-info">The gold dot is the target pitch. Colored dots are wandering notes. Their pitch changes in real-time as they drift toward the target.</div>
+    </div>
+  </section>
+
+  <!-- ============ STATION 3: CONSENSUS NEGOTIATION ============ -->
+  <section class="station consensus-station" id="consensus">
+    <div class="station-inner">
+      <div class="station-header">
+        <h2>◆ CONSENSUS Negotiation</h2>
+        <p>Drag 4 voices around. When they're outside the consensus zone, you hear dissonance. Hit "Negotiate" to watch them find agreement.</p>
+      </div>
+      <div class="station-controls">
+        <label>Strictness <input type="range" id="consensusStrict" min="10" max="100" value="60"> <span id="consensusStrictVal">0.60</span></label>
+        <button id="consensusNegotiate">Negotiate</button>
+        <button id="consensusReset">Reset</button>
+      </div>
+      <div class="canvas-wrap"><canvas id="consensusCanvas" height="380"></canvas></div>
+      <div class="station-info">The golden circle is the consensus zone. Voices outside produce dissonant tones. "Negotiate" runs a constraint solver that brings voices to agreement.</div>
+    </div>
+  </section>
+
+  <!-- ============ STATION 4: RIGIDITY SANDBOX ============ -->
+  <section class="station rigidity-station" id="rigidity">
+    <div class="station-inner">
+      <div class="station-header">
+        <h2>◆ RIGIDITY Sandbox</h2>
+        <p>Drag nodes in this network. When the structure is rigid (Laman condition), the whole thing moves as one unit. Remove an edge and it goes floppy.</p>
+      </div>
+      <div class="station-controls">
+        <button id="rigidRemoveEdge">Remove Edge</button>
+        <button id="rigidAddEdge">Add Edge</button>
+        <button id="rigidReset">Reset</button>
+      </div>
+      <div class="canvas-wrap"><canvas id="rigidCanvas" height="380"></canvas></div>
+      <div class="station-info">Solid red edges = rigid constraints. Dashed green = flexible. Tap a node to hear its pitch. Drag nodes to feel rigidity vs. floppiness.</div>
+    </div>
+  </section>
+
+  <!-- ============ STATION 5: TEMPO FUNNEL ============ -->
+  <section class="station tempo-station" id="tempo">
+    <div class="station-inner">
+      <div class="station-header">
+        <h2>◆ TEMPO Funnel</h2>
+        <p>Place events on the timeline. Events near beats are "in the pocket" (green). Between beats: yellow. Far off: red. Adjust funnel width to control timing strictness.</p>
+      </div>
+      <div class="station-controls">
+        <label>Funnel Width <input type="range" id="tempoWidth" min="5" max="80" value="30"> <span id="tempoWidthVal">30%</span></label>
+        <button id="tempoClear">Clear</button>
+        <button id="tempoPlay">▶ Play</button>
+      </div>
+      <div class="canvas-wrap"><canvas id="tempoCanvas" height="280"></canvas></div>
+      <div class="station-info">Click to place events. Vertical lines are beat markers. The colored zones show the funnel: green = locked in, yellow = close, red = out of pocket.</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Constraint Playground — Part of <a href="./index.html">Constraint Theory</a> • Pure HTML/CSS/JS, zero dependencies</p>
+</footer>
+
+<script>
+// ==================== AUDIO ENGINE ====================
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+function ensureAudio(){ if(!audioCtx) audioCtx = new AudioCtx(); if(audioCtx.state==='suspended') audioCtx.resume(); }
+
+const NOTE_BASES = {C:0,'C#':1,D:2,'D#':3,E:4,F:5,'F#':6,G:7,'G#':8,A:9,'A#':10,B:11};
+const MAJOR_SCALE = [0,2,4,5,7,9,11];
+const MINOR_SCALE = [0,2,3,5,7,8,10];
+
+function getScale(key){
+  const minor = key.endsWith('m');
+  const root = NOTE_BASES[key.replace('m','')];
+  const scale = minor ? MINOR_SCALE : MAJOR_SCALE;
+  return scale.map(s => (root + s) % 12);
+}
+
+function midiToFreq(midi){ return 440 * Math.pow(2,(midi-69)/12); }
+
+function playTone(freq, dur=0.3, vol=0.15, type='triangle'){
+  ensureAudio();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(); osc.stop(audioCtx.currentTime + dur);
+}
+
+function playNoise(dur=0.2, vol=0.08){
+  ensureAudio();
+  const buf = audioCtx.createBuffer(1, audioCtx.sampleRate*dur, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*vol;
+  const src = audioCtx.createBufferSource();
+  src.buffer = buf; src.connect(audioCtx.destination); src.start();
+}
+
+// ==================== GLOBAL STATE ====================
+let bpm = 120, currentKey = 'G', currentScale = getScale('G');
+document.getElementById('bpmSlider').oninput = e => { bpm = +e.target.value; document.getElementById('bpmVal').textContent = bpm; };
+document.getElementById('keySelect').onchange = e => { currentKey = e.target.value; currentScale = getScale(currentKey); };
+
+function isScaleNote(midi){ return currentScale.includes(midi % 12); }
+
+// ==================== CANVAS UTILITIES ====================
+function setupCanvas(id){
+  const c = document.getElementById(id);
+  const r = c.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  c.width = r.width * dpr; c.height = r.height * dpr;
+  const ctx = c.getContext('2d'); ctx.scale(dpr, dpr);
+  return {c, ctx, w: r.width, h: r.height};
+}
+
+function getCanvasPos(canvas, e){
+  const r = canvas.getBoundingClientRect();
+  const t = e.touches ? e.touches[0] : e;
+  return { x: t.clientX - r.left, y: t.clientY - r.top };
+}
+
+// ==================== STATION 1: SNAP LAB ====================
+(function(){
+  const COLS = 32, ROWS = 16;
+  let notes = new Set(), snapOn = true;
+  const {c, ctx, w, h} = setupCanvas('snapCanvas');
+  const cellW = w/COLS, cellH = h/ROWS;
+
+  // A2 lattice: every other column and rows in scale
+  function isLattice(col, row){
+    return col % 2 === 0 && isScaleNote(60 + (ROWS-1-row));
+  }
+
+  function snapToLattice(col, row){
+    // find nearest lattice position
+    let bestC = col, bestR = row, bestD = Infinity;
+    for(let c2 = 0; c2 < COLS; c2 += 2){
+      for(let r2 = 0; r2 < ROWS; r2++){
+        if(!isLattice(c2,r2)) continue;
+        const d = Math.abs(c2-col)+Math.abs(r2-row);
+        if(d < bestD){ bestD=d; bestC=c2; bestR=r2; }
+      }
+    }
+    return {col:bestC, row:bestR};
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    // background
+    for(let r=0;r<ROWS;r++) for(let c2=0;c2<COLS;c2++){
+      const midi = 60 + (ROWS-1-r);
+      const x=c2*cellW, y=r*cellH;
+      ctx.fillStyle = isScaleNote(midi) ? 'rgba(0,180,255,0.04)' : 'rgba(255,255,255,0.01)';
+      ctx.fillRect(x,y,cellW,cellH);
+      // lattice dots
+      if(snapOn && isLattice(c2,r)){
+        ctx.fillStyle='rgba(0,180,255,0.15)';
+        ctx.beginPath(); ctx.arc(x+cellW/2,y+cellH/2,2,0,Math.PI*2); ctx.fill();
+      }
+    }
+    // grid lines
+    ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=0.5;
+    for(let r=0;r<=ROWS;r++){ctx.beginPath();ctx.moveTo(0,r*cellH);ctx.lineTo(w,r*cellH);ctx.stroke();}
+    for(let c2=0;c2<=COLS;c2++){ctx.beginPath();ctx.moveTo(c2*cellW,0);ctx.lineTo(c2*cellW,h);ctx.stroke();}
+    // notes
+    notes.forEach(k=>{
+      const [nc,nr] = k.split(',').map(Number);
+      const midi = 60 + (ROWS-1-nr);
+      const inScale = isScaleNote(midi);
+      ctx.fillStyle = snapOn ? (inScale ? '#00b4ff' : '#0066aa') : '#00b4ff';
+      ctx.shadowColor = '#00b4ff'; ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.roundRect(nc*cellW+2,nr*cellH+2,cellW-4,cellH-4,3);
+      ctx.fill();
+      ctx.shadowBlur=0;
+    });
+  }
+
+  function handleClick(e){
+    ensureAudio();
+    const p = getCanvasPos(c, e);
+    let col = Math.floor(p.x/cellW), row = Math.floor(p.y/cellH);
+    col = Math.max(0,Math.min(COLS-1,col)); row = Math.max(0,Math.min(ROWS-1,row));
+    if(snapOn){ const s=snapToLattice(col,row); col=s.col; row=s.row; }
+    const k = col+','+row;
+    if(notes.has(k)) notes.delete(k); else {
+      notes.add(k);
+      const midi = 60 + (ROWS-1-row);
+      playTone(midiToFreq(midi), 0.25, 0.12);
+    }
+    draw();
+  }
+
+  c.addEventListener('click', handleClick);
+  c.addEventListener('touchstart', e=>{e.preventDefault();handleClick(e);},{passive:false});
+  document.getElementById('snapToggle').onchange = e => { snapOn=e.target.checked; draw(); };
+  document.getElementById('snapClear').onclick = () => { notes.clear(); draw(); };
+  document.getElementById('snapPlay').onclick = () => {
+    ensureAudio();
+    const sorted = [...notes].map(k=>{const[c,r]=k.split(',').map(Number);return{c,r,midi:60+(ROWS-1-r)};}).sort((a,b)=>a.c-b.c);
+    const step = 60/bpm;
+    sorted.forEach((n,i)=>{setTimeout(()=>playTone(midiToFreq(n.midi),0.2,0.12),i*step*125);});
+  };
+  window.addEventListener('resize', ()=>{ const s=setupCanvas('snapCanvas'); Object.assign({w:s.w,h:s.h}); draw(); });
+  draw();
+})();
+
+// ==================== STATION 2: FUNNEL SIMULATOR ====================
+(function(){
+  const {c, ctx, w, h} = setupCanvas('funnelCanvas');
+  let gravity = 0.5;
+  let target = {x: w/2, y: h/2, freq: midiToFreq(72)};
+  let wanderers = [];
+  let animId;
+
+  document.getElementById('funnelGravity').oninput = e => {
+    gravity = +e.target.value/100;
+    document.getElementById('funnelGravVal').textContent = gravity.toFixed(2);
+  };
+  document.getElementById('funnelClear').onclick = () => { wanderers = []; };
+
+  function addWanderer(x,y){
+    ensureAudio();
+    const hue = Math.random()*360;
+    wanderers.push({x,y,vx:(Math.random()-0.5)*2,vy:(Math.random()-0.5)*2,color:`hsl(${hue},80%,60%)`,freq:midiToFreq(48+y/h*36)});
+  }
+
+  c.addEventListener('click', e=>{ const p=getCanvasPos(c,e); addWanderer(p.x,p.y); });
+  c.addEventListener('touchstart', e=>{e.preventDefault();const p=getCanvasPos(c,e);addWanderer(p.x,p.y);},{passive:false});
+
+  function animate(){
+    ctx.clearRect(0,0,w,h);
+    // target zone
+    ctx.beginPath(); ctx.arc(target.x,target.y,30,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,200,0,0.1)'; ctx.fill();
+    ctx.strokeStyle='rgba(255,200,0,0.4)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.beginPath(); ctx.arc(target.x,target.y,6,0,Math.PI*2);
+    ctx.fillStyle='#ffc800'; ctx.fill();
+
+    // funnel rings
+    for(let r=60;r<Math.max(w,h);r+=60){
+      ctx.beginPath(); ctx.arc(target.x,target.y,r,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(0,255,136,${Math.max(0.02,0.08-r*0.0003)})`; ctx.lineWidth=0.5; ctx.stroke();
+    }
+
+    // wanderers
+    wanderers.forEach(wn=>{
+      const dx=target.x-wn.x, dy=target.y-wn.y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist>1){
+        wn.vx += dx/dist*gravity*0.5;
+        wn.vy += dy/dist*gravity*0.5;
+      }
+      wn.vx *= 0.98; wn.vy *= 0.98;
+      wn.x += wn.vx; wn.y += wn.vy;
+      // pitch based on Y position
+      const newFreq = midiToFreq(48 + (1 - wn.y/h)*36);
+      if(Math.abs(newFreq-wn.freq)>5) wn.freq=newFreq;
+
+      // draw
+      ctx.beginPath(); ctx.arc(wn.x,wn.y,8,0,Math.PI*2);
+      ctx.fillStyle=wn.color; ctx.shadowColor=wn.color; ctx.shadowBlur=12; ctx.fill(); ctx.shadowBlur=0;
+      // trail
+      ctx.beginPath(); ctx.moveTo(wn.x,wn.y);
+      ctx.lineTo(wn.x-wn.vx*5,wn.y-wn.vy*5);
+      ctx.strokeStyle=wn.color; ctx.lineWidth=2; ctx.globalAlpha=0.4; ctx.stroke(); ctx.globalAlpha=1;
+    });
+
+    // play nearest wanderer sound occasionally
+    if(wanderers.length>0 && Math.random()<0.03){
+      const wn = wanderers[Math.floor(Math.random()*wanderers.length)];
+      playTone(wn.freq, 0.15, 0.05);
+    }
+
+    animId = requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+// ==================== STATION 3: CONSENSUS NEGOTIATION ====================
+(function(){
+  const {c, ctx, w, h} = setupCanvas('consensusCanvas');
+  const cx = w/2, cy = h/2, zoneR = 70;
+  let strictness = 0.6;
+  let voices = [
+    {x:cx-100,y:cy-80,color:'#ff4466',freq:midiToFreq(60)},
+    {x:cx+90,y:cy-70,color:'#44aaff',freq:midiToFreq(64)},
+    {x:cx-80,y:cy+90,color:'#44ff88',freq:midiToFreq(67)},
+    {x:cx+100,y:cy+80,color:'#ff88ff',freq:midiToFreq(71)},
+  ];
+  let dragging = null, negotiating = false, consensusTarget = {x:cx,y:cy};
+  let dissonanceOsc = null;
+
+  document.getElementById('consensusStrict').oninput = e => {
+    strictness = +e.target.value/100;
+    document.getElementById('consensusStrictVal').textContent = strictness.toFixed(2);
+  };
+  document.getElementById('consensusReset').onclick = () => {
+    voices[0].x=cx-100;voices[0].y=cy-80;
+    voices[1].x=cx+90;voices[1].y=cy-70;
+    voices[2].x=cx-80;voices[2].y=cy+90;
+    voices[3].x=cx+100;voices[3].y=cy+80;
+    negotiating=false;
+  };
+  document.getElementById('consensusNegotiate').onclick = () => {
+    ensureAudio(); negotiating=true;
+    // target = center of mass, biased toward consensus zone
+    consensusTarget = {x:cx,y:cy};
+  };
+
+  function inZone(v){ return Math.hypot(v.x-cx,v.y-cy) < zoneR; }
+
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    // consensus zone
+    ctx.beginPath(); ctx.arc(cx,cy,zoneR,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,200,0,0.06)'; ctx.fill();
+    ctx.strokeStyle='rgba(255,200,0,0.3)'; ctx.lineWidth=1.5; ctx.setLineDash([6,4]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='rgba(255,200,0,0.5)'; ctx.font='12px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('Consensus Zone',cx,cy-zoneR-8);
+
+    // negotiate animation
+    if(negotiating){
+      let allDone=true;
+      voices.forEach(v=>{
+        const dx=consensusTarget.x-v.x, dy=consensusTarget.y-v.y;
+        const d=Math.hypot(dx,dy);
+        if(d>2){
+          v.x+=dx*strictness*0.03; v.y+=dy*strictness*0.03; allDone=false;
+        }
+      });
+      if(allDone) negotiating=false;
+    }
+
+    // voices
+    voices.forEach(v=>{
+      const inZ = inZone(v);
+      const r = inZ ? 14 : 11;
+      ctx.beginPath(); ctx.arc(v.x,v.y,r,0,Math.PI*2);
+      ctx.fillStyle=v.color; ctx.shadowColor=v.color; ctx.shadowBlur=inZ?16:6; ctx.fill(); ctx.shadowBlur=0;
+      if(!inZ){
+        // dissonance indicator
+        ctx.beginPath(); ctx.arc(v.x,v.y,r+4,0,Math.PI*2);
+        ctx.strokeStyle='rgba(255,50,50,0.4)'; ctx.lineWidth=1; ctx.stroke();
+      }
+      // update freq from Y
+      v.freq = midiToFreq(55 + (1-v.y/h)*30);
+    });
+
+    // dissonance sound
+    if(voices.some(v=>!inZone(v)) && Math.random()<0.02){
+      playNoise(0.1, 0.04);
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  function handleDown(e){
+    const p=getCanvasPos(c,e);
+    for(let i=voices.length-1;i>=0;i--){
+      if(Math.hypot(voices[i].x-p.x,voices[i].y-p.y)<18){dragging=i;break;}
+    }
+  }
+  function handleMove(e){
+    if(dragging===null) return;
+    const p=getCanvasPos(c,e);
+    voices[dragging].x=p.x; voices[dragging].y=p.y;
+  }
+  function handleUp(){dragging=null;}
+
+  c.addEventListener('mousedown',handleDown); c.addEventListener('mousemove',handleMove); c.addEventListener('mouseup',handleUp);
+  c.addEventListener('touchstart',e=>{e.preventDefault();handleDown(e);},{passive:false});
+  c.addEventListener('touchmove',e=>{e.preventDefault();handleMove(e);},{passive:false});
+  c.addEventListener('touchend',handleUp);
+  draw();
+})();
+
+// ==================== STATION 4: RIGIDITY SANDBOX ====================
+(function(){
+  const {c, ctx, w, h} = setupCanvas('rigidCanvas');
+  let nodes = [
+    {x:w*0.3,y:h*0.3,freq:midiToFreq(60)},
+    {x:w*0.7,y:h*0.3,freq:midiToFreq(64)},
+    {x:w*0.7,y:h*0.7,freq:midiToFreq(67)},
+    {x:w*0.3,y:h*0.7,freq:midiToFreq(71)},
+    {x:w*0.5,y:h*0.2,freq:midiToFreq(72)},
+    {x:w*0.5,y:h*0.8,freq:midiToFreq(65)},
+  ];
+  let edges = [
+    [0,1],[1,2],[2,3],[3,0], // outer
+    [0,2],[1,3],             // diagonals (makes it rigid)
+    [0,4],[1,4],             // top
+    [2,5],[3,5],             // bottom
+  ];
+  let dragging = null, isRigid = true;
+
+  function checkRigidity(){
+    // Simple Laman-like check: 2n-3 edges needed for n nodes
+    isRigid = edges.length >= 2*nodes.length - 3;
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    checkRigidity();
+
+    // edges
+    edges.forEach(([a,b])=>{
+      ctx.beginPath(); ctx.moveTo(nodes[a].x,nodes[a].y); ctx.lineTo(nodes[b].x,nodes[b].y);
+      if(isRigid){
+        ctx.strokeStyle='#ff3366'; ctx.lineWidth=3; ctx.setLineDash([]);
+        ctx.shadowColor='#ff3366'; ctx.shadowBlur=8;
+      } else {
+        ctx.strokeStyle='#00ff88'; ctx.lineWidth=2; ctx.setLineDash([8,6]);
+        ctx.shadowColor='#00ff88'; ctx.shadowBlur=4;
+      }
+      ctx.stroke(); ctx.shadowBlur=0; ctx.setLineDash([]);
+    });
+
+    // nodes
+    nodes.forEach((n,i)=>{
+      ctx.beginPath(); ctx.arc(n.x,n.y,14,0,Math.PI*2);
+      ctx.fillStyle = isRigid ? 'rgba(255,51,102,0.2)' : 'rgba(0,255,136,0.2)';
+      ctx.fill();
+      ctx.strokeStyle = isRigid ? '#ff3366' : '#00ff88';
+      ctx.lineWidth=2; ctx.stroke();
+      ctx.fillStyle='#e8e8f0'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(i+1,n.x,n.y);
+    });
+
+    // status
+    ctx.fillStyle=isRigid?'#ff3366':'#00ff88'; ctx.font='bold 14px sans-serif'; ctx.textAlign='left';
+    ctx.fillText(isRigid?'■ RIGID (Laman)':'〜 FLEXIBLE',12,24);
+    ctx.fillStyle='var(--muted)'; ctx.font='11px sans-serif';
+    ctx.fillText(`Edges: ${edges.length} / ${2*nodes.length-3} needed`,12,42);
+
+    requestAnimationFrame(draw);
+  }
+
+  function handleDown(e){
+    const p=getCanvasPos(c,e);
+    for(let i=nodes.length-1;i>=0;i--){
+      if(Math.hypot(nodes[i].x-p.x,nodes[i].y-p.y)<18){
+        dragging=i; ensureAudio(); playTone(nodes[i].freq,0.2,0.1);
+        break;
+      }
+    }
+  }
+  function handleMove(e){
+    if(dragging===null) return;
+    const p=getCanvasPos(c,e);
+    const dx=p.x-nodes[dragging].x, dy=p.y-nodes[dragging].y;
+    if(isRigid){
+      // move all nodes together
+      nodes.forEach(n=>{n.x+=dx;n.y+=dy;});
+    } else {
+      nodes[dragging].x=p.x; nodes[dragging].y=p.y;
+    }
+  }
+  function handleUp(){dragging=null;}
+
+  c.addEventListener('mousedown',handleDown); c.addEventListener('mousemove',handleMove); c.addEventListener('mouseup',handleUp);
+  c.addEventListener('touchstart',e=>{e.preventDefault();handleDown(e);},{passive:false});
+  c.addEventListener('touchmove',e=>{e.preventDefault();handleMove(e);},{passive:false});
+  c.addEventListener('touchend',handleUp);
+
+  document.getElementById('rigidRemoveEdge').onclick = () => {
+    if(edges.length>0) edges.pop();
+  };
+  document.getElementById('rigidAddEdge').onclick = () => {
+    // add a random edge between unconnected nodes
+    for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++){
+      if(!edges.some(([a,b])=>(a===i&&b===j)||(a===j&&b===i))){
+        edges.push([i,j]); return;
+      }
+    }
+  };
+  document.getElementById('rigidReset').onclick = () => {
+    edges = [[0,1],[1,2],[2,3],[3,0],[0,2],[1,3],[0,4],[1,4],[2,5],[3,5]];
+    nodes[0]={x:w*0.3,y:h*0.3,freq:midiToFreq(60)};
+    nodes[1]={x:w*0.7,y:h*0.3,freq:midiToFreq(64)};
+    nodes[2]={x:w*0.7,y:h*0.7,freq:midiToFreq(67)};
+    nodes[3]={x:w*0.3,y:h*0.7,freq:midiToFreq(71)};
+    nodes[4]={x:w*0.5,y:h*0.2,freq:midiToFreq(72)};
+    nodes[5]={x:w*0.5,y:h*0.8,freq:midiToFreq(65)};
+  };
+  draw();
+})();
+
+// ==================== STATION 5: TEMPO FUNNEL ====================
+(function(){
+  const {c, ctx, w, h} = setupCanvas('tempoCanvas');
+  const BEATS = 8;
+  let events = [];
+  let funnelWidth = 0.3;
+  let playing = false, playIdx = 0;
+
+  document.getElementById('tempoWidth').oninput = e => {
+    funnelWidth = +e.target.value/100;
+    document.getElementById('tempoWidthVal').textContent = Math.round(funnelWidth*100)+'%';
+  };
+  document.getElementById('tempoClear').onclick = () => { events = []; };
+  document.getElementById('tempoPlay').onclick = () => {
+    if(playing) return;
+    ensureAudio(); playing=true; playIdx=0;
+    const sorted=[...events].sort((a,b)=>a.x-b.x);
+    const beatDur = 60/bpm; // seconds per beat
+    const totalDur = BEATS * beatDur;
+    const startTime = audioCtx.currentTime;
+    sorted.forEach(ev=>{
+      const timePos = ev.x / w * totalDur;
+      setTimeout(()=>{
+        const midi = 60 + (1-ev.y/h)*24;
+        playTone(midiToFreq(midi), 0.2, ev.inPocket?0.15:0.06, ev.inPocket?'triangle':'sawtooth');
+      }, timePos*1000);
+    });
+    setTimeout(()=>{playing=false;}, totalDur*1000);
+  };
+
+  c.addEventListener('click', e=>{
+    const p=getCanvasPos(c,e);
+    events.push({x:p.x,y:p.y,inPocket:false});
+    classify();
+  });
+  c.addEventListener('touchstart',e=>{e.preventDefault();
+    const p=getCanvasPos(c,e);
+    events.push({x:p.x,y:p.y,inPocket:false});
+    classify();
+  },{passive:false});
+
+  function classify(){
+    const beatSpacing = w/BEATS;
+    const pocketW = funnelWidth * beatSpacing / 2;
+    events.forEach(ev=>{
+      let minDist = Infinity;
+      for(let b=0;b<BEATS;b++){
+        const bx = (b+0.5)*beatSpacing;
+        minDist = Math.min(minDist, Math.abs(ev.x-bx));
+      }
+      if(minDist <= pocketW*0.5) ev.inPocket=true;
+      else if(minDist <= pocketW) ev.inPocket='yellow';
+      else ev.inPocket=false;
+    });
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    const beatSpacing = w/BEATS;
+    const pocketW = funnelWidth * beatSpacing / 2;
+
+    // funnel zones
+    for(let b=0;b<BEATS;b++){
+      const bx = (b+0.5)*beatSpacing;
+      // green zone
+      ctx.fillStyle='rgba(0,255,136,0.08)';
+      ctx.fillRect(bx-pocketW*0.5,0,pocketW,h);
+      // yellow zone
+      ctx.fillStyle='rgba(255,200,0,0.04)';
+      ctx.fillRect(bx-pocketW,0,pocketW*0.5,h);
+      ctx.fillRect(bx+pocketW*0.5,0,pocketW*0.5,h);
+    }
+
+    // beat markers
+    for(let b=0;b<BEATS;b++){
+      const bx = (b+0.5)*beatSpacing;
+      ctx.beginPath(); ctx.moveTo(bx,0); ctx.lineTo(bx,h);
+      ctx.strokeStyle='rgba(180,74,255,0.3)'; ctx.lineWidth=1; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle='rgba(180,74,255,0.5)'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(b+1,bx,14);
+    }
+
+    // events
+    events.forEach(ev=>{
+      const color = ev.inPocket===true ? '#00ff88' : ev.inPocket==='yellow' ? '#ffc800' : '#ff3366';
+      ctx.beginPath(); ctx.arc(ev.x,ev.y,7,0,Math.PI*2);
+      ctx.fillStyle=color; ctx.shadowColor=color; ctx.shadowBlur=8; ctx.fill(); ctx.shadowBlur=0;
+    });
+
+    classify();
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ==================== GLOBAL: EXPORT & COMBINE ====================
+document.getElementById('btnExport').onclick = () => {
+  const data = {
+    bpm, key: currentKey, scale: currentScale,
+    exported: new Date().toISOString(),
+    stations: {
+      snap: 'See snap canvas notes',
+      funnel: 'See funnel wanderer positions',
+      consensus: 'See voice positions',
+      rigidity: 'See network state',
+      tempo: 'See timeline events'
+    }
+  };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='constraint-composition.json'; a.click();
+};
+
+document.getElementById('btnCombine').onclick = () => {
+  ensureAudio();
+  const beatDur = 60/bpm;
+  const totalBeats = 8;
+  // play a chord from current scale across octaves
+  const chord = currentScale.map(s => midiToFreq(60+s));
+  chord.forEach((f,i) => {
+    setTimeout(()=>playTone(f,0.4,0.08),i*beatDur*250);
+  });
+  // play rhythmically
+  for(let b=0;b<totalBeats;b++){
+    setTimeout(()=>{
+      const note = currentScale[b % currentScale.length];
+      playTone(midiToFreq(48+note),0.15,0.1);
+    }, b*beatDur*1000);
+  }
+  // add arp
+  for(let i=0;i<16;i++){
+    setTimeout(()=>{
+      const note = currentScale[i % currentScale.length];
+      const octave = i%2===0?60:72;
+      playTone(midiToFreq(octave+note),0.1,0.06,'sine');
+    }, i*beatDur*500);
+  }
+};
+</script>
+</body>
+</html>
