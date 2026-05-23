@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constraint Composer — Constraint Theory Music</title>
+    <style>
+        :root {
+            --bg: #0a0e0d;
+            --card: #111916;
+            --border: #1e2e27;
+            --text: #e8efe8;
+            --text-muted: #7a9488;
+            --accent: #4ade80;
+            --accent-dim: #22734a;
+            --amber: #f59e0b;
+            --purple: #a78bfa;
+            --cyan: #22d3ee;
+            --rose: #fb7185;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 1.5rem;
+            line-height: 1.6;
+        }
+        .back-link { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+        .back-link:hover { color: var(--accent); }
+        h1 { font-size: 1.8rem; font-weight: 800; margin: 0.5rem 0 0.25rem; }
+        .subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem; }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .panel h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .form-group { margin-bottom: 1rem; }
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+        .form-group select, .form-group input[type="range"] {
+            width: 100%;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.4rem 0.6rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+        .form-group input[type="range"] {
+            -webkit-appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border);
+            padding: 0;
+            border: none;
+        }
+        .form-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+        }
+        .range-val {
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: 600;
+            float: right;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            margin-bottom: 0.5rem;
+        }
+        .btn:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-primary {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .btn-primary:hover {
+            background: var(--accent);
+            color: var(--bg);
+        }
+        .btn-evolve {
+            background: rgba(167,139,250,0.1);
+            border-color: var(--purple);
+            color: var(--purple);
+        }
+        .btn-evolve:hover {
+            background: var(--purple);
+            color: var(--bg);
+        }
+        .btn-export {
+            background: rgba(34,211,238,0.1);
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+        .btn-export:hover {
+            background: var(--cyan);
+            color: var(--bg);
+        }
+
+        /* Constraint indicators */
+        .constraints {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-top: 1rem;
+        }
+        .constraint-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+        .constraint-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .constraint-dot.active {
+            box-shadow: 0 0 6px currentColor;
+        }
+        .constraint-dot.inactive {
+            opacity: 0.3;
+        }
+
+        /* Main area */
+        .main-area { display: flex; flex-direction: column; gap: 1rem; }
+
+        /* Piano roll / sequence display */
+        .piano-roll {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+        .piano-roll h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+        #rollCanvas {
+            width: 100%;
+            border-radius: 6px;
+        }
+
+        /* Generation info */
+        .gen-info {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .gen-stat { text-align: center; }
+        .gen-stat .val { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+        .gen-stat .lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+        /* Fitness bar */
+        .fitness-bar-container {
+            flex: 1;
+            min-width: 200px;
+        }
+        .fitness-bar-bg {
+            height: 20px;
+            background: var(--bg);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .fitness-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        .fitness-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 768px) {
+            .layout { grid-template-columns: 1fr; }
+            h1 { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← Back to Gallery</a>
+    <h1>🎼 Constraint Composer</h1>
+    <p class="subtitle">Generate, evolve, and export constraint-based musical compositions.</p>
+
+    <div class="layout">
+        <!-- Controls Panel -->
+        <div class="panel">
+            <h3>⚙️ Settings</h3>
+
+            <div class="form-group">
+                <label>Genre</label>
+                <select id="genre">
+                    <option value="jazz">Jazz</option>
+                    <option value="classical">Classical</option>
+                    <option value="electronic">Electronic</option>
+                    <option value="ambient">Ambient</option>
+                    <option value="funk">Funk</option>
+                    <option value="latin">Latin</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Constraint Tightness <span class="range-val" id="tightVal">0.5</span></label>
+                <input type="range" id="tightness" min="0" max="1" step="0.05" value="0.5">
+            </div>
+
+            <div class="form-group">
+                <label>Bars <span class="range-val" id="barsVal">8</span></label>
+                <input type="range" id="bars" min="4" max="32" step="4" value="8">
+            </div>
+
+            <div class="form-group">
+                <label>Tempo (BPM) <span class="range-val" id="bpmVal">120</span></label>
+                <input type="range" id="bpm" min="60" max="200" step="5" value="120">
+            </div>
+
+            <button class="btn btn-primary" onclick="generate()">▶ Generate</button>
+            <button class="btn btn-evolve" onclick="evolve()">🧬 Evolve (1 Generation)</button>
+            <button class="btn" onclick="playback()">▶ Play</button>
+            <button class="btn" onclick="stopPlayback()">■ Stop</button>
+            <button class="btn btn-export" onclick="exportMIDI()">💾 Export MIDI</button>
+
+            <h3 style="margin-top:1.25rem">📋 Active Constraints</h3>
+            <div class="constraints" id="constraintList">
+                <div class="constraint-item"><span class="constraint-dot inactive" style="color:var(--accent)" id="cScale"></span> Scale Constraint</div>
+                <div class="constraint-item"><span class="constraint-dot inactive" style="color:var(--amber)" id="cRhythm"></span> Rhythm Constraint</div>
+                <div class="constraint-item"><span class="constraint-dot inactive" style="color:var(--purple)" id="cVoice"></span> Voice Leading</div>
+                <div class="constraint-item"><span class="constraint-dot inactive" style="color:var(--cyan)" id="cRange"></span> Range Constraint</div>
+                <div class="constraint-item"><span class="constraint-dot inactive" style="color:var(--rose)" id="cHarmony"></span> Harmony Constraint</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-area">
+            <div class="gen-info">
+                <div class="gen-stat">
+                    <div class="val" id="genCount">0</div>
+                    <div class="lbl">Generation</div>
+                </div>
+                <div class="gen-stat">
+                    <div class="val" id="noteCount">0</div>
+                    <div class="lbl">Notes</div>
+                </div>
+                <div class="gen-stat">
+                    <div class="val" id="fitnessVal">—</div>
+                    <div class="lbl">Fitness</div>
+                </div>
+                <div class="fitness-bar-container">
+                    <div class="fitness-label">Fitness Score</div>
+                    <div class="fitness-bar-bg">
+                        <div class="fitness-bar-fill" id="fitnessBar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="piano-roll">
+                <h3>Piano Roll</h3>
+                <canvas id="rollCanvas" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ── Constraint Composer Engine ──
+
+    const SCALES = {
+        jazz:       { notes: [0,2,3,5,7,8,10], chordTones: [0,2,4,6] },
+        classical:  { notes: [0,2,4,5,7,9,11], chordTones: [0,2,4,6] },
+        electronic: { notes: [0,3,5,7,10],      chordTones: [0,2,4] },
+        ambient:    { notes: [0,2,4,7,9],       chordTones: [0,1,3,4] },
+        funk:       { notes: [0,3,5,6,7,10],    chordTones: [0,2,3,5] },
+        latin:      { notes: [0,2,3,5,7,8,10],  chordTones: [0,2,4,6] },
+    };
+
+    const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+
+    let audioCtx = null;
+    let sequence = [];
+    let generation = 0;
+    let fitness = 0;
+    let playing = false;
+    let playTimeouts = [];
+    let activeConstraints = { scale: false, rhythm: false, voice: false, range: false, harmony: false };
+
+    // Slider value displays
+    document.getElementById('tightness').addEventListener('input', e => {
+        document.getElementById('tightVal').textContent = e.target.value;
+    });
+    document.getElementById('bars').addEventListener('input', e => {
+        document.getElementById('barsVal').textContent = e.target.value;
+    });
+    document.getElementById('bpm').addEventListener('input', e => {
+        document.getElementById('bpmVal').textContent = e.target.value;
+    });
+
+    function midiToFreq(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+
+    // ── Constraint-based generation ──
+    function generate() {
+        const genre = document.getElementById('genre').value;
+        const tightness = parseFloat(document.getElementById('tightness').value);
+        const bars = parseInt(document.getElementById('bars').value);
+        const bpm = parseInt(document.getElementById('bpm').value);
+        const scale = SCALES[genre];
+        const beatsPerBar = 4;
+        const totalBeats = bars * beatsPerBar;
+        const beatDur = 60 / bpm;
+
+        sequence = [];
+        generation++;
+        activeConstraints = { scale: false, rhythm: false, voice: false, range: false, harmony: false };
+
+        // Determine which constraints are active based on tightness
+        if (tightness >= 0.2) activeConstraints.scale = true;
+        if (tightness >= 0.35) activeConstraints.rhythm = true;
+        if (tightness >= 0.5) activeConstraints.voice = true;
+        if (tightness >= 0.65) activeConstraints.range = true;
+        if (tightness >= 0.8) activeConstraints.harmony = true;
+
+        let prevNote = 60 + scale.notes[Math.floor(scale.notes.length / 2)];
+
+        for (let beat = 0; beat < totalBeats; beat++) {
+            // Should we place a note? (rhythm constraint)
+            let placeNote = true;
+            if (activeConstraints.rhythm) {
+                // Strong beat emphasis
+                const beatInBar = beat % beatsPerBar;
+                placeNote = beatInBar === 0 || Math.random() < tightness;
+                // Upbeat notes less likely
+                if (beatInBar === 2 && Math.random() > tightness + 0.2) placeNote = false;
+            }
+
+            if (!placeNote) continue;
+
+            // Pick note
+            let noteRange = 2; // semitones jump range
+            if (activeConstraints.voice) noteRange = Math.max(1, Math.floor(5 * (1 - tightness)));
+
+            const jump = Math.floor(Math.random() * (noteRange * 2 + 1)) - noteRange;
+            let candidate = prevNote + jump;
+
+            // Scale constraint: snap to scale
+            if (activeConstraints.scale) {
+                const pitchClass = ((candidate % 12) + 12) % 12;
+                if (!scale.notes.includes(pitchClass)) {
+                    // Find nearest scale tone
+                    let bestDist = 99, bestNote = candidate;
+                    for (const s of scale.notes) {
+                        const dist = Math.min(Math.abs(pitchClass - s), 12 - Math.abs(pitchClass - s));
+                        if (dist < bestDist) { bestDist = dist; bestNote = candidate - pitchClass + s; }
+                    }
+                    candidate = bestNote;
+                }
+            }
+
+            // Range constraint
+            const minNote = activeConstraints.range ? 55 : 36;
+            const maxNote = activeConstraints.range ? 79 : 96;
+            candidate = Math.max(minNote, Math.min(maxNote, candidate));
+
+            // Harmony constraint: prefer chord tones on strong beats
+            if (activeConstraints.harmony) {
+                const beatInBar = beat % beatsPerBar;
+                if (beatInBar === 0 || beatInBar === 2) {
+                    const pc = ((candidate % 12) + 12) % 12;
+                    if (!scale.chordTones.some(ct => scale.notes[ct] === pc)) {
+                        // Push toward nearest chord tone
+                        let bestDist = 99, bestNote = candidate;
+                        for (const ct of scale.chordTones) {
+                            const target = scale.notes[ct];
+                            const dist = Math.min(Math.abs(pc - target), 12 - Math.abs(pc - target));
+                            if (dist < bestDist) {
+                                bestDist = dist;
+                                bestNote = candidate - pc + target;
+                            }
+                        }
+                        candidate = bestNote;
+                    }
+                }
+            }
+
+            const dur = activeConstraints.rhythm
+                ? (beat % beatsPerBar === 0 ? beatDur * 2 : beatDur) * (0.8 + Math.random() * 0.4)
+                : beatDur * (0.5 + Math.random());
+
+            sequence.push({
+                midi: candidate,
+                time: beat * beatDur,
+                dur: Math.min(dur, beatDur * 3),
+                vel: 0.3 + Math.random() * 0.4
+            });
+
+            prevNote = candidate;
+        }
+
+        fitness = calcFitness();
+        updateUI();
+        drawPianoRoll();
+    }
+
+    function calcFitness() {
+        if (sequence.length < 2) return 0.5;
+
+        const genre = document.getElementById('genre').value;
+        const scale = SCALES[genre];
+        const tightness = parseFloat(document.getElementById('tightness').value);
+
+        let score = 0;
+        let count = 0;
+
+        // Scale adherence
+        let inScale = 0;
+        sequence.forEach(n => {
+            const pc = ((n.midi % 12) + 12) % 12;
+            if (scale.notes.includes(pc)) inScale++;
+        });
+        score += (inScale / sequence.length) * 0.3;
+
+        // Smooth voice leading (small intervals preferred)
+        let totalJump = 0;
+        for (let i = 1; i < sequence.length; i++) {
+            totalJump += Math.abs(sequence[i].midi - sequence[i-1].midi);
+        }
+        const avgJump = totalJump / (sequence.length - 1);
+        score += Math.max(0, (7 - avgJump) / 7) * 0.3;
+
+        // Rhythmic variety
+        const durs = new Set(sequence.map(n => Math.round(n.dur * 100)));
+        score += Math.min(durs.size / 4, 1) * 0.2;
+
+        // Range balance
+        const notes = sequence.map(n => n.midi);
+        const range = Math.max(...notes) - Math.min(...notes);
+        score += (range >= 12 && range <= 24 ? 1 : 0.5) * 0.2;
+
+        return Math.min(1, score + (Math.random() - 0.5) * 0.05);
+    }
+
+    // ── Evolution ──
+    function evolve() {
+        if (sequence.length === 0) { generate(); return; }
+
+        const genre = document.getElementById('genre').value;
+        const scale = SCALES[genre];
+        const tightness = parseFloat(document.getElementById('tightness').value);
+        const bars = parseInt(document.getElementById('bars').value);
+        const bpm = parseInt(document.getElementById('bpm').value);
+        const beatDur = 60 / bpm;
+
+        generation++;
+
+        // Mutate: modify some notes
+        const mutRate = 0.3;
+        const newSeq = sequence.map(n => {
+            if (Math.random() < mutRate) {
+                const jump = Math.floor(Math.random() * 5) - 2;
+                let midi = n.midi + jump;
+
+                if (activeConstraints.scale) {
+                    const pc = ((midi % 12) + 12) % 12;
+                    if (!scale.notes.includes(pc)) {
+                        let bestDist = 99, bestNote = midi;
+                        for (const s of scale.notes) {
+                            const dist = Math.min(Math.abs(pc - s), 12 - Math.abs(pc - s));
+                            if (dist < bestDist) { bestDist = dist; bestNote = midi - pc + s; }
+                        }
+                        midi = bestNote;
+                    }
+                }
+
+                return { ...n, midi };
+            }
+            return { ...n };
+        });
+
+        // Crossover: swap sections
+        if (newSeq.length > 4) {
+            const cutPoint = Math.floor(newSeq.length * 0.3 + Math.random() * newSeq.length * 0.4);
+            const section = newSeq.splice(cutPoint, Math.floor(newSeq.length * 0.2));
+            newSeq.push(...section.map(s => ({
+                ...s,
+                time: 0, // will be recalculated
+                midi: s.midi + (Math.random() > 0.5 ? 2 : -2)
+            })));
+        }
+
+        sequence = newSeq;
+        fitness = calcFitness();
+        updateUI();
+        drawPianoRoll();
+    }
+
+    // ── Playback ──
+    function playback() {
+        if (sequence.length === 0) return;
+        stopPlayback();
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        playing = true;
+        const startOffset = audioCtx.currentTime + 0.1;
+
+        sequence.forEach(n => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.value = midiToFreq(n.midi);
+            gain.gain.setValueAtTime(0, startOffset + n.time);
+            gain.gain.linearRampToValueAtTime(n.vel * 0.5, startOffset + n.time + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.001, startOffset + n.time + n.dur);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(startOffset + n.time);
+            osc.stop(startOffset + n.time + n.dur + 0.05);
+        });
+
+        const totalDur = Math.max(...sequence.map(n => n.time + n.dur));
+        const tid = setTimeout(() => { playing = false; }, totalDur * 1000 + 200);
+        playTimeouts.push(tid);
+    }
+
+    function stopPlayback() {
+        playTimeouts.forEach(t => clearTimeout(t));
+        playTimeouts = [];
+        playing = false;
+        if (audioCtx) { audioCtx.close(); audioCtx = null; }
+    }
+
+    // ── Export MIDI ──
+    function exportMIDI() {
+        if (sequence.length === 0) { alert('Generate a sequence first!'); return; }
+
+        const bpm = parseInt(document.getElementById('bpm').value);
+        const ticksPerBeat = 480;
+        const microPerTick = (60000000 / bpm) / ticksPerBeat;
+
+        // Build MIDI binary
+        const track = [];
+
+        function writeVarLen(val) {
+            const bytes = [];
+            let v = val;
+            bytes.unshift(v & 0x7F);
+            v >>= 7;
+            while (v > 0) {
+                bytes.unshift((v & 0x7F) | 0x80);
+                v >>= 7;
+            }
+            return bytes;
+        }
+
+        // Tempo meta event
+        track.push(0x00); // delta
+        track.push(0xFF, 0x51, 0x03);
+        track.push((microPerTick * ticksPerBeat >> 16) & 0xFF);
+        track.push((microPerTick * ticksPerBeat >> 8) & 0xFF);
+        track.push((microPerTick * ticksPerBeat) & 0xFF);
+
+        // Sort by time
+        const events = [];
+        sequence.forEach(n => {
+            const startTick = Math.round(n.time * ticksPerBeat * (bpm / 60));
+            const durTicks = Math.round(n.dur * ticksPerBeat * (bpm / 60));
+            events.push({ tick: startTick, type: 'on', midi: n.midi, vel: Math.round(n.vel * 127) });
+            events.push({ tick: startTick + durTicks, type: 'off', midi: n.midi, vel: 0 });
+        });
+        events.sort((a, b) => a.tick - b.tick);
+
+        let prevTick = 0;
+        events.forEach(e => {
+            const delta = e.tick - prevTick;
+            prevTick = e.tick;
+            track.push(...writeVarLen(delta));
+            if (e.type === 'on') {
+                track.push(0x90, e.midi, e.vel);
+            } else {
+                track.push(0x80, e.midi, 0);
+            }
+        });
+
+        // End of track
+        track.push(0x00, 0xFF, 0x2F, 0x00);
+
+        // Build full MIDI file
+        const header = [
+            0x4D, 0x54, 0x68, 0x64, // MThd
+            0x00, 0x00, 0x00, 0x06, // header length
+            0x00, 0x00,             // format 0
+            0x00, 0x01,             // 1 track
+            (ticksPerBeat >> 8) & 0xFF, ticksPerBeat & 0xFF
+        ];
+
+        const trackHeader = [
+            0x4D, 0x54, 0x72, 0x6B, // MTrk
+            (track.length >> 24) & 0xFF,
+            (track.length >> 16) & 0xFF,
+            (track.length >> 8) & 0xFF,
+            track.length & 0xFF
+        ];
+
+        const midi = new Uint8Array([...header, ...trackHeader, ...track]);
+        const blob = new Blob([midi], { type: 'audio/midi' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'constraint-composition.mid';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    // ── UI Updates ──
+    function updateUI() {
+        document.getElementById('genCount').textContent = generation;
+        document.getElementById('noteCount').textContent = sequence.length;
+        document.getElementById('fitnessVal').textContent = fitness.toFixed(2);
+        document.getElementById('fitnessBar').style.width = (fitness * 100) + '%';
+
+        // Constraint indicators
+        const map = {
+            cScale: activeConstraints.scale,
+            cRhythm: activeConstraints.rhythm,
+            cVoice: activeConstraints.voice,
+            cRange: activeConstraints.range,
+            cHarmony: activeConstraints.harmony,
+        };
+        Object.entries(map).forEach(([id, active]) => {
+            const el = document.getElementById(id);
+            el.className = 'constraint-dot ' + (active ? 'active' : 'inactive');
+        });
+    }
+
+    // ── Piano Roll Drawing ──
+    function drawPianoRoll() {
+        const canvas = document.getElementById('rollCanvas');
+        const container = canvas.parentElement;
+        canvas.width = container.clientWidth - 32;
+
+        if (sequence.length === 0) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#111916';
+            ctx.fillRect(0, 0, canvas.width, 300);
+            ctx.fillStyle = '#7a9488';
+            ctx.font = '14px system-ui';
+            ctx.textAlign = 'center';
+            ctx.fillText('Click "Generate" to create a composition', canvas.width / 2, 150);
+            return;
+        }
+
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width;
+        const h = 300;
+
+        const notes = sequence.map(n => n.midi);
+        const minNote = Math.min(...notes) - 2;
+        const maxNote = Math.max(...notes) + 2;
+        const noteRange = maxNote - minNote;
+        const totalTime = Math.max(...sequence.map(n => n.time + n.dur));
+
+        const noteH = Math.max(4, Math.min(16, (h - 30) / noteRange));
+        const padTop = 15;
+
+        // Background
+        ctx.fillStyle = '#0d1210';
+        ctx.fillRect(0, 0, w, h);
+
+        // Grid lines
+        ctx.strokeStyle = 'rgba(30,46,39,0.5)';
+        ctx.lineWidth = 1;
+        for (let n = minNote; n <= maxNote; n++) {
+            const y = padTop + (maxNote - n) * noteH;
+            if (n % 12 === 0) { // octave lines
+                ctx.strokeStyle = 'rgba(74,222,128,0.15)';
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+                ctx.fillStyle = 'rgba(74,222,128,0.3)';
+                ctx.font = '9px system-ui';
+                ctx.fillText('C' + Math.floor(n / 12 - 1), 2, y - 2);
+            }
+        }
+
+        // Note bars
+        const genre = document.getElementById('genre').value;
+        const scale = SCALES[genre];
+        const colors = {
+            jazz: '#4ade80',
+            classical: '#a78bfa',
+            electronic: '#22d3ee',
+            ambient: '#4ade80',
+            funk: '#f59e0b',
+            latin: '#fb7185',
+        };
+        const color = colors[genre] || '#4ade80';
+
+        sequence.forEach(n => {
+            const x = (n.time / totalTime) * w;
+            const nw = Math.max(3, (n.dur / totalTime) * w);
+            const y = padTop + (maxNote - n.midi) * noteH;
+
+            const pc = ((n.midi % 12) + 12) % 12;
+            const inScale = scale.notes.includes(pc);
+
+            ctx.fillStyle = inScale ? color : 'rgba(251,113,133,0.6)';
+            ctx.globalAlpha = 0.5 + n.vel * 0.5;
+            ctx.beginPath();
+            ctx.roundRect(x, y, nw, noteH - 1, 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        });
+    }
+
+    // ── Init ──
+    drawPianoRoll();
+    window.addEventListener('resize', drawPianoRoll);
+
+    // roundRect polyfill
+    if (!CanvasRenderingContext2D.prototype.roundRect) {
+        CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+            this.moveTo(x + r, y);
+            this.lineTo(x + w - r, y);
+            this.quadraticCurveTo(x + w, y, x + w, y + r);
+            this.lineTo(x + w, y + h - r);
+            this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            this.lineTo(x + r, y + h);
+            this.quadraticCurveTo(x, y + h, x, y + h - r);
+            this.lineTo(x, y + r);
+            this.quadraticCurveTo(x, y, x + r, y);
+            this.closePath();
+        };
+    }
+    </script>
+</body>
+</html>
