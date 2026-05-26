@@ -8,7 +8,7 @@
     "serve": "npx http-server -p 8000 -c-1",
     "validate:schema": "npx ajv validate -s schemas/experiment.json -d 'experiments/*/metadata.json' -d 'simulators/*/metadata.json' 2>/dev/null || echo 'Schema validation complete'",
     "validate:html": "npx html-validate 'experiments/*/index.html' 'simulators/*/index.html' 'index.html' 2>/dev/null || echo 'HTML validation complete'",
-    "validate:json": "find . -name '*.json' -type f | xargs -I {} python3 -m json.tool {} > /dev/null && echo 'All JSON files valid'",
+    "validate:json": "find . -name '*.json' -type f -not -path './node_modules/*' -not -path './.git/*' | xargs -I {} python3 -m json.tool {} > /dev/null && echo 'All JSON files valid'",
     "validate": "npm run validate:schema && npm run validate:json",
     "lint": "npx eslint 'js/**/*.js' 'experiments/*/app.js' 'simulators/*/app.js' --ignore-pattern node_modules 2>/dev/null || echo 'Lint complete'",
     "test": "npm run validate",
