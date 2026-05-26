@@ -25,10 +25,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
       
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm install
       
       - name: Lint JavaScript
         run: |
@@ -71,7 +70,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       
+      - name: Check Cloudflare secrets
+        id: check-secrets
+        run: |
+          if [ -n "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+            echo "has-secrets=true" >> $GITHUB_OUTPUT
+          else
+            echo "has-secrets=false" >> $GITHUB_OUTPUT
+            echo "⚠️ Cloudflare secrets not configured, skipping deploy"
+          fi
+
       - name: Deploy to Cloudflare Pages (Preview)
+        if: steps.check-secrets.outputs.has-secrets == 'true'
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -115,7 +125,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       
+      - name: Check Cloudflare secrets
+        id: check-secrets
+        run: |
+          if [ -n "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+            echo "has-secrets=true" >> $GITHUB_OUTPUT
+          else
+            echo "has-secrets=false" >> $GITHUB_OUTPUT
+            echo "⚠️ Cloudflare secrets not configured, skipping deploy"
+          fi
+
       - name: Deploy to Cloudflare Pages (Production)
+        if: steps.check-secrets.outputs.has-secrets == 'true'
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
