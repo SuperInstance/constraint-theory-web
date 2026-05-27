@@ -12,6 +12,7 @@
     "validate": "npm run validate:schema && npm run validate:json",
     "lint": "npx eslint 'js/**/*.js' 'experiments/*/app.js' 'simulators/*/app.js' --ignore-pattern node_modules 2>/dev/null || echo 'Lint complete'",
     "test": "npm run validate",
+    "test:pytest": "python3 -m pytest tests/ -q",
     "deploy": "wrangler pages deploy . --project-name constraint-theory-web",
     "deploy:staging": "wrangler pages deploy . --project-name constraint-theory-web --branch staging",
     "health": "curl -s https://constraint-theory.superinstance.ai/api/health | jq .",
