@@ -312,14 +312,17 @@
             header { padding: 2.5rem 0 1.5rem; }
         }
     </style>
+<link rel="stylesheet" href="https://superinstance.github.io/superinstance-design/superinstance.css">
 </head>
 <body>
+<style>body{padding-top:64px;}</style>
     <a href="#main-content" class="skip-link" style="position:absolute;top:-100px;left:0;background:var(--accent);color:#000;padding:8px 16px;z-index:9999;font-weight:700;text-decoration:none;transition:top .2s;">Skip to main content</a>
     <style>.skip-link:focus{top:0;}</style>
     <div class="lattice-bg" aria-hidden="true"><canvas id="latticeCanvas" role="presentation"></canvas></div>
 
     <div class="container">
-        <header role="banner">
+<div id="nav-root"></div>
+<header role="banner">
             <h1>Constraint Theory Music</h1>
             <p>Where geometry meets harmony. Explore interactive demos, compose with constraints, and discover the mathematics of musical beauty.</p>
             <span class="tagline" role="img" aria-label="Deterministic, Geometric, Beautiful">🎵 Deterministic · Geometric · Beautiful</span>
@@ -501,14 +504,7 @@
         </div>
 
         </main>
-        <footer role="contentinfo">
-            <div class="footer-links">
-                <a href="https://github.com/SuperInstance" target="_blank">GitHub</a>
-                <a href="https://discord.gg/superinstance" target="_blank">Discord</a>
-                <a href="https://github.com/SuperInstance/constraint-theory-web" target="_blank">Source Code</a>
-            </div>
-            <p>Built by <a href="https://github.com/SuperInstance" target="_blank">SuperInstance</a> · Constraint Theory Music Ecosystem</p>
-        </footer>
+        <div id="footer-root"></div>
     </div>
 
     <script>
@@ -666,5 +662,12 @@
         if (jamCtx) { jamCtx.close(); jamCtx = null; }
     }
     </script>
+
+<script src="https://superinstance.github.io/superinstance-design/superinstance-nav.js"></script>
+<script src="https://superinstance.github.io/superinstance-design/superinstance-footer.js"></script>
+<script>
+document.getElementById('nav-root').innerHTML = createSuperInstanceNav('demos');
+document.getElementById('footer-root').innerHTML = createSuperInstanceFooter();
+</script>
 </body>
 </html>
