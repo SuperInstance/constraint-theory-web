@@ -1,5 +1,12 @@
 # constraint-theory-web
 
+## 🔗 Live Demos
+
+- **Demo gallery:** https://superinstance.github.io/constraint-theory-web/
+- **Tensor MIDI:** https://superinstance.ai#flux
+- **All demos hub:** https://superinstance.ai/demos.html
+- **SuperInstance hub:** https://superinstance.ai
+
 WASM demos of constraint theory — interactive lattice visualization, deadband funnel animation, and distributed consensus simulation running in the browser.
 
 ## What This Gives You
