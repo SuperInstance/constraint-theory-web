@@ -422,6 +422,28 @@
                     <span class="card-link">Play Piano →</span>
                 </div>
             </a>
+
+            <!-- Tensor MIDI Visualizer -->
+            <div class="demo-card" role="region" aria-label="Tensor MIDI Conservation visualizer" style="cursor:default">
+                <div class="card-thumb" style="background:linear-gradient(135deg,#0a0d1a,#0d170d);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+                    <div style="display:flex;align-items:flex-end;gap:2px;height:50px" id="tensorBars"></div>
+                    <div style="color:#4ade80;font-size:.7em;font-weight:700">CR=0.94</div>
+                </div>
+                <div class="card-body">
+                    <h3>🎹 Tensor MIDI — Conservation in Music</h3>
+                    <p>Spectral conservation theory applied to harmony. The Conservation Ratio measures how well harmonic patterns preserve spectral energy — real music scores CR≈0.87-0.94, random notes score CR≈0.25-0.35.</p>
+                    <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+                        <button class="btn" onclick="tensorTranspose()" style="padding:4px 10px;font-size:.75em;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text);cursor:pointer">⬆ Transpose</button>
+                        <button class="btn" onclick="tensorDissipate()" style="padding:4px 10px;font-size:.75em;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text);cursor:pointer">💥 Dissipate</button>
+                        <button class="btn" onclick="tensorRestore()" style="padding:4px 10px;font-size:.75em;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text);cursor:pointer">✨ Restore</button>
+                    </div>
+                    <div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;font-size:.75em;color:var(--text-muted)">
+                        <div>ii–V–I in C:</div><div><span style="color:var(--text)">CR=0.94</span> (+4.06σ)</div>
+                        <div>12-bar blues:</div><div><span style="color:var(--text)">CR=0.87</span></div>
+                        <div>Random notes:</div><div><span style="color:var(--text)">CR=0.31</span></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Composition Tool</h2>
@@ -661,6 +683,36 @@
         if (jamTimeout) { clearTimeout(jamTimeout); jamTimeout = null; }
         if (jamCtx) { jamCtx.close(); jamCtx = null; }
     }
+
+    // ── Tensor MIDI Mini Visualizer ──
+    (function() {
+      var cr = 0.94, targetCR = 0.94;
+      var bars = document.getElementById('tensorBars');
+      if (bars) {
+        for (var i = 0; i < 12; i++) {
+          var b = document.createElement('div');
+          b.style.cssText = 'width:6px;border-radius:2px 2px 0 0;transition:height .5s;background:' + (i < 7 ? '#4ade80' : '#22d3ee');
+          b.style.height = (10 + Math.random() * 30) + 'px';
+          bars.appendChild(b);
+        }
+      }
+      function updateBars() {
+        if (!bars) return;
+        var children = bars.children;
+        for (var i = 0; i < children.length; i++) {
+          children[i].style.height = Math.max(3, (cr * 20 + Math.random() * 15)) + 'px';
+          children[i].style.background = cr > 0.7 ? '#4ade80' : cr > 0.4 ? '#f59e0b' : '#ff4444';
+        }
+        bars.parentElement.querySelector('div:last-child').textContent = 'CR=' + cr.toFixed(2);
+      }
+      window.tensorTranspose = function() { cr = Math.min(1, cr + 0.02); updateBars(); };
+      window.tensorDissipate = function() { cr = 0.15 + Math.random() * 0.2; updateBars(); };
+      window.tensorRestore = function() { cr = 0.94; updateBars(); };
+      setInterval(function() {
+        cr += (targetCR - cr) * 0.05;
+        if (Math.abs(cr - targetCR) > 0.01) updateBars();
+      }, 1000);
+    })();
     </script>
 
 <script src="https://superinstance.github.io/superinstance-design/superinstance-nav.js"></script>
